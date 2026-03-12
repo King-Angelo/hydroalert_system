@@ -1,0 +1,24 @@
+name: admin_app  # Change this to match your folder name
+description: "HydroAlert Admin Dashboard Application"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '^3.11.0'  # It's best to match the ^3.6.0 in your root pubspec
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  shared_models: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0 # Standard for 2026 projects
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,11 @@
+**/.dart_tool/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.pub/
+**/ios/Pods/
+**/android/.gradle/
+**/*.iml
+.vs/
+.DS_Store
+Thumbs.db

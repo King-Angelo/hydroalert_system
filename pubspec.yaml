@@ -1,0 +1,11 @@
+name: hydroalert_workspace
+publish_to: none
+
+environment:
+  sdk: '^3.11.0' # This fulfills the requirement and enables workspaces
+
+workspace:
+  - apps/admin_app
+  - apps/resident_app
+  - apps/official_app
+  - packages/*
