@@ -4,10 +4,18 @@ import '../../../app_routes.dart';
 import '../../../core/theme/admin_theme.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/locale_controller.dart';
+import '../../reports/data/report_workflow_repository.dart';
 import '../../dashboard/presentation/dashboard_page.dart';
 
 class AdminShellPage extends StatefulWidget {
-  const AdminShellPage({super.key});
+  const AdminShellPage({
+    super.key,
+    required this.reportWorkflowRepository,
+    required this.adminUserId,
+  });
+
+  final ReportWorkflowRepository reportWorkflowRepository;
+  final String adminUserId;
 
   @override
   State<AdminShellPage> createState() => _AdminShellPageState();
@@ -61,7 +69,10 @@ class _AdminShellPageState extends State<AdminShellPage> {
 
     switch (section) {
       case _NavSection.dashboard:
-        return const DashboardPage();
+        return DashboardPage(
+          reportWorkflowRepository: widget.reportWorkflowRepository,
+          adminUserId: widget.adminUserId,
+        );
       case _NavSection.incidentVerification:
       case _NavSection.userManagement:
       case _NavSection.systemLogs:

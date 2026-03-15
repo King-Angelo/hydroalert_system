@@ -14,6 +14,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  firebase_core: any
+  cloud_firestore: any
   cupertino_icons: ^1.0.8
   shared_models: any
 

@@ -56,6 +56,7 @@ class AppLocalizations {
   String get staticMockMapBadge => _t('staticMockMapBadge');
   String get addMockMapAsset => _t('addMockMapAsset');
   String get statusPending => _t('statusPending');
+  String get statusValidated => _t('statusValidated');
   String get statusApproved => _t('statusApproved');
   String get statusRejected => _t('statusRejected');
   String get statusCritical => _t('statusCritical');
@@ -122,6 +123,7 @@ const _strings = <String, Map<String, String>>{
     'staticMockMapBadge': 'STATIC MOCK MAP',
     'addMockMapAsset': 'Add assets/images/mock_map.png',
     'statusPending': 'Pending',
+    'statusValidated': 'Validated',
     'statusApproved': 'Approved',
     'statusRejected': 'Rejected',
     'statusCritical': 'Critical',
@@ -162,6 +164,7 @@ const _strings = <String, Map<String, String>>{
     'staticMockMapBadge': 'STATIC MOCK MAP',
     'addMockMapAsset': 'Idagdag ang assets/images/mock_map.png',
     'statusPending': 'Pending',
+    'statusValidated': 'Validated',
     'statusApproved': 'Approved',
     'statusRejected': 'Rejected',
     'statusCritical': 'Critical',

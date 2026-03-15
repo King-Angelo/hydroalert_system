@@ -2,12 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/admin_theme.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../reports/data/report_workflow_repository.dart';
 import '../data/mock_dashboard_data.dart';
 import '../widgets/action_queue_panel.dart';
 import '../widgets/mock_map_panel.dart';
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key});
+  const DashboardPage({
+    super.key,
+    required this.reportWorkflowRepository,
+    required this.adminUserId,
+  });
+
+  final ReportWorkflowRepository reportWorkflowRepository;
+  final String adminUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +30,11 @@ class DashboardPage extends StatelessWidget {
                 const _SituationPane(),
                 const SizedBox(height: 16),
                 SizedBox(
-                  height: 420,
-                  child: ActionQueuePanel(items: mockActionQueue),
+                  height: 500,
+                  child: ActionQueuePanel(
+                    reportWorkflowRepository: reportWorkflowRepository,
+                    adminUserId: adminUserId,
+                  ),
                 ),
               ],
             ),
@@ -41,7 +52,10 @@ class DashboardPage extends StatelessWidget {
             const SizedBox(width: 16),
             Expanded(
               flex: 2,
-              child: ActionQueuePanel(items: mockActionQueue),
+              child: ActionQueuePanel(
+                reportWorkflowRepository: reportWorkflowRepository,
+                adminUserId: adminUserId,
+              ),
             ),
           ],
         );
