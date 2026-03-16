@@ -22,7 +22,7 @@ class _ActionQueuePanelState extends State<ActionQueuePanel> {
   String? _submittingReportId;
 
   Future<void> _reviewReport({
-    required IncidentReportQueueItem report,
+    required IncidentReportRecord report,
     required ReportReviewDecision decision,
   }) async {
     final notes = await _openReviewNotesDialog(
@@ -89,7 +89,7 @@ class _ActionQueuePanelState extends State<ActionQueuePanel> {
             FilledButton(
               onPressed: () {
                 final text = controller.text.trim();
-                if (text.isEmpty) {
+                if (!isValidate && text.isEmpty) {
                   return;
                 }
                 Navigator.of(context).pop(text);
@@ -139,7 +139,7 @@ class _ActionQueuePanelState extends State<ActionQueuePanel> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: StreamBuilder<List<IncidentReportQueueItem>>(
+              child: StreamBuilder<List<IncidentReportRecord>>(
                 stream: widget.reportWorkflowRepository.watchPendingReports(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {

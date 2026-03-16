@@ -5,6 +5,7 @@ import '../../../core/theme/admin_theme.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/locale_controller.dart';
 import '../../reports/data/report_workflow_repository.dart';
+import '../../reports/presentation/reports_page.dart';
 import '../../dashboard/presentation/dashboard_page.dart';
 
 class AdminShellPage extends StatefulWidget {
@@ -74,6 +75,10 @@ class _AdminShellPageState extends State<AdminShellPage> {
           adminUserId: widget.adminUserId,
         );
       case _NavSection.incidentVerification:
+        return ReportsPage(
+          reportWorkflowRepository: widget.reportWorkflowRepository,
+          adminUserId: widget.adminUserId,
+        );
       case _NavSection.userManagement:
       case _NavSection.systemLogs:
       case _NavSection.shelterLogistics:

@@ -12,7 +12,7 @@ class FirestoreReportWorkflowRepository implements ReportWorkflowRepository {
   static const _logsCollection = 'System_Logs';
 
   @override
-  Stream<List<IncidentReportQueueItem>> watchPendingReports({int limit = 20}) {
+  Stream<List<IncidentReportRecord>> watchPendingReports({int limit = 20}) {
     return _firestore
         .collection(_reportsCollection)
         .where('status', isEqualTo: 'Pending')
@@ -24,6 +24,42 @@ class FirestoreReportWorkflowRepository implements ReportWorkflowRepository {
               .map((doc) => _mapReportDoc(doc.id, doc.data()))
               .toList();
         });
+  }
+
+  @override
+  Future<IncidentReportPageResult> fetchReportsPage({
+    required String statusFilter,
+    int pageSize = 20,
+    DateTime? startAfterCreatedAt,
+  }) async {
+    Query<Map<String, dynamic>> query = _firestore
+        .collection(_reportsCollection)
+        .orderBy('created_at', descending: true);
+
+    if (statusFilter != 'All') {
+      query = query.where('status', isEqualTo: statusFilter);
+    }
+
+    if (startAfterCreatedAt != null) {
+      query = query.startAfter([Timestamp.fromDate(startAfterCreatedAt)]);
+    }
+
+    final snapshot = await query.limit(pageSize + 1).get();
+    final hasNext = snapshot.docs.length > pageSize;
+    final visibleDocs = hasNext
+        ? snapshot.docs.take(pageSize).toList()
+        : snapshot.docs;
+
+    final items = visibleDocs
+        .map((doc) => _mapReportDoc(doc.id, doc.data()))
+        .toList();
+
+    final nextCursor = hasNext && items.isNotEmpty ? items.last.createdAt : null;
+    return IncidentReportPageResult(
+      items: items,
+      hasNextPage: hasNext,
+      nextCursorCreatedAt: nextCursor,
+    );
   }
 
   @override
@@ -72,7 +108,7 @@ class FirestoreReportWorkflowRepository implements ReportWorkflowRepository {
     });
   }
 
-  IncidentReportQueueItem _mapReportDoc(String id, Map<String, dynamic> data) {
+  IncidentReportRecord _mapReportDoc(String id, Map<String, dynamic> data) {
     final location = data['location'];
     final locationMap = location is Map<String, dynamic> ? location : null;
     final zoneRaw = locationMap?['zone'];
@@ -98,12 +134,46 @@ class FirestoreReportWorkflowRepository implements ReportWorkflowRepository {
       createdAt = createdAtRaw;
     }
 
-    return IncidentReportQueueItem(
+    final description = _trimmedString(data['description']);
+    final photoUrl = _trimmedString(data['photo_url']);
+    final reviewedBy = _trimmedString(data['reviewed_by']);
+    final reviewNotes = _trimmedString(data['review_notes']);
+    final reviewedAtRaw = data['reviewed_at'];
+    DateTime? reviewedAt;
+    if (reviewedAtRaw is Timestamp) {
+      reviewedAt = reviewedAtRaw.toDate();
+    } else if (reviewedAtRaw is DateTime) {
+      reviewedAt = reviewedAtRaw;
+    }
+
+    final latitude = _toDouble(locationMap?['lat']);
+    final longitude = _toDouble(locationMap?['lng']);
+
+    return IncidentReportRecord(
       reportId: id,
       residentId: residentId,
       zone: zone,
       status: status,
       createdAt: createdAt,
+      description: description,
+      photoUrl: photoUrl,
+      latitude: latitude,
+      longitude: longitude,
+      reviewedBy: reviewedBy,
+      reviewedAt: reviewedAt,
+      reviewNotes: reviewNotes,
     );
+  }
+
+  String? _trimmedString(dynamic value) {
+    if (value is! String) return null;
+    final text = value.trim();
+    return text.isEmpty ? null : text;
+  }
+
+  double? _toDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 }
