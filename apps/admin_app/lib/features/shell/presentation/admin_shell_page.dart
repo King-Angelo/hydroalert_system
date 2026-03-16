@@ -7,15 +7,19 @@ import '../../../l10n/locale_controller.dart';
 import '../../reports/data/report_workflow_repository.dart';
 import '../../reports/presentation/reports_page.dart';
 import '../../dashboard/presentation/dashboard_page.dart';
+import '../../users/data/user_management_repository.dart';
+import '../../users/presentation/user_management_page.dart';
 
 class AdminShellPage extends StatefulWidget {
   const AdminShellPage({
     super.key,
     required this.reportWorkflowRepository,
+    required this.userManagementRepository,
     required this.adminUserId,
   });
 
   final ReportWorkflowRepository reportWorkflowRepository;
+  final UserManagementRepository userManagementRepository;
   final String adminUserId;
 
   @override
@@ -80,6 +84,10 @@ class _AdminShellPageState extends State<AdminShellPage> {
           adminUserId: widget.adminUserId,
         );
       case _NavSection.userManagement:
+        return UserManagementPage(
+          userManagementRepository: widget.userManagementRepository,
+          adminUserId: widget.adminUserId,
+        );
       case _NavSection.systemLogs:
       case _NavSection.shelterLogistics:
         return _PlaceholderPage(

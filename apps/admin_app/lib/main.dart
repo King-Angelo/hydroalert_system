@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'app.dart';
 import 'firebase_options.dart';
 import 'features/reports/data/report_workflow_repository_factory.dart';
+import 'features/users/data/user_management_repository_factory.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,5 +26,13 @@ Future<void> main() async {
   final reportWorkflowRepository = ReportWorkflowRepositoryFactory.create(
     firebaseReady: firebaseReady,
   );
-  runApp(AdminApp(reportWorkflowRepository: reportWorkflowRepository));
+  final userManagementRepository = UserManagementRepositoryFactory.create(
+    firebaseReady: firebaseReady,
+  );
+  runApp(
+    AdminApp(
+      reportWorkflowRepository: reportWorkflowRepository,
+      userManagementRepository: userManagementRepository,
+    ),
+  );
 }

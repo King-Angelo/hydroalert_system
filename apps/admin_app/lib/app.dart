@@ -8,6 +8,8 @@ import 'features/auth/presentation/login_page.dart';
 import 'features/reports/data/mock_report_workflow_repository.dart';
 import 'features/reports/data/report_workflow_repository.dart';
 import 'features/shell/presentation/admin_shell_page.dart';
+import 'features/users/data/mock_user_management_repository.dart';
+import 'features/users/data/user_management_repository.dart';
 import 'l10n/app_localizations.dart';
 import 'l10n/locale_controller.dart';
 
@@ -15,10 +17,12 @@ class AdminApp extends StatelessWidget {
   const AdminApp({
     super.key,
     this.reportWorkflowRepository = const MockReportWorkflowRepository(),
+    this.userManagementRepository = const MockUserManagementRepository(),
     this.adminUserId = 'admin_001',
   });
 
   final ReportWorkflowRepository reportWorkflowRepository;
+  final UserManagementRepository userManagementRepository;
   final String adminUserId;
 
   @override
@@ -43,6 +47,7 @@ class AdminApp extends StatelessWidget {
             AppRoutes.login: (_) => const LoginPage(authService: MockAuthService()),
             AppRoutes.dashboard: (_) => AdminShellPage(
               reportWorkflowRepository: reportWorkflowRepository,
+              userManagementRepository: userManagementRepository,
               adminUserId: adminUserId,
             ),
           },
