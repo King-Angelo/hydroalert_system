@@ -7,6 +7,8 @@ import '../../../l10n/locale_controller.dart';
 import '../../reports/data/report_workflow_repository.dart';
 import '../../reports/presentation/reports_page.dart';
 import '../../dashboard/presentation/dashboard_page.dart';
+import '../../system_logs/data/system_logs_repository.dart';
+import '../../system_logs/presentation/system_logs_page.dart';
 import '../../users/data/user_management_repository.dart';
 import '../../users/presentation/user_management_page.dart';
 
@@ -14,11 +16,13 @@ class AdminShellPage extends StatefulWidget {
   const AdminShellPage({
     super.key,
     required this.reportWorkflowRepository,
+    required this.systemLogsRepository,
     required this.userManagementRepository,
     required this.adminUserId,
   });
 
   final ReportWorkflowRepository reportWorkflowRepository;
+  final SystemLogsRepository systemLogsRepository;
   final UserManagementRepository userManagementRepository;
   final String adminUserId;
 
@@ -89,6 +93,9 @@ class _AdminShellPageState extends State<AdminShellPage> {
           adminUserId: widget.adminUserId,
         );
       case _NavSection.systemLogs:
+        return SystemLogsPage(
+          systemLogsRepository: widget.systemLogsRepository,
+        );
       case _NavSection.shelterLogistics:
         return _PlaceholderPage(
           title: _labelForSection(context, section),

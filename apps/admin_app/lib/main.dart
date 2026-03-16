@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'app.dart';
 import 'firebase_options.dart';
 import 'features/reports/data/report_workflow_repository_factory.dart';
+import 'features/system_logs/data/system_logs_repository_factory.dart';
 import 'features/users/data/user_management_repository_factory.dart';
 
 Future<void> main() async {
@@ -29,9 +30,13 @@ Future<void> main() async {
   final userManagementRepository = UserManagementRepositoryFactory.create(
     firebaseReady: firebaseReady,
   );
+  final systemLogsRepository = SystemLogsRepositoryFactory.create(
+    firebaseReady: firebaseReady,
+  );
   runApp(
     AdminApp(
       reportWorkflowRepository: reportWorkflowRepository,
+      systemLogsRepository: systemLogsRepository,
       userManagementRepository: userManagementRepository,
     ),
   );
