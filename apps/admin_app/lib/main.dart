@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'app.dart';
 import 'firebase_options.dart';
 import 'features/reports/data/report_workflow_repository_factory.dart';
+import 'features/shelters/data/shelter_logistics_repository_factory.dart';
 import 'features/system_logs/data/system_logs_repository_factory.dart';
 import 'features/users/data/user_management_repository_factory.dart';
 
@@ -33,9 +34,13 @@ Future<void> main() async {
   final systemLogsRepository = SystemLogsRepositoryFactory.create(
     firebaseReady: firebaseReady,
   );
+  final shelterLogisticsRepository = ShelterLogisticsRepositoryFactory.create(
+    firebaseReady: firebaseReady,
+  );
   runApp(
     AdminApp(
       reportWorkflowRepository: reportWorkflowRepository,
+      shelterLogisticsRepository: shelterLogisticsRepository,
       systemLogsRepository: systemLogsRepository,
       userManagementRepository: userManagementRepository,
     ),

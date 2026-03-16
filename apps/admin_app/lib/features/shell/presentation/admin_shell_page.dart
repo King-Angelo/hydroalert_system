@@ -6,6 +6,8 @@ import '../../../l10n/app_localizations.dart';
 import '../../../l10n/locale_controller.dart';
 import '../../reports/data/report_workflow_repository.dart';
 import '../../reports/presentation/reports_page.dart';
+import '../../shelters/data/shelter_logistics_repository.dart';
+import '../../shelters/presentation/shelter_logistics_page.dart';
 import '../../dashboard/presentation/dashboard_page.dart';
 import '../../system_logs/data/system_logs_repository.dart';
 import '../../system_logs/presentation/system_logs_page.dart';
@@ -16,12 +18,14 @@ class AdminShellPage extends StatefulWidget {
   const AdminShellPage({
     super.key,
     required this.reportWorkflowRepository,
+    required this.shelterLogisticsRepository,
     required this.systemLogsRepository,
     required this.userManagementRepository,
     required this.adminUserId,
   });
 
   final ReportWorkflowRepository reportWorkflowRepository;
+  final ShelterLogisticsRepository shelterLogisticsRepository;
   final SystemLogsRepository systemLogsRepository;
   final UserManagementRepository userManagementRepository;
   final String adminUserId;
@@ -73,7 +77,6 @@ class _AdminShellPageState extends State<AdminShellPage> {
   }
 
   Widget _buildCurrentPage(BuildContext context) {
-    final l10n = context.l10n;
     final section = _sections[_selectedIndex];
 
     switch (section) {
@@ -97,9 +100,9 @@ class _AdminShellPageState extends State<AdminShellPage> {
           systemLogsRepository: widget.systemLogsRepository,
         );
       case _NavSection.shelterLogistics:
-        return _PlaceholderPage(
-          title: _labelForSection(context, section),
-          placeholderSuffix: l10n.placeholderSuffix,
+        return ShelterLogisticsPage(
+          shelterLogisticsRepository: widget.shelterLogisticsRepository,
+          adminUserId: widget.adminUserId,
         );
     }
   }
@@ -213,28 +216,6 @@ class _AdminShellPageState extends State<AdminShellPage> {
           ),
         );
       },
-    );
-  }
-}
-
-class _PlaceholderPage extends StatelessWidget {
-  const _PlaceholderPage({
-    required this.title,
-    required this.placeholderSuffix,
-  });
-
-  final String title;
-  final String placeholderSuffix;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Center(
-        child: Text(
-          '$title ($placeholderSuffix)',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-      ),
     );
   }
 }

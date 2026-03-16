@@ -7,6 +7,8 @@ import 'features/auth/data/mock_auth_service.dart';
 import 'features/auth/presentation/login_page.dart';
 import 'features/reports/data/mock_report_workflow_repository.dart';
 import 'features/reports/data/report_workflow_repository.dart';
+import 'features/shelters/data/mock_shelter_logistics_repository.dart';
+import 'features/shelters/data/shelter_logistics_repository.dart';
 import 'features/shell/presentation/admin_shell_page.dart';
 import 'features/system_logs/data/mock_system_logs_repository.dart';
 import 'features/system_logs/data/system_logs_repository.dart';
@@ -19,12 +21,14 @@ class AdminApp extends StatelessWidget {
   const AdminApp({
     super.key,
     this.reportWorkflowRepository = const MockReportWorkflowRepository(),
+    this.shelterLogisticsRepository = const MockShelterLogisticsRepository(),
     this.systemLogsRepository = const MockSystemLogsRepository(),
     this.userManagementRepository = const MockUserManagementRepository(),
     this.adminUserId = 'admin_001',
   });
 
   final ReportWorkflowRepository reportWorkflowRepository;
+  final ShelterLogisticsRepository shelterLogisticsRepository;
   final SystemLogsRepository systemLogsRepository;
   final UserManagementRepository userManagementRepository;
   final String adminUserId;
@@ -51,6 +55,7 @@ class AdminApp extends StatelessWidget {
             AppRoutes.login: (_) => const LoginPage(authService: MockAuthService()),
             AppRoutes.dashboard: (_) => AdminShellPage(
               reportWorkflowRepository: reportWorkflowRepository,
+              shelterLogisticsRepository: shelterLogisticsRepository,
               systemLogsRepository: systemLogsRepository,
               userManagementRepository: userManagementRepository,
               adminUserId: adminUserId,
