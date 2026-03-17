@@ -4,12 +4,12 @@ import '../../../app_routes.dart';
 import '../../../core/theme/admin_theme.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/locale_controller.dart';
-import '../data/mock_auth_service.dart';
+import '../data/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.authService});
 
-  final MockAuthService authService;
+  final AuthService authService;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -36,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
 
     setState(() => _submitting = true);
 
-    final ok = await widget.authService.signIn(
+    final result = await widget.authService.signIn(
       email: _emailController.text,
       password: _passwordController.text,
       rememberMe: _rememberMe,
@@ -45,14 +45,42 @@ class _LoginPageState extends State<LoginPage> {
     if (!mounted) return;
     setState(() => _submitting = false);
 
-    if (ok) {
+    if (result.ok) {
       Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
       return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.mockSignInFailed)),
+      SnackBar(content: Text(_errorMessage(l10n, result.errorCode))),
     );
+  }
+
+  Future<void> _handleForgotPassword() async {
+    final l10n = context.l10n;
+    final email = _emailController.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.emailInvalid)),
+      );
+      return;
+    }
+
+    final errorCode = await widget.authService.sendPasswordReset(email: email);
+    if (!mounted) return;
+
+    final message = errorCode == null
+        ? l10n.passwordResetEmailSent
+        : l10n.passwordResetFailed;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  String _errorMessage(AppLocalizations l10n, String? errorCode) {
+    if (errorCode == 'auth-not-admin') {
+      return l10n.authAdminRequired;
+    }
+    return l10n.authSignInFailed;
   }
 
   @override
@@ -136,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                           );
 
                           final forgotButton = TextButton(
-                            onPressed: () {},
+                            onPressed: _submitting ? null : _handleForgotPassword,
                             child: Text(l10n.forgotPassword),
                           );
 

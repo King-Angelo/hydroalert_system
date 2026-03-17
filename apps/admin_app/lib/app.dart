@@ -3,7 +3,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'app_routes.dart';
 import 'core/theme/admin_theme.dart';
+import 'features/auth/data/auth_service.dart';
 import 'features/auth/data/mock_auth_service.dart';
+import 'features/auth/presentation/admin_auth_gate_page.dart';
 import 'features/auth/presentation/login_page.dart';
 import 'features/reports/data/mock_report_workflow_repository.dart';
 import 'features/reports/data/report_workflow_repository.dart';
@@ -24,14 +26,14 @@ class AdminApp extends StatelessWidget {
     this.shelterLogisticsRepository = const MockShelterLogisticsRepository(),
     this.systemLogsRepository = const MockSystemLogsRepository(),
     this.userManagementRepository = const MockUserManagementRepository(),
-    this.adminUserId = 'admin_001',
+    this.authService = const MockAuthService(),
   });
 
   final ReportWorkflowRepository reportWorkflowRepository;
   final ShelterLogisticsRepository shelterLogisticsRepository;
   final SystemLogsRepository systemLogsRepository;
   final UserManagementRepository userManagementRepository;
-  final String adminUserId;
+  final AuthService authService;
 
   @override
   Widget build(BuildContext context) {
@@ -52,13 +54,17 @@ class AdminApp extends StatelessWidget {
           ],
           initialRoute: AppRoutes.login,
           routes: {
-            AppRoutes.login: (_) => const LoginPage(authService: MockAuthService()),
-            AppRoutes.dashboard: (_) => AdminShellPage(
-              reportWorkflowRepository: reportWorkflowRepository,
-              shelterLogisticsRepository: shelterLogisticsRepository,
-              systemLogsRepository: systemLogsRepository,
-              userManagementRepository: userManagementRepository,
-              adminUserId: adminUserId,
+            AppRoutes.login: (_) => LoginPage(authService: authService),
+            AppRoutes.dashboard: (_) => AdminAuthGatePage(
+              authService: authService,
+              builder: (context, adminUserId) => AdminShellPage(
+                reportWorkflowRepository: reportWorkflowRepository,
+                shelterLogisticsRepository: shelterLogisticsRepository,
+                systemLogsRepository: systemLogsRepository,
+                userManagementRepository: userManagementRepository,
+                authService: authService,
+                adminUserId: adminUserId,
+              ),
             ),
           },
         );
