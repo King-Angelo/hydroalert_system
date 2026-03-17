@@ -49,6 +49,18 @@ class FirebaseAuthService implements AuthService {
   }
 
   @override
+  Future<String?> sendPasswordReset({required String email}) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email.trim());
+      return null;
+    } on FirebaseAuthException catch (error) {
+      return error.code;
+    } catch (_) {
+      return 'auth-unknown';
+    }
+  }
+
+  @override
   Future<void> signOut() {
     return _auth.signOut();
   }

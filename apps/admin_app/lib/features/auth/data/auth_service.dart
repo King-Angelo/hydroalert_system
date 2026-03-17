@@ -23,6 +23,8 @@ abstract class AuthService {
     required bool rememberMe,
   });
 
+  Future<String?> sendPasswordReset({required String email});
+
   Future<void> signOut();
 
   Future<String?> getCurrentAdminUserId();

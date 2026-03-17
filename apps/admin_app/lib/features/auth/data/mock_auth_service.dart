@@ -18,6 +18,15 @@ class MockAuthService implements AuthService {
   }
 
   @override
+  Future<String?> sendPasswordReset({required String email}) async {
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    if (email.trim().isEmpty || !email.contains('@')) {
+      return 'invalid-email';
+    }
+    return null;
+  }
+
+  @override
   Future<void> signOut() async {}
 
   @override

@@ -55,6 +55,27 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Future<void> _handleForgotPassword() async {
+    final l10n = context.l10n;
+    final email = _emailController.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.emailInvalid)),
+      );
+      return;
+    }
+
+    final errorCode = await widget.authService.sendPasswordReset(email: email);
+    if (!mounted) return;
+
+    final message = errorCode == null
+        ? l10n.passwordResetEmailSent
+        : l10n.passwordResetFailed;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
   String _errorMessage(AppLocalizations l10n, String? errorCode) {
     if (errorCode == 'auth-not-admin') {
       return l10n.authAdminRequired;
@@ -143,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                           );
 
                           final forgotButton = TextButton(
-                            onPressed: () {},
+                            onPressed: _submitting ? null : _handleForgotPassword,
                             child: Text(l10n.forgotPassword),
                           );
 
