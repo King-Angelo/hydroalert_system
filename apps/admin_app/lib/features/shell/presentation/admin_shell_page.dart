@@ -4,6 +4,7 @@ import '../../../app_routes.dart';
 import '../../../core/theme/admin_theme.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/locale_controller.dart';
+import '../../auth/data/auth_service.dart';
 import '../../reports/data/report_workflow_repository.dart';
 import '../../reports/presentation/reports_page.dart';
 import '../../shelters/data/shelter_logistics_repository.dart';
@@ -21,6 +22,7 @@ class AdminShellPage extends StatefulWidget {
     required this.shelterLogisticsRepository,
     required this.systemLogsRepository,
     required this.userManagementRepository,
+    required this.authService,
     required this.adminUserId,
   });
 
@@ -28,6 +30,7 @@ class AdminShellPage extends StatefulWidget {
   final ShelterLogisticsRepository shelterLogisticsRepository;
   final SystemLogsRepository systemLogsRepository;
   final UserManagementRepository userManagementRepository;
+  final AuthService authService;
   final String adminUserId;
 
   @override
@@ -194,7 +197,9 @@ class _AdminShellPageState extends State<AdminShellPage> {
                           ),
                           const SizedBox(width: 8),
                           TextButton.icon(
-                            onPressed: () {
+                            onPressed: () async {
+                              await widget.authService.signOut();
+                              if (!context.mounted) return;
                               Navigator.of(context).pushReplacementNamed(AppRoutes.login);
                             },
                             icon: const Icon(Icons.logout),

@@ -40,6 +40,8 @@ class AppLocalizations {
   String get emailInvalid => _t('emailInvalid');
   String get passwordRequired => _t('passwordRequired');
   String get mockSignInFailed => _t('mockSignInFailed');
+  String get authSignInFailed => _t('authSignInFailed');
+  String get authAdminRequired => _t('authAdminRequired');
   String get navDashboard => _t('navDashboard');
   String get navIncidentVerification => _t('navIncidentVerification');
   String get navUserManagement => _t('navUserManagement');
@@ -107,6 +109,8 @@ const _strings = <String, Map<String, String>>{
     'emailInvalid': 'Enter a valid email',
     'passwordRequired': 'Password is required',
     'mockSignInFailed': 'Mock sign-in failed. Check your input.',
+    'authSignInFailed': 'Sign-in failed. Check credentials and try again.',
+    'authAdminRequired': 'This account is not an active admin account.',
     'navDashboard': 'Dashboard',
     'navIncidentVerification': 'Reports',
     'navUserManagement': 'User Management',
@@ -148,6 +152,8 @@ const _strings = <String, Map<String, String>>{
     'emailInvalid': 'Maglagay ng wastong email',
     'passwordRequired': 'Kailangan ang password',
     'mockSignInFailed': 'Nabigo ang mock sign-in. Suriin ang iyong input.',
+    'authSignInFailed': 'Nabigo ang pag-sign in. Suriin ang credentials at subukan muli.',
+    'authAdminRequired': 'Ang account na ito ay hindi aktibong admin account.',
     'navDashboard': 'Dashboard',
     'navIncidentVerification': 'Reports',
     'navUserManagement': 'Pamamahala ng User',
