@@ -8,4 +8,5 @@ workspace:
   - apps/admin_app
   - apps/resident_app
   - apps/official_app
+  - backend/*
   - packages/*
