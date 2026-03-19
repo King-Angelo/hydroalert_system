@@ -1,0 +1,17 @@
+# Secrets - never include in image
+config/
+
+# Build output (we build fresh in Docker)
+build/
+.dart_tool/
+
+# Version control
+.git/
+.gitignore
+
+# IDE and OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

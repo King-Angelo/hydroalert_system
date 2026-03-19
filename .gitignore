@@ -1,3 +1,7 @@
+# Service account credentials (never commit)
+backend/api/config/
+node_modules/
+functions/node_modules/
 **/.dart_tool/
 **/build/
 **/.flutter-plugins
@@ -9,3 +13,13 @@
 .vs/
 .DS_Store
 Thumbs.db
+# Firebase logs
+firebase-debug.log*
+.firebase/
+
+# Environment secrets (Important for GCP!)
+.env
+.env.local
+
+# OS generated files
+[Dd]esktop.ini
