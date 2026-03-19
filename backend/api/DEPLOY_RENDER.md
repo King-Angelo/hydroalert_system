@@ -31,7 +31,7 @@ git push origin main
 2. Connect your GitHub account and select the repo (`Development_of_hydroalert` or similar)
 3. **Settings:**
    - **Name:** `hydroalert-api`
-   - **Root Directory:** `hydroalert_system/backend/api`
+   - **Root Directory:** `backend/api` *(if repo root is `hydroalert_system`)* — or `hydroalert_system/backend/api` *(if repo root is the parent folder)*
    - **Environment:** `Docker`
    - **Region:** Choose nearest (e.g. Singapore, Oregon)
    - **Plan:** Free
@@ -92,6 +92,7 @@ If using backup/retention endpoints, add jobs at [cron-job.org](https://cron-job
 
 | Issue | Fix |
 |-------|-----|
-| Build fails on `dart_frog build` | Ensure Root Directory is `hydroalert_system/backend/api` |
+| **`open Dockerfile: no such file or directory`** | Wrong Root Directory. Try `backend/api` (if repo root is `hydroalert_system`). Or use **Blueprint** deploy: Dashboard → New → Blueprint → connect repo — `render.yaml` in the repo configures the path. |
+| Build fails on `dart_frog build` | Ensure Root Directory is correct and Dockerfile exists at that path |
 | Firestore permission denied | Verify `FIREBASE_SERVICE_ACCOUNT_JSON` is valid and has Firestore access |
 | 502 Bad Gateway | Check Render logs; service may be starting. Wait for cold start. |
