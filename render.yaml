@@ -1,0 +1,11 @@
+# Render Blueprint - HydroAlert API
+# Deploy via: Render Dashboard → New → Blueprint → Connect repo
+# Or set Root Directory to "backend/api" when creating Web Service manually
+
+services:
+  - type: web
+    name: hydroalert-api
+    runtime: docker
+    rootDir: backend/api
+    region: oregon
+    plan: free
