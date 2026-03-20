@@ -9,10 +9,19 @@
       ]
     },
     {
-      "collectionGroup": "System_Logs",
+      "collectionGroup": "IoT_Devices",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "timestamp", "order": "ASCENDING" }
+        { "fieldPath": "zone", "order": "ASCENDING" },
+        { "fieldPath": "last_seen_at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "readings",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "recorded_at", "order": "DESCENDING" },
+        { "fieldPath": "__name__", "order": "DESCENDING" }
       ]
     }
   ],
