@@ -15,14 +15,6 @@
         { "fieldPath": "zone", "order": "ASCENDING" },
         { "fieldPath": "last_seen_at", "order": "DESCENDING" }
       ]
-    },
-    {
-      "collectionGroup": "readings",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        { "fieldPath": "recorded_at", "order": "DESCENDING" },
-        { "fieldPath": "__name__", "order": "DESCENDING" }
-      ]
     }
   ],
   "fieldOverrides": []
