@@ -49,6 +49,16 @@ class AppLocalizations {
   String get navUserManagement => _t('navUserManagement');
   String get navSystemLogs => _t('navSystemLogs');
   String get navShelterLogistics => _t('navShelterLogistics');
+  String get navIoTDevices => _t('navIoTDevices');
+  String get iotDevicesEmpty => _t('iotDevicesEmpty');
+  String get iotDevicesError => _t('iotDevicesError');
+  String get iotDevicesId => _t('iotDevicesId');
+  String get iotDevicesZone => _t('iotDevicesZone');
+  String get iotDevicesFirmware => _t('iotDevicesFirmware');
+  String get iotDevicesLastSeen => _t('iotDevicesLastSeen');
+  String get iotDevicesActive => _t('iotDevicesActive');
+  String get iotDevicesInactive => _t('iotDevicesInactive');
+  String get iotDevicesWaterCm => _t('iotDevicesWaterCm');
   String get placeholderSuffix => _t('placeholderSuffix');
   String get situationPane => _t('situationPane');
   String get activityFeed => _t('activityFeed');
@@ -66,6 +76,18 @@ class AppLocalizations {
   String get statusCritical => _t('statusCritical');
   String get statusElevated => _t('statusElevated');
   String get statusHeavy => _t('statusHeavy');
+  String get manualAlertTitle => _t('manualAlertTitle');
+  String get manualAlertSubtitle => _t('manualAlertSubtitle');
+  String get manualAlertApiDisabled => _t('manualAlertApiDisabled');
+  String get manualAlertZoneLabel => _t('manualAlertZoneLabel');
+  String get manualAlertZoneHint => _t('manualAlertZoneHint');
+  String get manualAlertSeverityLabel => _t('manualAlertSeverityLabel');
+  String get manualAlertMessageLabel => _t('manualAlertMessageLabel');
+  String get manualAlertSend => _t('manualAlertSend');
+  String get manualAlertSent => _t('manualAlertSent');
+  String get manualAlertFillFields => _t('manualAlertFillFields');
+  String manualAlertFailed(String details) =>
+      '${_t('manualAlertFailedPrefix')}$details';
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -120,6 +142,16 @@ const _strings = <String, Map<String, String>>{
     'navUserManagement': 'User Management',
     'navSystemLogs': 'System Logs',
     'navShelterLogistics': 'Shelter Logistics',
+    'navIoTDevices': 'IoT devices',
+    'iotDevicesEmpty': 'No IoT devices in Firestore yet.',
+    'iotDevicesError': 'Could not load IoT devices.',
+    'iotDevicesId': 'ID',
+    'iotDevicesZone': 'Zone',
+    'iotDevicesFirmware': 'FW',
+    'iotDevicesLastSeen': 'Last seen',
+    'iotDevicesActive': 'Active',
+    'iotDevicesInactive': 'Inactive',
+    'iotDevicesWaterCm': 'Water (cm)\nch0 / ch1 / ch2',
     'placeholderSuffix': 'placeholder',
     'situationPane': 'Situation Pane',
     'activityFeed': 'Activity Feed',
@@ -137,6 +169,19 @@ const _strings = <String, Map<String, String>>{
     'statusCritical': 'Critical',
     'statusElevated': 'Elevated',
     'statusHeavy': 'Heavy',
+    'manualAlertTitle': 'Zone alert (FCM)',
+    'manualAlertSubtitle':
+        'Sends push to active users with matching Users.location.zone and device_tokens (no topic subscription).',
+    'manualAlertApiDisabled':
+        'API URL not set. Run with --dart-define=HYDROADMIN_API_BASE_URL=https://your-api (and use Firebase sign-in, not mock).',
+    'manualAlertZoneLabel': 'Target zone',
+    'manualAlertZoneHint': 'Must match Users.location.zone exactly',
+    'manualAlertSeverityLabel': 'Severity',
+    'manualAlertMessageLabel': 'Message',
+    'manualAlertSend': 'Send alert',
+    'manualAlertSent': 'Alert API call succeeded. Check System logs for push details.',
+    'manualAlertFillFields': 'Enter zone and message.',
+    'manualAlertFailedPrefix': 'Failed: ',
   },
   'fil': {
     'appTitle': 'HydroAlert Admin',
@@ -166,6 +211,16 @@ const _strings = <String, Map<String, String>>{
     'navUserManagement': 'Pamamahala ng User',
     'navSystemLogs': 'System Logs',
     'navShelterLogistics': 'Shelter Logistics',
+    'navIoTDevices': 'IoT devices',
+    'iotDevicesEmpty': 'Walang IoT device sa Firestore.',
+    'iotDevicesError': 'Hindi ma-load ang IoT devices.',
+    'iotDevicesId': 'ID',
+    'iotDevicesZone': 'Zone',
+    'iotDevicesFirmware': 'FW',
+    'iotDevicesLastSeen': 'Huling nakita',
+    'iotDevicesActive': 'Aktibo',
+    'iotDevicesInactive': 'Hindi aktibo',
+    'iotDevicesWaterCm': 'Tubig (cm)\nch0 / ch1 / ch2',
     'placeholderSuffix': 'placeholder',
     'situationPane': 'Situation Pane',
     'activityFeed': 'Activity Feed',
@@ -183,5 +238,18 @@ const _strings = <String, Map<String, String>>{
     'statusCritical': 'Critical',
     'statusElevated': 'Elevated',
     'statusHeavy': 'Heavy',
+    'manualAlertTitle': 'Alerto sa zone (FCM)',
+    'manualAlertSubtitle':
+        'Magpadala ng push sa mga aktibong user na may tumutugmang Users.location.zone at device_tokens.',
+    'manualAlertApiDisabled':
+        'Walang API URL. Gumamit ng --dart-define=HYDROADMIN_API_BASE_URL=... (Firebase sign-in, hindi mock).',
+    'manualAlertZoneLabel': 'Target zone',
+    'manualAlertZoneHint': 'Dapat tumugma sa Users.location.zone',
+    'manualAlertSeverityLabel': 'Severity',
+    'manualAlertMessageLabel': 'Mensahe',
+    'manualAlertSend': 'Ipadala',
+    'manualAlertSent': 'OK ang API. Tingnan ang System logs para sa push.',
+    'manualAlertFillFields': 'Ilagay ang zone at mensahe.',
+    'manualAlertFailedPrefix': 'Nabigo: ',
   },
 };

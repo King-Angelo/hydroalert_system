@@ -8,5 +8,5 @@ workspace:
   - apps/admin_app
   - apps/resident_app
   - apps/official_app
-  - backend/*
+  # backend/api is excluded: Dart Frog + firebase_admin deps conflict with Flutter workspace (intl, etc.)
   - packages/*

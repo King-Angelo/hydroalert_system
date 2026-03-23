@@ -14,6 +14,9 @@ import '../../system_logs/data/system_logs_repository.dart';
 import '../../system_logs/presentation/system_logs_page.dart';
 import '../../users/data/user_management_repository.dart';
 import '../../users/presentation/user_management_page.dart';
+import '../../alerts/data/manual_override_api_client.dart';
+import '../../iot_devices/data/iot_devices_repository.dart';
+import '../../iot_devices/presentation/iot_devices_page.dart';
 
 class AdminShellPage extends StatefulWidget {
   const AdminShellPage({
@@ -22,16 +25,20 @@ class AdminShellPage extends StatefulWidget {
     required this.shelterLogisticsRepository,
     required this.systemLogsRepository,
     required this.userManagementRepository,
+    required this.iotDevicesRepository,
     required this.authService,
     required this.adminUserId,
+    this.manualOverrideApiClient,
   });
 
   final ReportWorkflowRepository reportWorkflowRepository;
   final ShelterLogisticsRepository shelterLogisticsRepository;
   final SystemLogsRepository systemLogsRepository;
   final UserManagementRepository userManagementRepository;
+  final IotDevicesRepository iotDevicesRepository;
   final AuthService authService;
   final String adminUserId;
+  final ManualOverrideApiClient? manualOverrideApiClient;
 
   @override
   State<AdminShellPage> createState() => _AdminShellPageState();
@@ -46,6 +53,7 @@ class _AdminShellPageState extends State<AdminShellPage> {
     _NavSection.userManagement,
     _NavSection.systemLogs,
     _NavSection.shelterLogistics,
+    _NavSection.iotDevices,
   ];
 
   IconData _iconForSection(_NavSection section) {
@@ -60,6 +68,8 @@ class _AdminShellPageState extends State<AdminShellPage> {
         return Icons.receipt_long_outlined;
       case _NavSection.shelterLogistics:
         return Icons.home_work_outlined;
+      case _NavSection.iotDevices:
+        return Icons.sensors_rounded;
     }
   }
 
@@ -76,6 +86,8 @@ class _AdminShellPageState extends State<AdminShellPage> {
         return l10n.navSystemLogs;
       case _NavSection.shelterLogistics:
         return l10n.navShelterLogistics;
+      case _NavSection.iotDevices:
+        return l10n.navIoTDevices;
     }
   }
 
@@ -87,6 +99,7 @@ class _AdminShellPageState extends State<AdminShellPage> {
         return DashboardPage(
           reportWorkflowRepository: widget.reportWorkflowRepository,
           adminUserId: widget.adminUserId,
+          manualOverrideApiClient: widget.manualOverrideApiClient,
         );
       case _NavSection.incidentVerification:
         return ReportsPage(
@@ -107,6 +120,8 @@ class _AdminShellPageState extends State<AdminShellPage> {
           shelterLogisticsRepository: widget.shelterLogisticsRepository,
           adminUserId: widget.adminUserId,
         );
+      case _NavSection.iotDevices:
+        return IotDevicesPage(repository: widget.iotDevicesRepository);
     }
   }
 
@@ -277,4 +292,5 @@ enum _NavSection {
   userManagement,
   systemLogs,
   shelterLogistics,
+  iotDevices,
 }

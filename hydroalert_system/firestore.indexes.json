@@ -15,6 +15,14 @@
         { "fieldPath": "zone", "order": "ASCENDING" },
         { "fieldPath": "last_seen_at", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "Users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "is_active", "order": "ASCENDING" },
+        { "fieldPath": "location.zone", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

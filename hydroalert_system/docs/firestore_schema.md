@@ -81,10 +81,107 @@
 | `severity` | string | no | For manual_override: Normal, Advisory, Watch, Warning |
 | `message` | string | no | For manual_override |
 | `target_zone` | string | no | For manual_override |
+| `push` | map | no | For `manual_override`: FCM **token multicast** outcome (`mode`, `token_count`, `success_count`, `failure_count`, `duplicate`, `rate_limited`, `dry_run`, `zone_slug`, `error`). See [notifications_fcm_p0.md](notifications_fcm_p0.md). |
 
 **Document ID:** Auto-generated.
 
 **Retention:** See [database_operations.md](database_operations.md#system_logs-retention-policy).
+
+---
+
+### Notification_Dedupe
+
+Server-only (Admin SDK). Prevents identical **manual override** payloads from generating multiple FCM sends within a configurable time bucket.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `kind` | string | e.g. `manual_override` |
+| `created_at` | timestamp | Reservation time |
+| `target_zone` | string | Original zone string |
+| `severity` | string | Severity |
+| `admin_id` | string | Admin UID |
+| `zone_slug` | string | Stable slug for rate keys / logs |
+| `delivery` | string | `token_multicast` |
+| `status` | string | `pending` → `sent` / `dry_run`; doc deleted if send fails or no tokens (retry allowed) |
+| `message_preview` | string | Truncated message |
+| `token_count` | number | no | Recipient tokens |
+| `success_count` | number | no | FCM successes |
+| `failure_count` | number | no | FCM failures |
+| `sent_at` | timestamp | no | Set after successful send |
+
+**Document ID:** SHA-256 hex of `(kind, zone, severity, message, time_bucket)`.
+
+---
+
+### Notification_Rate
+
+Server-only. Per **zone slug** last send time for flood control (token multicast).
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `last_sent_at` | timestamp | Last successful (or dry-run) send |
+| `zone_slug` | string | Stable slug |
+| `target_zone` | string | Original zone string from last send |
+| `last_severity` | string | no | Last severity sent |
+| `last_admin_id` | string | no | Last admin UID |
+| `last_token_count` | number | no | Tokens in last send |
+
+**Document ID:** `zone_{slug}` (e.g. `zone_district_1`).
+
+---
+
+### IoT_Devices
+
+Water-level monitoring stations (ESP32). One document per physical device.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `device_id` | string | yes | Same as document ID |
+| `name` | string | no | Human label (e.g. bridge upstream) |
+| `zone` | string | no | Aligns with shelters / reports |
+| `location` | map | no | `{ lat?, lng? }` |
+| `sensor_count` | number | yes | `3` for P0 (three water-level channels) |
+| `firmware_version` | string | no | e.g. `0.1.0` |
+| `is_active` | boolean | yes | Admin can disable a unit |
+| `ingest_uid` | string | no | Firebase Auth UID allowed to write telemetry (see below) |
+| `created_at` | timestamp | yes | |
+| `updated_at` | timestamp | yes | Last metadata or telemetry touch |
+| `last_seen_at` | timestamp | no | Last successful telemetry write |
+| `latest_reading` | map | no | Denormalized snapshot for dashboards (see below) |
+
+**`latest_reading` map**
+
+| Subfield | Type | Description |
+|----------|------|-------------|
+| `recorded_at` | timestamp | Sample time on device |
+| `received_at` | timestamp | Optional; server accept time |
+| `water_level_cm` | array\<number\> | Length **3**: `[ch0, ch1, ch2]` in centimeters |
+| `battery_mv` | number | optional |
+| `wifi_rssi_dbm` | number | optional |
+
+**Document ID:** Stable id burned in firmware (e.g. `hydro-bridge-01`).
+
+**Device writes (direct Firebase):** The ESP32 signs in with Firebase Auth (e.g. **Anonymous** with credentials stored in NVS, or a **dedicated** email/password device user). An admin sets **`ingest_uid`** on this document to that user’s UID once (minimal pairing). Firestore rules allow that UID to update telemetry fields and append `readings` only.
+
+**Alerts:** Local on device only; no cloud alert documents required for P0.
+
+**Pairing:** See [iot_device_pairing.md](iot_device_pairing.md).
+
+---
+
+### IoT_Devices / `{deviceId}` / readings (subcollection)
+
+Time-series samples for charts and history.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `recorded_at` | timestamp | yes | Device sample time |
+| `water_level_cm` | array\<number\> | yes | Length **3** |
+| `battery_mv` | number | no | |
+| `wifi_rssi_dbm` | number | no | |
+| `raw_adc` | array\<number\> | no | Optional calibration / debug |
+
+**Document ID:** Auto-generated.
 
 ---
 
@@ -96,6 +193,7 @@
 | `report_status` | `Pending`, `Validated`, `Rejected` |
 | `shelter_status` | `Open`, `Closed` |
 | `alert_severity` | `Normal`, `Advisory`, `Watch`, `Warning` |
+| `iot_device_status` | (optional future) `ok`, `degraded`, `sensor_fault` |
 
 ---
 

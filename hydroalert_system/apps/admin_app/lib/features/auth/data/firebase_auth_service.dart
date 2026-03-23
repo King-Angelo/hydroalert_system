@@ -74,6 +74,15 @@ class FirebaseAuthService implements AuthService {
     return uid;
   }
 
+  @override
+  Future<String?> getIdToken() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return null;
+    final adminAllowed = await _isAdminAllowed(uid);
+    if (!adminAllowed) return null;
+    return _auth.currentUser?.getIdToken();
+  }
+
   Future<bool> _isAdminAllowed(String uid) async {
     final doc = await _firestore.collection(_usersCollection).doc(uid).get();
     if (!doc.exists) return false;

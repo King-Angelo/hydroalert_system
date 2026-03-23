@@ -1,6 +1,10 @@
 import 'package:dart_frog/dart_frog.dart';
+import 'package:dart_firebase_admin_plus/firestore.dart';
 
+import 'package:hydroalert_backend_api/src/alert_notification_service.dart';
+import 'package:hydroalert_backend_api/src/firebase_admin_service.dart';
 import 'package:hydroalert_backend_api/src/request_helpers.dart';
+import 'package:hydroalert_backend_api/src/v1_firestore_writes.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   return switch (context.request.method) {
@@ -25,13 +29,44 @@ Future<Response> _onPost(RequestContext context) async {
   if (targetZone == null) return badRequest('targetZone is required.');
 
   final adminUid = context.read<String>();
-  return scaffoldAccepted(
-    operation: 'alerts.manualOverride',
-    adminUid: adminUid,
-    payload: {
+
+  try {
+    final firestore = await V1FirestoreWrites.db();
+    final messaging = await FirebaseAdminService.instance.getMessaging();
+
+    final push = await AlertNotificationService.sendManualOverrideToZone(
+      firestore: firestore,
+      messaging: messaging,
+      adminUid: adminUid,
+      targetZone: targetZone,
+      severity: severity,
+      message: message,
+    );
+
+    final logRef = firestore.collection(V1FirestoreWrites.systemLogs).doc();
+    await logRef.set({
+      ...V1FirestoreWrites.systemLogBase(
+        type: 'manual_override',
+        action: 'alerts.manualOverride',
+        adminId: adminUid,
+      ),
       'severity': severity,
       'message': message,
+      'target_zone': targetZone,
+      'notes': message,
+      'push': push.toLogMap(),
+    });
+
+    return V1FirestoreWrites.ok({
+      'status': 'ok',
+      'operation': 'alerts.manualOverride',
+      'severity': severity,
       'targetZone': targetZone,
-    },
-  );
+      'push': push.toLogMap(),
+    });
+  } on FirebaseFirestoreAdminException catch (e) {
+    return V1FirestoreWrites.firestoreFailure(e, StackTrace.current);
+  } catch (e, st) {
+    return V1FirestoreWrites.firestoreFailure(e, st);
+  }
 }

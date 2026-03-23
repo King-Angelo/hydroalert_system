@@ -1,17 +1,8 @@
 # HydroAlert Backend API (Dart Frog)
 
-This folder contains the P0 backend API scaffold for privileged admin actions.
+Privileged admin actions and **FCM zone alerts** (manual override).
 
-## Goal
-
-Move privileged writes from client apps to server-side handlers:
-
-- Report decisions
-- User role/state updates
-- Shelter updates
-- Manual override alerts
-
-## Routes scaffolded
+## Routes
 
 - `GET /health`
 - `POST /v1/reports/review`
@@ -22,7 +13,7 @@ Move privileged writes from client apps to server-side handlers:
 - `POST /v1/shelters/update-capacity`
 - `POST /v1/shelters/update-occupancy`
 - `POST /v1/shelters/soft-delete`
-- `POST /v1/alerts/manual-override`
+- `POST /v1/alerts/manual-override` — writes `System_Logs`, FCM **token multicast** to users in zone (see [notifications doc](../../docs/notifications_fcm_p0.md))
 
 Cron routes (require `X-Cron-Secret` header, no Firebase token):
 
@@ -43,23 +34,25 @@ The backend verifies the token and checks `Users/{uid}` for `user_type == admin`
 
 **Client:** Obtain the ID token from Firebase Auth (`FirebaseAuth.instance.currentUser?.getIdToken()`) and send it as `Authorization: Bearer <token>`.
 
-**Environment:**
+## Environment
 
-- `FIREBASE_PROJECT_ID` – Firebase project ID (default: `hydroalert-dev`)
-- `GOOGLE_APPLICATION_CREDENTIALS` – Path to service account JSON for Firestore admin check and token verification. Download from [Firebase Console → Project Settings → Service accounts](https://console.firebase.google.com/project/hydroalert-dev/settings/serviceaccounts/adminsdk).
+| Variable | Description |
+|----------|-------------|
+| `FIREBASE_PROJECT_ID` | Firebase project ID (default: `hydroalert-dev`) |
+| `GOOGLE_APPLICATION_CREDENTIALS` | Path to service account JSON (local). On Render use `FIREBASE_SERVICE_ACCOUNT_JSON` via entrypoint. |
+| `CORS_ALLOW_ORIGIN` | Optional; set to admin web origin in staging/production (see `_middleware.dart`) |
+| `CRON_SECRET` | Required for `/cron/*` routes |
+| `BACKUP_BUCKET` / `LOGS_RETENTION_DAYS` | Optional; see cron routes |
+| `FCM_ALERTS_ENABLED` | `true` / `false` — disable FCM while keeping audit logs |
+| `FCM_DRY_RUN` | `true` — FCM validate-only |
+| `FCM_INCLUDE_ADMIN_RECIPIENTS` | `true` — include `user_type` admin when zone matches |
+| `ALERT_MIN_INTERVAL_SECONDS` | Default `120` — per-zone flood control (token multicast) |
+| `ALERT_DEDUPE_WINDOW_SECONDS` | Default `900` — duplicate payload window |
+
+**Full template:** [docs/examples/backend-api.env.example](../../docs/examples/backend-api.env.example)  
+**Multi-environment (dev / staging / prod):** [docs/environment_separation_p0.md](../../docs/environment_separation_p0.md)  
+**Alerting / FCM:** [docs/notifications_fcm_p0.md](../../docs/notifications_fcm_p0.md)
 
 ## Deploy to Render
 
-See [DEPLOY_RENDER.md](DEPLOY_RENDER.md) for step-by-step instructions. No GCP billing required.
-
-## Deploy to Render
-
-See [DEPLOY_RENDER.md](DEPLOY_RENDER.md) for step-by-step instructions to deploy to Render (free tier, no GCP billing).
-
-## Deploy to Render
-
-See [DEPLOY_RENDER.md](DEPLOY_RENDER.md) for step-by-step instructions.
-
-## Notes
-
-- Endpoint handlers currently return `202 scaffolded` payloads with validated contracts; Firestore mutation layer is pending.
+See [DEPLOY_RENDER.md](DEPLOY_RENDER.md).

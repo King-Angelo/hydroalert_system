@@ -21,5 +21,13 @@ firebase-debug.log*
 .env
 .env.local
 
+# Optional FlutterFire outputs for staging/prod (keep dev in firebase_options_dev.dart + barrel)
+apps/admin_app/lib/firebase_options.staging.dart
+apps/admin_app/lib/firebase_options.production.dart
+
 # OS generated files
 [Dd]esktop.ini
+
+# ESP32 firmware secrets (copy from secrets.example.h)
+firmware/**/include/secrets.h
+firmware/**/.pio/

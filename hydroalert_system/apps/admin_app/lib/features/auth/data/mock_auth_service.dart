@@ -33,4 +33,7 @@ class MockAuthService implements AuthService {
   Future<String?> getCurrentAdminUserId() async {
     return 'admin_001';
   }
+
+  @override
+  Future<String?> getIdToken() async => null;
 }

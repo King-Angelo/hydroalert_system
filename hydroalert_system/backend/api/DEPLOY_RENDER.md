@@ -2,6 +2,10 @@
 
 Deploy the Dart Frog backend to [Render](https://render.com) (no GCP billing required).
 
+**Repo layout:** This file lives under `hydroalert_system/backend/api/`. If your Git remote root is **`hydroalert_system`**, use Root Directory **`backend/api`**. If the remote root is the parent folder `Development_of_hydroalert`, use **`hydroalert_system/backend/api`** instead.
+
+**Environment separation (P0):** Use **one Render Web Service per environment** (dev / staging / production) with **different** `FIREBASE_PROJECT_ID`, service account JSON, and secrets. Do not point staging at the prod Firebase project. See **[`docs/RENDER_PER_ENVIRONMENT.md`](../../docs/RENDER_PER_ENVIRONMENT.md)** (matrix + SA JSON per tier), [`docs/environment_separation_p0.md`](../../docs/environment_separation_p0.md), and [`docs/RELEASE_GATE_CHECKLIST.md`](../../docs/RELEASE_GATE_CHECKLIST.md). Blueprint example: [`docs/examples/render-multi-env.yaml`](../../docs/examples/render-multi-env.yaml).
+
 ---
 
 ## Prerequisites
@@ -44,6 +48,13 @@ git push origin main
    | `FIREBASE_SERVICE_ACCOUNT_JSON` | `{ ... }` | Full JSON from service account file (paste entire content) |
    | `CRON_SECRET` | `your-random-secret` | For cron endpoints (optional) |
    | `BACKUP_BUCKET` | `gs://hydroalert-dev-backups` | For backup export (optional) |
+   | `FCM_ALERTS_ENABLED` | `true` | Set `false` to disable FCM sends (audit log still records `push.skipped_disabled`) |
+   | `FCM_DRY_RUN` | `false` | `true` = FCM validate-only (no delivery) |
+   | `FCM_INCLUDE_ADMIN_RECIPIENTS` | `false` | `true` = also push to admins whose `location.zone` matches |
+   | `ALERT_MIN_INTERVAL_SECONDS` | `120` | Min seconds between sends for the same zone (rate key) |
+   | `ALERT_DEDUPE_WINDOW_SECONDS` | `900` | Dedupe bucket size (seconds) for identical payloads |
+
+   **FCM / alerting:** See [docs/notifications_fcm_p0.md](../docs/notifications_fcm_p0.md).
 
    **Getting the service account JSON:**
    - Firebase Console → Project Settings → Service accounts → Generate new private key

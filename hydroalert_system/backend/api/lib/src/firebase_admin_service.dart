@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dart_firebase_admin_plus/auth.dart';
 import 'package:dart_firebase_admin_plus/dart_firebase_admin.dart';
 import 'package:dart_firebase_admin_plus/firestore.dart';
+import 'package:dart_firebase_admin_plus/messaging.dart';
 
 /// Lazy-initialized Firebase Admin service for token verification and admin checks.
 class FirebaseAdminService {
@@ -15,6 +16,7 @@ class FirebaseAdminService {
   FirebaseAdminApp? _app;
   Auth? _auth;
   Firestore? _firestore;
+  Messaging? _messaging;
 
   static const _usersCollection = 'Users';
 
@@ -70,6 +72,12 @@ class FirebaseAdminService {
   Future<Firestore> getFirestore() async {
     await ensureInitialized();
     return _firestore!;
+  }
+
+  /// FCM Admin API (topic / token messages). Call after [ensureInitialized].
+  Future<Messaging> getMessaging() async {
+    await ensureInitialized();
+    return _messaging ??= Messaging(_app!);
   }
 
   Future<bool> _isAdminInFirestore(String uid) async {

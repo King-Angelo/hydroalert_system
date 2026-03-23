@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/admin_theme.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../alerts/data/manual_override_api_client.dart';
+import '../../alerts/presentation/zone_manual_alert_card.dart';
 import '../../reports/data/report_workflow_repository.dart';
 import '../data/mock_dashboard_data.dart';
 import '../widgets/action_queue_panel.dart';
@@ -12,10 +14,12 @@ class DashboardPage extends StatelessWidget {
     super.key,
     required this.reportWorkflowRepository,
     required this.adminUserId,
+    this.manualOverrideApiClient,
   });
 
   final ReportWorkflowRepository reportWorkflowRepository;
   final String adminUserId;
+  final ManualOverrideApiClient? manualOverrideApiClient;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +32,8 @@ class DashboardPage extends StatelessWidget {
             child: Column(
               children: [
                 const _SituationPane(),
+                const SizedBox(height: 16),
+                ZoneManualAlertCard(apiClient: manualOverrideApiClient),
                 const SizedBox(height: 16),
                 SizedBox(
                   height: 500,
@@ -46,7 +52,14 @@ class DashboardPage extends StatelessWidget {
             Expanded(
               flex: 8,
               child: SingleChildScrollView(
-                child: const _SituationPane(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const _SituationPane(),
+                    const SizedBox(height: 16),
+                    ZoneManualAlertCard(apiClient: manualOverrideApiClient),
+                  ],
+                ),
               ),
             ),
             const SizedBox(width: 16),

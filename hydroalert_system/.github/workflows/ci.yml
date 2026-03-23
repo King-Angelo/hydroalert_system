@@ -1,0 +1,75 @@
+# P0 release gate: static analysis on every PR (no deploy).
+# Repo root must be the folder that contains this file (hydroalert_system).
+name: CI
+
+on:
+  pull_request:
+    branches: [main, master, develop]
+  push:
+    branches: [main, master]
+
+jobs:
+  backend-api:
+    name: Backend API (dart analyze)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - run: dart pub get
+      - run: dart analyze
+
+  shared-models:
+    name: shared_models (test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/shared_models
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - run: dart pub get
+      - run: dart test
+
+  admin-app:
+    name: Admin app (flutter analyze)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/admin_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter pub get
+      - run: flutter analyze
+
+  firebase-options-policy:
+    name: Firebase options policy (no prod project in repo)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail if production Firebase project id appears in tracked options
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROD_ID="$(python3 -c "import json; print(json.load(open('.firebaserc'))['projects']['production'])")"
+          echo "Production Firebase project id (from .firebaserc): ${PROD_ID}"
+          failed=0
+          shopt -s nullglob
+          for f in apps/admin_app/lib/firebase_options*.dart; do
+            if git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
+              if grep -qF "$PROD_ID" "$f"; then
+                echo "::error file=$f::Tracked file references production Firebase project '${PROD_ID}'. Use firebase_options_dev + CI injection — see docs/FLUTTERFIRE_BUILD_LANES.md"
+                failed=1
+              fi
+            fi
+          done
+          exit "$failed"

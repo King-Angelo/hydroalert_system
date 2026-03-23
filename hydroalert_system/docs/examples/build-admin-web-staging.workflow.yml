@@ -1,0 +1,36 @@
+# Copy to `.github/workflows/build-admin-web-staging.yml` to enable.
+# Secret: full contents of FlutterFire-generated `firebase_options.dart` for **staging**.
+#
+# See docs/FLUTTERFIRE_BUILD_LANES.md
+
+name: Build admin web (staging)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/admin_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Inject Firebase options for staging
+        env:
+          OPTIONS: ${{ secrets.ADMIN_FIREBASE_OPTIONS_STAGING_DART }}
+        run: |
+          test -n "$OPTIONS"
+          printf '%s\n' "$OPTIONS" > lib/firebase_options.dart
+      - run: flutter pub get
+      - run: |
+          flutter build web \
+            --dart-define=HYDRO_ENV=staging \
+            --dart-define=HYDROADMIN_API_BASE_URL=https://hydroalert-api-staging.onrender.com
+      - uses: actions/upload-artifact@v4
+        with:
+          name: admin-web-staging
+          path: apps/admin_app/build/web/

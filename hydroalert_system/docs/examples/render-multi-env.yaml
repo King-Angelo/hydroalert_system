@@ -1,0 +1,45 @@
+# Example Render Blueprint: THREE Web Services (dev / staging / production).
+#
+# Copy sections into your repo's `render.yaml` or create three services manually.
+# **Do not** put `FIREBASE_SERVICE_ACCOUNT_JSON` or `CRON_SECRET` in Git — add those
+# in the Render dashboard for each service after the blueprint syncs.
+#
+# If your Git repo root is the parent of `hydroalert_system`, change `rootDir` to
+# `hydroalert_system/backend/api` for every service.
+
+services:
+  - type: web
+    name: hydroalert-api-dev
+    runtime: docker
+    rootDir: backend/api
+    region: oregon
+    plan: free
+    envVars:
+      - key: FIREBASE_PROJECT_ID
+        value: hydroalert-dev
+      - key: FCM_DRY_RUN
+        value: "true"
+
+  - type: web
+    name: hydroalert-api-staging
+    runtime: docker
+    rootDir: backend/api
+    region: oregon
+    plan: free
+    envVars:
+      - key: FIREBASE_PROJECT_ID
+        value: hydroalert-staging
+      - key: FCM_DRY_RUN
+        value: "true"
+
+  - type: web
+    name: hydroalert-api-production
+    runtime: docker
+    rootDir: backend/api
+    region: oregon
+    plan: free
+    envVars:
+      - key: FIREBASE_PROJECT_ID
+        value: hydroalert-prod
+      - key: FCM_DRY_RUN
+        value: "false"

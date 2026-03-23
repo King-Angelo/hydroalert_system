@@ -26,6 +26,46 @@ service cloud.firestore {
         getCurrentUser().data.is_active == true;
     }
 
+    // IoT: device may write only if IoT_Devices/{id}.ingest_uid matches request.auth.uid
+    function iotDeviceDoc(deviceId) {
+      return get(/databases/$(database)/documents/IoT_Devices/$(deviceId));
+    }
+
+    function canIngestAsDevice(deviceId) {
+      return request.auth != null &&
+        iotDeviceDoc(deviceId).exists &&
+        iotDeviceDoc(deviceId).data.is_active == true &&
+        iotDeviceDoc(deviceId).data.ingest_uid is string &&
+        iotDeviceDoc(deviceId).data.ingest_uid.size() > 0 &&
+        iotDeviceDoc(deviceId).data.ingest_uid == request.auth.uid;
+    }
+
+    function iotTelemetryFieldKeysOnly() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['latest_reading', 'last_seen_at', 'updated_at', 'firmware_version']);
+    }
+
+    function validWaterLevelArray(w) {
+      return w is list && w.size() == 3;
+    }
+
+    function validLatestReadingMap() {
+      return request.resource.data.latest_reading is map &&
+        request.resource.data.latest_reading.keys().hasAll(['recorded_at', 'water_level_cm']) &&
+        validWaterLevelArray(request.resource.data.latest_reading.water_level_cm);
+    }
+
+    function latestReadingUpdateOk() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['latest_reading']) ||
+        validLatestReadingMap();
+    }
+
+    function validReadingCreate() {
+      return request.resource.data.keys().hasAll(['recorded_at', 'water_level_cm']) &&
+        request.resource.data.recorded_at is timestamp &&
+        validWaterLevelArray(request.resource.data.water_level_cm);
+    }
+
     // Users: read own doc (any auth); read all if admin; write only if admin
     match /Users/{userId} {
       allow read: if isAuthenticated() && (
@@ -55,6 +95,24 @@ service cloud.firestore {
     match /System_Logs/{logId} {
       allow read: if isAdmin();
       allow write: if isAdmin();
+    }
+
+    // IoT_Devices: telemetry from ESP32 when ingest_uid matches signed-in UID (see firestore_schema.md)
+    match /IoT_Devices/{deviceId} {
+      allow read: if isAuthenticated();
+      allow create: if isAdmin();
+      allow update: if isAdmin() || (
+        canIngestAsDevice(deviceId) &&
+        iotTelemetryFieldKeysOnly() &&
+        latestReadingUpdateOk()
+      );
+      allow delete: if isAdmin();
+
+      match /readings/{readingId} {
+        allow read: if isAuthenticated();
+        allow create: if canIngestAsDevice(deviceId) && validReadingCreate();
+        allow update, delete: if false;
+      }
     }
 
     // Deny all other collections by default

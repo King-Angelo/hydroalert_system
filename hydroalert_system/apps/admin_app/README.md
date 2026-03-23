@@ -1,6 +1,12 @@
-# hydroalert_flutter_application_1
+# HydroAlert admin app
 
-A new Flutter project.
+## Environment (dev / staging / production)
+
+- **`HYDRO_ENV`** — compile-time label: `--dart-define=HYDRO_ENV=dev|staging|production` (see `lib/core/config/runtime_environment.dart`). Shown in debug logs on startup.
+- **`HYDROADMIN_API_BASE_URL`** — backend API base URL for manual override and related calls (no trailing slash).
+- **`firebase_options.dart` / `firebase_options_dev.dart`** — dev project is in **`firebase_options_dev.dart`**; the barrel **`firebase_options.dart`** exports it. Staging/prod: inject in CI or use gitignored files — see **`docs/FLUTTERFIRE_BUILD_LANES.md`**.
+
+See repo **[`docs/environment_separation_p0.md`](../../docs/environment_separation_p0.md)**.
 
 ## Getting Started
 

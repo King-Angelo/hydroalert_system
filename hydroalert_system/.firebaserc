@@ -1,5 +1,10 @@
 {
   "projects": {
-    "default": "hydroalert-dev"
-  }
+    "default": "hydroalert-dev",
+    "dev": "hydroalert-dev",
+    "staging": "hydroalert-staging",
+    "production": "hydroalert-prod"
+  },
+  "targets": {},
+  "etags": {}
 }

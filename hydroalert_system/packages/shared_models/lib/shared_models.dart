@@ -1,3 +1,4 @@
+export 'src/fcm/notification_topics.dart';
 export 'src/enums/alert_level.dart';
 export 'src/enums/geofence_event_type.dart';
 export 'src/models/device_node.dart';

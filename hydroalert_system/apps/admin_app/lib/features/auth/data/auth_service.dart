@@ -28,4 +28,8 @@ abstract class AuthService {
   Future<void> signOut();
 
   Future<String?> getCurrentAdminUserId();
+
+  /// Firebase ID token for `Authorization: Bearer` when calling the Dart Frog API.
+  /// Mock implementations return `null`.
+  Future<String?> getIdToken();
 }
