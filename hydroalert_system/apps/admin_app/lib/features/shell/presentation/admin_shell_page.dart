@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../app_routes.dart';
 import '../../../core/theme/admin_theme.dart';
@@ -163,11 +164,29 @@ class _AdminShellPageState extends State<AdminShellPage> {
             children: [
               Container(
                 width: sidebarWidth,
-                decoration: const BoxDecoration(
-                  color: AdminColors.surface,
-                  border: Border(
-                    right: BorderSide(color: AdminColors.border),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AdminColors.surface,
+                      AdminColors.surfaceAlt,
+                      AdminColors.background,
+                    ],
                   ),
+                  border: Border(
+                    right: BorderSide(
+                      color: AdminColors.primary.withValues(alpha: 0.4),
+                      width: 1,
+                    ),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AdminColors.primary.withValues(alpha: 0.07),
+                      blurRadius: 24,
+                      offset: const Offset(6, 0),
+                    ),
+                  ],
                 ),
                 child: Column(
                   children: [
@@ -175,17 +194,42 @@ class _AdminShellPageState extends State<AdminShellPage> {
                       height: 70,
                       child: Center(
                         child: compactSidebar
-                            ? const Icon(Icons.water_drop, color: AdminColors.primary)
-                            : Text(
-                                l10n.appWordmark,
-                                style: TextStyle(
-                                  letterSpacing: 1.4,
-                                  fontWeight: FontWeight.bold,
+                            ? Icon(
+                                Icons.water_drop_rounded,
+                                color: AdminColors.primary,
+                                size: 32,
+                                shadows: [
+                                  Shadow(
+                                    color: AdminColors.primary.withValues(alpha: 0.85),
+                                    blurRadius: 12,
+                                  ),
+                                ],
+                              )
+                            : ShaderMask(
+                                blendMode: BlendMode.srcIn,
+                                shaderCallback: (bounds) => LinearGradient(
+                                  colors: [
+                                    AdminColors.primary,
+                                    AdminColors.accent,
+                                  ],
+                                ).createShader(bounds),
+                                child: Text(
+                                  l10n.appWordmark,
+                                  style: GoogleFonts.orbitron(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 2.8,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                       ),
                     ),
-                    const Divider(height: 1, color: AdminColors.border),
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: AdminColors.primary.withValues(alpha: 0.22),
+                    ),
                     Expanded(
                       child: ListView.builder(
                         itemCount: _sections.length,
@@ -224,10 +268,20 @@ class _AdminShellPageState extends State<AdminShellPage> {
                     Container(
                       height: 56,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
+                        color: AdminColors.background.withValues(alpha: 0.92),
                         border: Border(
-                          bottom: BorderSide(color: AdminColors.border),
+                          bottom: BorderSide(
+                            color: AdminColors.primary.withValues(alpha: 0.28),
+                          ),
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AdminColors.accent.withValues(alpha: 0.06),
+                            blurRadius: 20,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
                       child: Row(
                         children: [

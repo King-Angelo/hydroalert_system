@@ -38,13 +38,26 @@ class MockMapPanel extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.55),
+                          color: AdminColors.background.withValues(alpha: 0.72),
                           borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: AdminColors.border),
+                          border: Border.all(
+                            color: AdminColors.primary.withValues(alpha: 0.55),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AdminColors.primary.withValues(alpha: 0.25),
+                              blurRadius: 8,
+                            ),
+                          ],
                         ),
                         child: Text(
                           l10n.staticMockMapBadge,
-                          style: TextStyle(fontSize: 11, letterSpacing: 1.1),
+                          style: TextStyle(
+                            fontSize: 11,
+                            letterSpacing: 1.4,
+                            color: AdminColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
@@ -67,7 +80,7 @@ class _FallbackMap extends StatelessWidget {
     final l10n = context.l10n;
 
     return Container(
-      color: const Color(0xFF0D2230),
+      color: AdminColors.surfaceAlt,
       child: Center(
         child: Text(l10n.addMockMapAsset),
       ),
@@ -81,7 +94,7 @@ class _GridOverlayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.08)
+      ..color = AdminColors.primary.withValues(alpha: 0.11)
       ..strokeWidth = 1;
 
     const step = 28.0;

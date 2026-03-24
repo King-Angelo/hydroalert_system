@@ -194,44 +194,68 @@ class _MetricCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final statusColor = _statusColor();
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      clipBehavior: Clip.antiAlias,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              metric.label.toUpperCase(),
-              style: const TextStyle(
-                letterSpacing: 1.1,
-                color: AdminColors.textMuted,
-                fontSize: 12,
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: statusColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: statusColor.withValues(alpha: 0.55),
+                    blurRadius: 10,
+                    spreadRadius: -2,
+                  ),
+                ],
               ),
+              child: const SizedBox(width: 3),
             ),
-            const SizedBox(height: 8),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  metric.value,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      metric.label.toUpperCase(),
+                      style: const TextStyle(
+                        letterSpacing: 1.1,
+                        color: AdminColors.textMuted,
+                        fontSize: 12,
                       ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          metric.value,
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                        const SizedBox(width: 6),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Text(metric.unit),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _localizedStatus(context),
+                      style: TextStyle(
+                        color: statusColor,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 6),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text(metric.unit),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _localizedStatus(context),
-              style: TextStyle(
-                color: _statusColor(),
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.8,
               ),
             ),
           ],

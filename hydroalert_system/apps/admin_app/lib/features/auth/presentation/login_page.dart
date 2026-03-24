@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../app_routes.dart';
 import '../../../core/theme/admin_theme.dart';
@@ -133,145 +134,232 @@ class _LoginPageState extends State<LoginPage> {
     final l10n = context.l10n;
 
     return Scaffold(
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 430),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Card(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          const _CyberLoginBackdrop(),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 430),
               child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: _LanguageMenuButton(
-                          currentLocale: Localizations.localeOf(context),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      const Icon(Icons.shield_outlined, size: 42, color: AdminColors.primary),
-                      const SizedBox(height: 10),
-                      Text(
-                        l10n.loginTitle,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 18),
-                      Semantics(
-                        label: l10n.semanticLoginEmail,
-                        textField: true,
-                        child: TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          autofillHints: const [AutofillHints.email],
-                          decoration: InputDecoration(
-                            labelText: l10n.emailLabel,
-                            hintText: l10n.emailHint,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return l10n.emailRequired;
-                            }
-                            if (!value.contains('@')) return l10n.emailInvalid;
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Semantics(
-                        label: l10n.semanticLoginPassword,
-                        textField: true,
-                        child: TextFormField(
-                          controller: _passwordController,
-                          obscureText: true,
-                          autofillHints: const [AutofillHints.password],
-                          decoration: InputDecoration(
-                            labelText: l10n.passwordLabel,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return l10n.passwordRequired;
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          final compact = constraints.maxWidth < 360;
-
-                          final rememberRow = MergeSemantics(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Semantics(
-                                  label: l10n.semanticRememberMe,
-                                  child: Checkbox(
-                                    value: _rememberMe,
-                                    onChanged: (value) => setState(
-                                      () => _rememberMe = value ?? false,
-                                    ),
-                                  ),
+                padding: const EdgeInsets.all(24),
+                child: Container(
+                  decoration: AdminCyberDecor.loginCardFrame(),
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    child: Padding(
+                      padding: const EdgeInsets.all(22),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: _LanguageMenuButton(
+                                currentLocale:
+                                    Localizations.localeOf(context),
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Icon(
+                              Icons.shield_moon_outlined,
+                              size: 44,
+                              color: AdminColors.primary,
+                              shadows: [
+                                Shadow(
+                                  color: AdminColors.primary
+                                      .withValues(alpha: 0.9),
+                                  blurRadius: 16,
                                 ),
-                                Text(l10n.rememberMe),
                               ],
                             ),
-                          );
-
-                          final forgotButton = TextButton(
-                            onPressed: _submitting ? null : _handleForgotPassword,
-                            child: Text(l10n.forgotPassword),
-                          );
-
-                          if (compact) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                rememberRow,
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: forgotButton,
+                            const SizedBox(height: 10),
+                            Text(
+                              l10n.loginTitle,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.orbitron(
+                                textStyle:
+                                    Theme.of(context).textTheme.titleLarge,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                            const SizedBox(height: 18),
+                            Semantics(
+                              label: l10n.semanticLoginEmail,
+                              textField: true,
+                              child: TextFormField(
+                                controller: _emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                autofillHints: const [AutofillHints.email],
+                                decoration: InputDecoration(
+                                  labelText: l10n.emailLabel,
+                                  hintText: l10n.emailHint,
                                 ),
-                              ],
-                            );
-                          }
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return l10n.emailRequired;
+                                  }
+                                  if (!value.contains('@')) {
+                                    return l10n.emailInvalid;
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Semantics(
+                              label: l10n.semanticLoginPassword,
+                              textField: true,
+                              child: TextFormField(
+                                controller: _passwordController,
+                                obscureText: true,
+                                autofillHints: const [AutofillHints.password],
+                                decoration: InputDecoration(
+                                  labelText: l10n.passwordLabel,
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return l10n.passwordRequired;
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                final compact =
+                                    constraints.maxWidth < 360;
 
-                          return Row(
-                            children: [
-                              rememberRow,
-                              const Spacer(),
-                              Flexible(child: forgotButton),
-                            ],
-                          );
-                        },
+                                final rememberRow = MergeSemantics(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Semantics(
+                                        label: l10n.semanticRememberMe,
+                                        child: Checkbox(
+                                          value: _rememberMe,
+                                          onChanged: (value) => setState(
+                                            () => _rememberMe =
+                                                value ?? false,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(l10n.rememberMe),
+                                    ],
+                                  ),
+                                );
+
+                                final forgotButton = TextButton(
+                                  onPressed: _submitting
+                                      ? null
+                                      : _handleForgotPassword,
+                                  child: Text(l10n.forgotPassword),
+                                );
+
+                                if (compact) {
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      rememberRow,
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: forgotButton,
+                                      ),
+                                    ],
+                                  );
+                                }
+
+                                return Row(
+                                  children: [
+                                    rememberRow,
+                                    const Spacer(),
+                                    Flexible(child: forgotButton),
+                                  ],
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 8),
+                            FilledButton(
+                              onPressed:
+                                  _submitting ? null : _handleLogin,
+                              child: _submitting
+                                  ? const SizedBox(
+                                      height: 18,
+                                      width: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : Text(l10n.signIn),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      FilledButton(
-                        onPressed: _submitting ? null : _handleLogin,
-                        child: _submitting
-                            ? const SizedBox(
-                                height: 18,
-                                width: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : Text(l10n.signIn),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
+}
+
+class _CyberLoginBackdrop extends StatelessWidget {
+  const _CyberLoginBackdrop();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AdminColors.background,
+                AdminColors.backgroundMid,
+                const Color(0xFF12081F),
+                const Color(0xFF1A0A28),
+              ],
+              stops: const [0.0, 0.35, 0.7, 1.0],
+            ),
+          ),
+        ),
+        const IgnorePointer(child: CustomPaint(painter: _HexGridPainter())),
+      ],
+    );
+  }
+}
+
+class _HexGridPainter extends CustomPainter {
+  const _HexGridPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AdminColors.primary.withValues(alpha: 0.04)
+      ..strokeWidth = 1;
+
+    const step = 48.0;
+    for (double y = 0; y < size.height + step; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+    for (double x = 0; x < size.width + step; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _LanguageMenuButton extends StatelessWidget {
