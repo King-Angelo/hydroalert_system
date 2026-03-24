@@ -3,6 +3,7 @@ import 'package:dart_firebase_admin_plus/firestore.dart';
 
 import 'package:hydroalert_backend_api/src/alert_notification_service.dart';
 import 'package:hydroalert_backend_api/src/firebase_admin_service.dart';
+import 'package:hydroalert_backend_api/src/observability_log.dart';
 import 'package:hydroalert_backend_api/src/request_helpers.dart';
 import 'package:hydroalert_backend_api/src/v1_firestore_writes.dart';
 
@@ -30,6 +31,7 @@ Future<Response> _onPost(RequestContext context) async {
 
   final adminUid = context.read<String>();
 
+  final sw = Stopwatch()..start();
   try {
     final firestore = await V1FirestoreWrites.db();
     final messaging = await FirebaseAdminService.instance.getMessaging();
@@ -44,6 +46,13 @@ Future<Response> _onPost(RequestContext context) async {
     );
 
     final logRef = firestore.collection(V1FirestoreWrites.systemLogs).doc();
+    sw.stop();
+    final processingMs = sw.elapsedMilliseconds;
+    final pushLog = {
+      ...push.toLogMap(),
+      'manual_override_processing_ms': processingMs,
+    };
+
     await logRef.set({
       ...V1FirestoreWrites.systemLogBase(
         type: 'manual_override',
@@ -54,15 +63,21 @@ Future<Response> _onPost(RequestContext context) async {
       'message': message,
       'target_zone': targetZone,
       'notes': message,
-      'push': push.toLogMap(),
+      'push': pushLog,
     });
+
+    ObservabilityLog.manualOverrideCompleted(
+      processingMs: processingMs,
+      targetZone: targetZone,
+      attempted: push.attempted,
+    );
 
     return V1FirestoreWrites.ok({
       'status': 'ok',
       'operation': 'alerts.manualOverride',
       'severity': severity,
       'targetZone': targetZone,
-      'push': push.toLogMap(),
+      'push': pushLog,
     });
   } on FirebaseFirestoreAdminException catch (e) {
     return V1FirestoreWrites.firestoreFailure(e, StackTrace.current);

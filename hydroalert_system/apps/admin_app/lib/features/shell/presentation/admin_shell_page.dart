@@ -99,6 +99,7 @@ class _AdminShellPageState extends State<AdminShellPage> {
         return DashboardPage(
           reportWorkflowRepository: widget.reportWorkflowRepository,
           adminUserId: widget.adminUserId,
+          iotDevicesRepository: widget.iotDevicesRepository,
           manualOverrideApiClient: widget.manualOverrideApiClient,
         );
       case _NavSection.incidentVerification:

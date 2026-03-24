@@ -4,21 +4,25 @@ import '../../../core/theme/admin_theme.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../alerts/data/manual_override_api_client.dart';
 import '../../alerts/presentation/zone_manual_alert_card.dart';
+import '../../iot_devices/data/iot_devices_repository.dart';
 import '../../reports/data/report_workflow_repository.dart';
 import '../data/mock_dashboard_data.dart';
 import '../widgets/action_queue_panel.dart';
 import '../widgets/mock_map_panel.dart';
+import '../widgets/operations_health_panel.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({
     super.key,
     required this.reportWorkflowRepository,
     required this.adminUserId,
+    required this.iotDevicesRepository,
     this.manualOverrideApiClient,
   });
 
   final ReportWorkflowRepository reportWorkflowRepository;
   final String adminUserId;
+  final IotDevicesRepository iotDevicesRepository;
   final ManualOverrideApiClient? manualOverrideApiClient;
 
   @override
@@ -31,6 +35,10 @@ class DashboardPage extends StatelessWidget {
           return SingleChildScrollView(
             child: Column(
               children: [
+                OperationsHealthPanel(
+                  iotDevicesRepository: iotDevicesRepository,
+                ),
+                const SizedBox(height: 16),
                 const _SituationPane(),
                 const SizedBox(height: 16),
                 ZoneManualAlertCard(apiClient: manualOverrideApiClient),
@@ -55,6 +63,10 @@ class DashboardPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    OperationsHealthPanel(
+                      iotDevicesRepository: iotDevicesRepository,
+                    ),
+                    const SizedBox(height: 16),
                     const _SituationPane(),
                     const SizedBox(height: 16),
                     ZoneManualAlertCard(apiClient: manualOverrideApiClient),

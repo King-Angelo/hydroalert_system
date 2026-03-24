@@ -78,6 +78,8 @@ https://hydroalert-api-xxxx.onrender.com
 
 Use this as the base URL for your Flutter apps (e.g. in API config).
 
+**Uptime / ops (P1, free):** `GET /health` and `GET /health/detailed` (JSON includes `uptime_seconds`). Logs: structured JSON on stdout — see [docs/observability_p1.md](../../docs/observability_p1.md).
+
 ---
 
 ## Step 4: Configure Cron (Optional)

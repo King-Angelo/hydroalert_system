@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'app.dart';
 import 'core/config/admin_api_config.dart';
 import 'core/config/runtime_environment.dart';
+import 'core/observability/firebase_observability.dart';
 import 'features/alerts/data/manual_override_api_client.dart';
 import 'firebase_options.dart';
 import 'features/auth/data/auth_service_factory.dart';
@@ -28,6 +29,7 @@ Future<void> main() async {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
+      await setupFirebaseObservability();
       firebaseReady = true;
     }
   } catch (error, stackTrace) {

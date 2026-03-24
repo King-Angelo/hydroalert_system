@@ -17,6 +17,10 @@ Firebase CLI aliases live in **[`.firebaserc`](.firebaserc)**. Replace `hydroale
 
 On pull requests and pushes to `main`/`master`, **[`.github/workflows/ci.yml`](.github/workflows/ci.yml)** runs: **Backend API** (`dart analyze`), **shared_models** (`dart test`), **Admin app** (`flutter analyze`), and **Firebase options policy** (blocks committing production Firebase project id into tracked `firebase_options*.dart`). **Repo root for GitHub** should be this folder (`hydroalert_system`); if your remote root is the parent directory, move `.github` to the repo root and prefix paths (e.g. `hydroalert_system/backend/api`). Required check names for branch protection: **`docs/GITHUB_BRANCH_PROTECTION.md`**.
 
+## Observability (P1)
+
+- **[docs/observability_p1.md](docs/observability_p1.md)** — Firebase **Spark**, log audiences & retention, serverless “queue” / **≤30s** alert path, **sensor health** + API uptime on the admin dashboard, optional external probes.
+
 ## Where to go next
 
 | Area | Doc / entry |

@@ -5,6 +5,7 @@ Privileged admin actions and **FCM zone alerts** (manual override).
 ## Routes
 
 - `GET /health`
+- `GET /health/detailed` — JSON: `uptime_seconds`, `process_started_at`, `firebase_project_id`, optional `deploy_version` (no auth; for dashboards & probes). See [docs/observability_p1.md](../../docs/observability_p1.md).
 - `POST /v1/reports/review`
 - `POST /v1/users/update-role`
 - `POST /v1/users/set-active-state`
@@ -48,6 +49,10 @@ The backend verifies the token and checks `Users/{uid}` for `user_type == admin`
 | `FCM_INCLUDE_ADMIN_RECIPIENTS` | `true` — include `user_type` admin when zone matches |
 | `ALERT_MIN_INTERVAL_SECONDS` | Default `120` — per-zone flood control (token multicast) |
 | `ALERT_DEDUPE_WINDOW_SECONDS` | Default `900` — duplicate payload window |
+| `OPS_STRUCTURED_LOGS` | Default on — set `false` to disable JSON request logs to stdout |
+| `DEPLOY_VERSION` | Optional — echoed by `/health/detailed` (e.g. git SHA) |
+
+**Observability (P1):** [docs/observability_p1.md](../../docs/observability_p1.md)
 
 **Full template:** [docs/examples/backend-api.env.example](../../docs/examples/backend-api.env.example)  
 **Multi-environment (dev / staging / prod):** [docs/environment_separation_p0.md](../../docs/environment_separation_p0.md)  

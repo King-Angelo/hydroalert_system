@@ -88,6 +88,20 @@ class AppLocalizations {
   String get manualAlertFillFields => _t('manualAlertFillFields');
   String manualAlertFailed(String details) =>
       '${_t('manualAlertFailedPrefix')}$details';
+
+  String get opsHealthTitle => _t('opsHealthTitle');
+  String get opsHealthApi => _t('opsHealthApi');
+  String get opsHealthApiChecking => _t('opsHealthApiChecking');
+  String get opsHealthApiNotConfigured => _t('opsHealthApiNotConfigured');
+  String get opsHealthApiOk => _t('opsHealthApiOk');
+  String opsHealthApiFail(String details) =>
+      '${_t('opsHealthApiFailPrefix')}$details';
+  String get opsHealthSensors => _t('opsHealthSensors');
+  String opsHealthSensorSummary(int total, int stale) =>
+      _t('opsHealthSensorSummary')
+          .replaceAll('{total}', '$total')
+          .replaceAll('{stale}', '$stale');
+  String get opsHealthStaleHint => _t('opsHealthStaleHint');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -182,6 +196,18 @@ const _strings = <String, Map<String, String>>{
     'manualAlertSent': 'Alert API call succeeded. Check System logs for push details.',
     'manualAlertFillFields': 'Enter zone and message.',
     'manualAlertFailedPrefix': 'Failed: ',
+    'opsHealthTitle': 'Operations & health (P1)',
+    'opsHealthApi': 'Backend API',
+    'opsHealthApiChecking': 'Checking…',
+    'opsHealthApiNotConfigured':
+        'Not configured (set HYDROADMIN_API_BASE_URL)',
+    'opsHealthApiOk': 'Reachable',
+    'opsHealthApiFailPrefix': 'Unreachable: ',
+    'opsHealthSensors': 'Sensor health',
+    'opsHealthSensorSummary':
+        '{total} devices • {stale} stale / no recent data',
+    'opsHealthStaleHint':
+        'Stale = no last_seen_at within 10 minutes (tune to your telemetry rate).',
   },
   'fil': {
     'appTitle': 'HydroAlert Admin',
@@ -251,5 +277,17 @@ const _strings = <String, Map<String, String>>{
     'manualAlertSent': 'OK ang API. Tingnan ang System logs para sa push.',
     'manualAlertFillFields': 'Ilagay ang zone at mensahe.',
     'manualAlertFailedPrefix': 'Nabigo: ',
+    'opsHealthTitle': 'Operasyon at kalusugan (P1)',
+    'opsHealthApi': 'Backend API',
+    'opsHealthApiChecking': 'Sinusuri…',
+    'opsHealthApiNotConfigured':
+        'Hindi naka-config (HYDROADMIN_API_BASE_URL)',
+    'opsHealthApiOk': 'Maaabot',
+    'opsHealthApiFailPrefix': 'Hindi maaabot: ',
+    'opsHealthSensors': 'Kalusugan ng sensor',
+    'opsHealthSensorSummary':
+        '{total} device • {stale} walang bagong data / stale',
+    'opsHealthStaleHint':
+        'Stale = walang last_seen_at sa loob ng 10 minuto.',
   },
 };

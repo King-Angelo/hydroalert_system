@@ -80,3 +80,9 @@ Use **different Firebase projects** (and different service accounts / Render ser
 
 - Cron cleanup of old **`Notification_Dedupe`** docs.
 - Client SDK: obtain FCM token → **`arrayUnion`** into **`Users.device_tokens`** on sign-in.
+
+---
+
+## 9. Latency & operations (≤30s target)
+
+End-to-end **sensor → notification** timing and dashboard/ops conventions: **[observability_p1.md](observability_p1.md)**.

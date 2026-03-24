@@ -81,7 +81,7 @@
 | `severity` | string | no | For manual_override: Normal, Advisory, Watch, Warning |
 | `message` | string | no | For manual_override |
 | `target_zone` | string | no | For manual_override |
-| `push` | map | no | For `manual_override`: FCM **token multicast** outcome (`mode`, `token_count`, `success_count`, `failure_count`, `duplicate`, `rate_limited`, `dry_run`, `zone_slug`, `error`). See [notifications_fcm_p0.md](notifications_fcm_p0.md). |
+| `push` | map | no | For `manual_override`: FCM **token multicast** outcome (`mode`, `token_count`, `success_count`, `failure_count`, `duplicate`, `rate_limited`, `dry_run`, `zone_slug`, `error`) plus **`manual_override_processing_ms`** (API alert-processing time for P1 observability). See [notifications_fcm_p0.md](notifications_fcm_p0.md) and [observability_p1.md](observability_p1.md). |
 
 **Document ID:** Auto-generated.
 
