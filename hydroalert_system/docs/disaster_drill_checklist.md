@@ -1,6 +1,8 @@
 # Disaster drill checklist (P1)
 
-Run on **staging** first. Check each box and note **time**, **owner**, and **anomalies**.
+**Governance:** See **[operations_compliance_p1/README.md](operations_compliance_p1/README.md)** (ownership, approval, prod vs dev). For your deployment, **production** may be authoritative for live drills when it holds verified shelters and live IoT.
+
+Run on **staging** first when a separate staging project exists; otherwise use **dev** for safe rehearsal and **prod** only with explicit approval. Check each box and note **time**, **owner**, and **anomalies**.
 
 **Date:** _______________  **Facilitator:** _______________
 

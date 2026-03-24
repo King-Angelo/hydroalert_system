@@ -25,6 +25,10 @@ On pull requests and pushes to `main`/`master`, **[`.github/workflows/ci.yml`](.
 
 - **[docs/admin_app_hardening_p1.md](docs/admin_app_hardening_p1.md)** — localization, error UX, session re-auth, validation, accessibility checklist.
 
+## Operations & Compliance (P1)
+
+- **[docs/operations_compliance_p1/README.md](docs/operations_compliance_p1/README.md)** — bilingual runbooks, incident response (Yellow / Orange / Red), access control & audit, event-driven key rotation, deployment rollback; links existing checklists (release gate, disaster drill, environment).
+
 ## QA & Reliability (P1)
 
 - **[docs/qa_reliability_p1.md](docs/qa_reliability_p1.md)** — CI tests, load probe, network-failure tests, staging E2E notes.

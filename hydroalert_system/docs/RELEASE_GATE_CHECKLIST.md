@@ -1,5 +1,7 @@
 # Release gate checklist (P0)
 
+**Related:** Institutional ops/compliance context and rollback narrative — **[operations_compliance_p1/README.md](operations_compliance_p1/README.md)**.
+
 Use this when moving a change **toward staging** or **from staging to production**. Adapt names to your branching model.
 
 ---
