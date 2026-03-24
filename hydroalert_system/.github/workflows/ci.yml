@@ -10,7 +10,7 @@ on:
 
 jobs:
   backend-api:
-    name: Backend API (dart analyze)
+    name: Backend API (analyze + test)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -22,6 +22,7 @@ jobs:
           sdk: stable
       - run: dart pub get
       - run: dart analyze
+      - run: dart test
 
   shared-models:
     name: shared_models (test)
@@ -38,7 +39,7 @@ jobs:
       - run: dart test
 
   admin-app:
-    name: Admin app (flutter analyze)
+    name: Admin app (analyze + test)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -50,6 +51,7 @@ jobs:
           channel: stable
       - run: flutter pub get
       - run: flutter analyze
+      - run: flutter test
 
   firebase-options-policy:
     name: Firebase options policy (no prod project in repo)

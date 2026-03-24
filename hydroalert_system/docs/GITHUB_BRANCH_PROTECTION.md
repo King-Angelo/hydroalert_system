@@ -29,9 +29,9 @@ Suggested settings:
 
 Under **Status checks that are required**, add these **exact** names (they come from the `name:` field of each job in `.github/workflows/ci.yml`):
 
-1. `Backend API (dart analyze)`
+1. `Backend API (analyze + test)`
 2. `shared_models (test)`
-3. `Admin app (flutter analyze)`
+3. `Admin app (analyze + test)`
 4. `Firebase options policy (no prod project in repo)`
 
 If a name does not appear in the search box, open a PR, wait for CI to finish, then refresh the ruleset page.

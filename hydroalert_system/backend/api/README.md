@@ -58,6 +58,21 @@ The backend verifies the token and checks `Users/{uid}` for `user_type == admin`
 **Multi-environment (dev / staging / prod):** [docs/environment_separation_p0.md](../../docs/environment_separation_p0.md)  
 **Alerting / FCM:** [docs/notifications_fcm_p0.md](../../docs/notifications_fcm_p0.md)
 
+## Tests & load probe
+
+```bash
+dart pub get
+dart test
+```
+
+Load / soak probe (API must be running or use staging URL):
+
+```bash
+dart run tool/qa_load_probe.dart
+```
+
+**QA / drills:** [docs/qa_reliability_p1.md](../../docs/qa_reliability_p1.md)
+
 ## Deploy to Render
 
 See [DEPLOY_RENDER.md](DEPLOY_RENDER.md).

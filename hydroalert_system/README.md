@@ -15,11 +15,17 @@ Firebase CLI aliases live in **[`.firebaserc`](.firebaserc)**. Replace `hydroale
 
 ## CI (release gate)
 
-On pull requests and pushes to `main`/`master`, **[`.github/workflows/ci.yml`](.github/workflows/ci.yml)** runs: **Backend API** (`dart analyze`), **shared_models** (`dart test`), **Admin app** (`flutter analyze`), and **Firebase options policy** (blocks committing production Firebase project id into tracked `firebase_options*.dart`). **Repo root for GitHub** should be this folder (`hydroalert_system`); if your remote root is the parent directory, move `.github` to the repo root and prefix paths (e.g. `hydroalert_system/backend/api`). Required check names for branch protection: **`docs/GITHUB_BRANCH_PROTECTION.md`**.
+On pull requests and pushes to `main`/`master`, **[`.github/workflows/ci.yml`](.github/workflows/ci.yml)** runs: **Backend API** (`dart analyze`, `dart test`), **shared_models** (`dart test`), **Admin app** (`flutter analyze`, `flutter test`), and **Firebase options policy** (blocks committing production Firebase project id into tracked `firebase_options*.dart`). **Repo root for GitHub** should be this folder (`hydroalert_system`); if your remote root is the parent directory, move `.github` to the repo root and prefix paths (e.g. `hydroalert_system/backend/api`). Required check names for branch protection: **`docs/GITHUB_BRANCH_PROTECTION.md`**.
 
 ## Observability (P1)
 
 - **[docs/observability_p1.md](docs/observability_p1.md)** — Firebase **Spark**, log audiences & retention, serverless “queue” / **≤30s** alert path, **sensor health** + API uptime on the admin dashboard, optional external probes.
+
+## QA & Reliability (P1)
+
+- **[docs/qa_reliability_p1.md](docs/qa_reliability_p1.md)** — CI tests, load probe, network-failure tests, staging E2E notes.
+- **[docs/disaster_drill_checklist.md](docs/disaster_drill_checklist.md)** — repeatable drill for alerts and degradation.
+- **Load probe:** from `backend/api`, run `dart run tool/qa_load_probe.dart` (see [backend/api/README.md](backend/api/README.md)).
 
 ## Where to go next
 

@@ -3,6 +3,7 @@ import 'package:dart_firebase_admin_plus/firestore.dart';
 
 import 'package:hydroalert_backend_api/src/alert_notification_service.dart';
 import 'package:hydroalert_backend_api/src/firebase_admin_service.dart';
+import 'package:hydroalert_backend_api/src/manual_override_validation.dart';
 import 'package:hydroalert_backend_api/src/observability_log.dart';
 import 'package:hydroalert_backend_api/src/request_helpers.dart';
 import 'package:hydroalert_backend_api/src/v1_firestore_writes.dart';
@@ -16,18 +17,13 @@ Future<Response> onRequest(RequestContext context) async {
 
 Future<Response> _onPost(RequestContext context) async {
   final body = await readJsonBody(context);
-  if (body == null) return badRequest('Request body must be valid JSON object.');
+  final validationError = validateManualOverrideBody(body);
+  if (validationError != null) return badRequest(validationError);
 
-  final severity = readString(body['severity']);
-  final message = readString(body['message']);
-  final targetZone = readString(body['targetZone']);
-
-  const validSeverities = {'Normal', 'Advisory', 'Watch', 'Warning'};
-  if (severity == null || !validSeverities.contains(severity)) {
-    return badRequest('severity must be one of: Normal, Advisory, Watch, Warning.');
-  }
-  if (message == null) return badRequest('message is required.');
-  if (targetZone == null) return badRequest('targetZone is required.');
+  final payload = body!;
+  final severity = readString(payload['severity'])!;
+  final message = readString(payload['message'])!;
+  final targetZone = readString(payload['targetZone'])!;
 
   final adminUid = context.read<String>();
 
