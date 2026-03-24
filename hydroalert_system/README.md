@@ -21,6 +21,10 @@ On pull requests and pushes to `main`/`master`, **[`.github/workflows/ci.yml`](.
 
 - **[docs/observability_p1.md](docs/observability_p1.md)** — Firebase **Spark**, log audiences & retention, serverless “queue” / **≤30s** alert path, **sensor health** + API uptime on the admin dashboard, optional external probes.
 
+## Admin app hardening (P1)
+
+- **[docs/admin_app_hardening_p1.md](docs/admin_app_hardening_p1.md)** — localization, error UX, session re-auth, validation, accessibility checklist.
+
 ## QA & Reliability (P1)
 
 - **[docs/qa_reliability_p1.md](docs/qa_reliability_p1.md)** — CI tests, load probe, network-failure tests, staging E2E notes.

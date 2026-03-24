@@ -4,6 +4,9 @@ class MockAuthService implements AuthService {
   const MockAuthService();
 
   @override
+  Stream<void> get sessionTerminated => const Stream.empty();
+
+  @override
   Future<AuthSignInResult> signIn({
     required String email,
     required String password,

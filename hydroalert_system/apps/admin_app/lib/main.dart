@@ -62,6 +62,7 @@ Future<void> main() async {
     manualOverrideClient = ManualOverrideApiClient(
       baseUrl: AdminApiConfig.baseUrl,
       getIdToken: authService.getIdToken,
+      onUnauthorized: authService.signOut,
     );
   }
 

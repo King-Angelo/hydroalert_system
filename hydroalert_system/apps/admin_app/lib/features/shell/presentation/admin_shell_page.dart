@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../app_routes.dart';
@@ -46,6 +48,7 @@ class AdminShellPage extends StatefulWidget {
 
 class _AdminShellPageState extends State<AdminShellPage> {
   int _selectedIndex = 0;
+  StreamSubscription<void>? _sessionSub;
 
   static const _sections = <_NavSection>[
     _NavSection.dashboard,
@@ -71,6 +74,26 @@ class _AdminShellPageState extends State<AdminShellPage> {
       case _NavSection.iotDevices:
         return Icons.sensors_rounded;
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _sessionSub = widget.authService.sessionTerminated.listen((_) {
+      if (!mounted) return;
+      final message = context.l10n.sessionTerminatedMessage;
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRoutes.login,
+        (route) => false,
+        arguments: message,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _sessionSub?.cancel();
+    super.dispose();
   }
 
   String _labelForSection(BuildContext context, _NavSection section) {
@@ -183,7 +206,12 @@ class _AdminShellPageState extends State<AdminShellPage> {
                           );
 
                           if (!compactSidebar) return tile;
-                          return Tooltip(message: label, child: tile);
+                          return Semantics(
+                            button: true,
+                            selected: selected,
+                            label: label,
+                            child: Tooltip(message: label, child: tile),
+                          );
                         },
                       ),
                     ),
@@ -212,14 +240,19 @@ class _AdminShellPageState extends State<AdminShellPage> {
                             currentLocale: Localizations.localeOf(context),
                           ),
                           const SizedBox(width: 8),
-                          TextButton.icon(
-                            onPressed: () async {
-                              await widget.authService.signOut();
-                              if (!context.mounted) return;
-                              Navigator.of(context).pushReplacementNamed(AppRoutes.login);
-                            },
-                            icon: const Icon(Icons.logout),
-                            label: Text(l10n.signOut),
+                          Semantics(
+                            button: true,
+                            label: l10n.signOut,
+                            child: TextButton.icon(
+                              onPressed: () async {
+                                await widget.authService.signOut();
+                                if (!context.mounted) return;
+                                Navigator.of(context)
+                                    .pushReplacementNamed(AppRoutes.login);
+                              },
+                              icon: const Icon(Icons.logout),
+                              label: Text(l10n.signOut),
+                            ),
                           ),
                         ],
                       ),

@@ -61,7 +61,11 @@ class AdminApp extends StatelessWidget {
           ],
           initialRoute: AppRoutes.login,
           routes: {
-            AppRoutes.login: (_) => LoginPage(authService: authService),
+            AppRoutes.login: (context) => LoginPage(
+                  authService: authService,
+                  sessionExpiredMessage:
+                      ModalRoute.of(context)?.settings.arguments as String?,
+                ),
             AppRoutes.dashboard: (_) => AdminAuthGatePage(
               authService: authService,
               builder: (context, adminUserId) => AdminShellPage(

@@ -1,15 +1,23 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app_routes.dart';
 import '../../../core/theme/admin_theme.dart';
+import '../../../core/ui/app_feedback.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/locale_controller.dart';
 import '../data/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.authService});
+  const LoginPage({
+    super.key,
+    required this.authService,
+    this.sessionExpiredMessage,
+  });
 
   final AuthService authService;
+  /// Shown after [Navigator] replaces stack (e.g. session ended).
+  final String? sessionExpiredMessage;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -17,10 +25,28 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'admin@hydroalert.local');
-  final _passwordController = TextEditingController(text: 'admin123');
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
   bool _rememberMe = true;
   bool _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController(
+      text: kDebugMode ? 'admin@hydroalert.local' : '',
+    );
+    _passwordController = TextEditingController(
+      text: kDebugMode ? 'admin123' : '',
+    );
+    final expired = widget.sessionExpiredMessage;
+    if (expired != null && expired.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        showAppSnackBar(context, expired, isError: true);
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -50,8 +76,10 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(_errorMessage(l10n, result.errorCode))),
+    showAppSnackBar(
+      context,
+      _errorMessage(l10n, result.errorCode),
+      isError: true,
     );
   }
 
@@ -59,9 +87,7 @@ class _LoginPageState extends State<LoginPage> {
     final l10n = context.l10n;
     final email = _emailController.text.trim();
     if (email.isEmpty || !email.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.emailInvalid)),
-      );
+      showAppSnackBar(context, l10n.emailInvalid, isError: true);
       return;
     }
 
@@ -71,16 +97,35 @@ class _LoginPageState extends State<LoginPage> {
     final message = errorCode == null
         ? l10n.passwordResetEmailSent
         : l10n.passwordResetFailed;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+    showAppSnackBar(
+      context,
+      message,
+      isError: errorCode != null,
     );
   }
 
   String _errorMessage(AppLocalizations l10n, String? errorCode) {
-    if (errorCode == 'auth-not-admin') {
-      return l10n.authAdminRequired;
+    switch (errorCode) {
+      case 'auth-not-admin':
+        return l10n.authAdminRequired;
+      case 'wrong-password':
+        return l10n.authWrongPassword;
+      case 'user-not-found':
+        return l10n.authUserNotFound;
+      case 'invalid-email':
+        return l10n.emailInvalid;
+      case 'invalid-credential':
+        return l10n.authInvalidCredential;
+      case 'too-many-requests':
+        return l10n.authTooManyRequests;
+      case 'network-request-failed':
+      case 'internal-error':
+        return l10n.authNetworkFailed;
+      case 'mock-invalid-input':
+        return l10n.mockSignInFailed;
+      default:
+        return l10n.authSignInFailed;
     }
-    return l10n.authSignInFailed;
   }
 
   @override
@@ -117,50 +162,66 @@ class _LoginPageState extends State<LoginPage> {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 18),
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          labelText: l10n.emailLabel,
-                          hintText: l10n.emailHint,
+                      Semantics(
+                        label: l10n.semanticLoginEmail,
+                        textField: true,
+                        child: TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          autofillHints: const [AutofillHints.email],
+                          decoration: InputDecoration(
+                            labelText: l10n.emailLabel,
+                            hintText: l10n.emailHint,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.emailRequired;
+                            }
+                            if (!value.contains('@')) return l10n.emailInvalid;
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return l10n.emailRequired;
-                          }
-                          if (!value.contains('@')) return l10n.emailInvalid;
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: l10n.passwordLabel,
+                      Semantics(
+                        label: l10n.semanticLoginPassword,
+                        textField: true,
+                        child: TextFormField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          autofillHints: const [AutofillHints.password],
+                          decoration: InputDecoration(
+                            labelText: l10n.passwordLabel,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.passwordRequired;
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return l10n.passwordRequired;
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: 8),
                       LayoutBuilder(
                         builder: (context, constraints) {
                           final compact = constraints.maxWidth < 360;
 
-                          final rememberRow = Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Checkbox(
-                                value: _rememberMe,
-                                onChanged: (value) =>
-                                    setState(() => _rememberMe = value ?? false),
-                              ),
-                              Text(l10n.rememberMe),
-                            ],
+                          final rememberRow = MergeSemantics(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Semantics(
+                                  label: l10n.semanticRememberMe,
+                                  child: Checkbox(
+                                    value: _rememberMe,
+                                    onChanged: (value) => setState(
+                                      () => _rememberMe = value ?? false,
+                                    ),
+                                  ),
+                                ),
+                                Text(l10n.rememberMe),
+                              ],
+                            ),
                           );
 
                           final forgotButton = TextButton(

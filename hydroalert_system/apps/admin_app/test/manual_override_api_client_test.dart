@@ -45,6 +45,36 @@ void main() {
       );
     });
 
+    test('invokes onUnauthorized on 401 before throwing', () async {
+      var signedOut = false;
+      final mock = MockClient(
+        (_) async => http.Response(
+          '{"message":"unauthorized"}',
+          401,
+          headers: {'content-type': 'application/json'},
+        ),
+      );
+      final client = ManualOverrideApiClient(
+        baseUrl: 'http://localhost:8080',
+        getIdToken: () async => 'token',
+        onUnauthorized: () async {
+          signedOut = true;
+        },
+        httpClient: mock,
+      );
+      addTearDown(client.close);
+
+      await expectLater(
+        client.sendManualOverride(
+          severity: 'Watch',
+          message: 'test',
+          targetZone: 'Zone-A',
+        ),
+        throwsA(isA<ManualOverrideApiException>()),
+      );
+      expect(signedOut, isTrue);
+    });
+
     test('ManualOverrideApiException on HTTP error', () async {
       final mock = MockClient(
         (_) async => http.Response(

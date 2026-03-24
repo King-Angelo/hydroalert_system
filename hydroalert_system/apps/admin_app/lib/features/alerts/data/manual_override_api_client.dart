@@ -7,10 +7,14 @@ class ManualOverrideApiClient {
   ManualOverrideApiClient({
     required String baseUrl,
     required Future<String?> Function() getIdToken,
+    this.onUnauthorized,
     http.Client? httpClient,
   })  : _baseUrl = baseUrl.replaceAll(RegExp(r'/$'), ''),
         _getIdToken = getIdToken,
         _http = httpClient ?? http.Client();
+
+  /// Called when the API returns 401 (e.g. expired session). Usually [AuthService.signOut].
+  final Future<void> Function()? onUnauthorized;
 
   final String _baseUrl;
   final Future<String?> Function() _getIdToken;
@@ -48,6 +52,14 @@ class ManualOverrideApiClient {
         if (decoded is Map<String, dynamic>) body = decoded;
       }
     } catch (_) {}
+
+    if (resp.statusCode == 401) {
+      try {
+        await onUnauthorized?.call();
+      } catch (_) {
+        // Best-effort: still surface API error to caller.
+      }
+    }
 
     if (resp.statusCode < 200 || resp.statusCode >= 300) {
       final msg = body?['message']?.toString() ?? resp.body;

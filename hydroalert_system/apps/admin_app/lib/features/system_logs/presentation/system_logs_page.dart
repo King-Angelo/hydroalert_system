@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/admin_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/system_logs_repository.dart';
 
 class SystemLogsPage extends StatefulWidget {
@@ -364,6 +365,7 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
   }
 
   Widget _buildListPane(BuildContext context) {
+    final l10n = context.l10n;
     final items = _currentPageItems;
     final types = <String>{
       'All',
@@ -386,11 +388,15 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
                   width: 220,
                   child: DropdownButtonFormField<String>(
                     initialValue: _typeFilter,
-                    decoration: const InputDecoration(labelText: 'Type'),
+                    decoration: InputDecoration(
+                      labelText: l10n.systemLogsTypeLabel,
+                    ),
                     items: types
                         .map((type) => DropdownMenuItem(
                               value: type,
-                              child: Text(type),
+                              child: Text(
+                                type == 'All' ? l10n.reportsFilterAll : type,
+                              ),
                             ))
                         .toList(),
                     onChanged: (value) {
@@ -403,10 +409,10 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
                     },
                   ),
                 ),
-                _dateChip(_DateRangeFilter.last24Hours, 'Last 24h'),
-                _dateChip(_DateRangeFilter.last7Days, 'Last 7d'),
-                _dateChip(_DateRangeFilter.last30Days, 'Last 30d'),
-                _dateChip(_DateRangeFilter.all, 'All time'),
+                _dateChip(_DateRangeFilter.last24Hours, l10n.systemLogsDateLast24h),
+                _dateChip(_DateRangeFilter.last7Days, l10n.systemLogsDateLast7d),
+                _dateChip(_DateRangeFilter.last30Days, l10n.systemLogsDateLast30d),
+                _dateChip(_DateRangeFilter.all, l10n.systemLogsDateAllTime),
               ],
             ),
             const SizedBox(height: 10),
@@ -416,41 +422,41 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
               children: [
                 _queryField(
                   controller: _searchController,
-                  label: 'Search notes/ids',
+                  label: l10n.systemLogsSearchNotes,
                 ),
                 _queryField(
                   controller: _actionController,
-                  label: 'Filter action',
+                  label: l10n.systemLogsFilterAction,
                 ),
                 _queryField(
                   controller: _adminController,
-                  label: 'Filter admin_id',
+                  label: l10n.systemLogsFilterAdminId,
                 ),
                 _queryField(
                   controller: _targetController,
-                  label: 'Filter target_id',
+                  label: l10n.systemLogsFilterTargetId,
                 ),
                 FilledButton(
                   onPressed: _applyFilters,
-                  child: const Text('Apply'),
+                  child: Text(l10n.commonApply),
                 ),
                 OutlinedButton(
                   onPressed: _clearFilters,
-                  child: const Text('Clear'),
+                  child: Text(l10n.commonClear),
                 ),
               ],
             ),
             const SizedBox(height: 10),
-            _buildTableHeader(),
+            _buildTableHeader(l10n),
             const Divider(color: AdminColors.border, height: 1),
-            Expanded(child: _buildTableBody(context, items)),
+            Expanded(child: _buildTableBody(context, l10n, items)),
             const SizedBox(height: 8),
             Row(
               children: [
-                Text('Page ${_pageIndex + 1} / $_totalPages'),
+                Text(l10n.paginationPageOf(_pageIndex + 1, _totalPages)),
                 const SizedBox(width: 12),
                 Text(
-                  '${_filteredLogs.length} matching logs',
+                  l10n.systemLogsMatchingCount(_filteredLogs.length),
                   style: const TextStyle(color: AdminColors.textMuted, fontSize: 12),
                 ),
                 const Spacer(),
@@ -458,14 +464,16 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
                   onPressed: _pageIndex > 0 && !_loadingInitial && !_loadingMore
                       ? _goToPreviousPage
                       : null,
-                  child: const Text('Previous'),
+                  child: Text(l10n.commonPrevious),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton(
                   onPressed: !_loadingInitial && !_loadingMore
                       ? _goToNextPage
                       : null,
-                  child: Text(_loadingMore ? 'Loading...' : 'Next'),
+                  child: Text(
+                    _loadingMore ? l10n.systemLogsLoadingMore : l10n.commonNext,
+                  ),
                 ),
               ],
             ),
@@ -503,23 +511,27 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
     );
   }
 
-  Widget _buildTableHeader() {
+  Widget _buildTableHeader(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       color: AdminColors.surfaceAlt,
-      child: const Row(
+      child: Row(
         children: [
-          Expanded(flex: 3, child: Text('timestamp')),
-          Expanded(flex: 2, child: Text('type')),
-          Expanded(flex: 2, child: Text('action')),
-          Expanded(flex: 2, child: Text('admin_id')),
-          Expanded(flex: 3, child: Text('target_id')),
+          Expanded(flex: 3, child: Text(l10n.systemLogsColumnTimestamp)),
+          Expanded(flex: 2, child: Text(l10n.systemLogsColumnType)),
+          Expanded(flex: 2, child: Text(l10n.systemLogsColumnAction)),
+          Expanded(flex: 2, child: Text(l10n.systemLogsColumnAdminId)),
+          Expanded(flex: 3, child: Text(l10n.systemLogsColumnTargetId)),
         ],
       ),
     );
   }
 
-  Widget _buildTableBody(BuildContext context, List<SystemLogRecord> items) {
+  Widget _buildTableBody(
+    BuildContext context,
+    AppLocalizations l10n,
+    List<SystemLogRecord> items,
+  ) {
     if (_loadingInitial) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -527,7 +539,7 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
     if (_error != null) {
       return Center(
         child: Text(
-          'Unable to load system logs.\n$_error',
+          '${l10n.systemLogsUnableToLoad}\n$_error',
           textAlign: TextAlign.center,
           style: Theme.of(context)
               .textTheme
@@ -540,7 +552,7 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
     if (items.isEmpty) {
       return Center(
         child: Text(
-          'No logs found for the current filters.',
+          l10n.systemLogsNoMatches,
           style: Theme.of(context)
               .textTheme
               .bodySmall
@@ -584,12 +596,13 @@ class _SystemLogsPageState extends State<SystemLogsPage> {
   }
 
   Widget _buildDetailPane(BuildContext context) {
+    final l10n = context.l10n;
     final selected = _selected;
     if (selected == null) {
       return Card(
         child: Center(
           child: Text(
-            'Select a log entry to inspect full payload.',
+            l10n.systemLogsSelectLog,
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium

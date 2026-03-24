@@ -102,6 +102,191 @@ class AppLocalizations {
           .replaceAll('{total}', '$total')
           .replaceAll('{stale}', '$stale');
   String get opsHealthStaleHint => _t('opsHealthStaleHint');
+
+  // ——— Admin hardening (P1): shared UI ———
+  String get commonCancel => _t('commonCancel');
+  String get commonConfirm => _t('commonConfirm');
+  String get commonSave => _t('commonSave');
+  String get commonApply => _t('commonApply');
+  String get commonClear => _t('commonClear');
+  String get commonPrevious => _t('commonPrevious');
+  String get commonNext => _t('commonNext');
+  String get sessionTerminatedMessage => _t('sessionTerminatedMessage');
+  String get authWrongPassword => _t('authWrongPassword');
+  String get authUserNotFound => _t('authUserNotFound');
+  String get authInvalidCredential => _t('authInvalidCredential');
+  String get authTooManyRequests => _t('authTooManyRequests');
+  String get authNetworkFailed => _t('authNetworkFailed');
+  String get validationZoneRequired => _t('validationZoneRequired');
+  String get validationMessageRequired => _t('validationMessageRequired');
+  String get validationZoneTooLong => _t('validationZoneTooLong');
+  String get validationMessageTooLong => _t('validationMessageTooLong');
+  String get validationIntegerNonNegative => _t('validationIntegerNonNegative');
+  String get validationRejectionReasonRequired =>
+      _t('validationRejectionReasonRequired');
+  String get reviewNotesLabel => _t('reviewNotesLabel');
+  String get reviewNotesHintValidate => _t('reviewNotesHintValidate');
+  String get reviewNotesHintReject => _t('reviewNotesHintReject');
+  String reportReviewValidated(String id) =>
+      _t('reportReviewValidated').replaceAll('{id}', id);
+  String reportReviewRejected(String id) =>
+      _t('reportReviewRejected').replaceAll('{id}', id);
+  String get reportReviewFailed => _t('reportReviewFailed');
+  String errorWithDetails(String details) =>
+      '${_t('errorWithDetailsPrefix')}$details';
+  String get actionQueueLoadError => _t('actionQueueLoadError');
+  String get actionQueueNoPending => _t('actionQueueNoPending');
+  String timeAgoMinutes(int n) =>
+      _t('timeAgoMinutes').replaceAll('{n}', '$n');
+  String timeAgoHours(int n) => _t('timeAgoHours').replaceAll('{n}', '$n');
+  String timeAgoDays(int n) => _t('timeAgoDays').replaceAll('{n}', '$n');
+  String get timeAgoJustNow => _t('timeAgoJustNow');
+  String get reportsFilterAll => _t('reportsFilterAll');
+  String get userFilterAll => _t('userFilterAll');
+  String get userFilterAdmin => _t('userFilterAdmin');
+  String get userFilterOfficial => _t('userFilterOfficial');
+  String get userFilterResident => _t('userFilterResident');
+  String get userFilterInactive => _t('userFilterInactive');
+  String userRoleUpdated(String id) =>
+      _t('userRoleUpdated').replaceAll('{id}', id);
+  String get userRoleUpdateFailed => _t('userRoleUpdateFailed');
+  String userActivated(String id) =>
+      _t('userActivated').replaceAll('{id}', id);
+  String userDeactivated(String id) =>
+      _t('userDeactivated').replaceAll('{id}', id);
+  String get userStateUpdateFailed => _t('userStateUpdateFailed');
+  String get userSoftDeleteTitle => _t('userSoftDeleteTitle');
+  String userSoftDeleteConfirm(String id) =>
+      _t('userSoftDeleteConfirm').replaceAll('{id}', id);
+  String userSoftDeleted(String id) =>
+      _t('userSoftDeleted').replaceAll('{id}', id);
+  String get userSoftDeleteFailed => _t('userSoftDeleteFailed');
+  String tokensCopied(int n) => _t('tokensCopied').replaceAll('{n}', '$n');
+  String get userColumnUserId => _t('userColumnUserId');
+  String get userColumnEmail => _t('userColumnEmail');
+  String get userColumnUserType => _t('userColumnUserType');
+  String get userColumnActive => _t('userColumnActive');
+  String get userColumnTokens => _t('userColumnTokens');
+  String get locationPreview => _t('locationPreview');
+  String get copyTokens => _t('copyTokens');
+  String get roleChangeHint => _t('roleChangeHint');
+  String get paginationPage => _t('paginationPage');
+  String paginationPageOf(int current, int total) =>
+      _t('paginationPageOf')
+          .replaceAll('{current}', '$current')
+          .replaceAll('{total}', '$total');
+  String get shelterOpen => _t('shelterOpen');
+  String get shelterClosed => _t('shelterClosed');
+  String shelterStatusUpdated(String id, String status) =>
+      _t('shelterStatusUpdated')
+          .replaceAll('{id}', id)
+          .replaceAll('{status}', status);
+  String shelterCapacityUpdated(String id) =>
+      _t('shelterCapacityUpdated').replaceAll('{id}', id);
+  String shelterOccupancyUpdated(String id) =>
+      _t('shelterOccupancyUpdated').replaceAll('{id}', id);
+  String get shelterStatusUpdateFailed => _t('shelterStatusUpdateFailed');
+  String get shelterCapacityUpdateFailed => _t('shelterCapacityUpdateFailed');
+  String get shelterOccupancyUpdateFailed => _t('shelterOccupancyUpdateFailed');
+  String get shelterSoftDeleteTitle => _t('shelterSoftDeleteTitle');
+  String shelterSoftDeleteConfirm(String id) =>
+      _t('shelterSoftDeleteConfirm').replaceAll('{id}', id);
+  String shelterSoftDeleted(String id) =>
+      _t('shelterSoftDeleted').replaceAll('{id}', id);
+  String get shelterSoftDeleteFailed => _t('shelterSoftDeleteFailed');
+  String get shelterLoadError => _t('shelterLoadError');
+  String get shelterFilterAll => _t('shelterFilterAll');
+  String get shelterOccupancyFilterAll => _t('shelterOccupancyFilterAll');
+  String get shelterOccupancyFilterAvailable =>
+      _t('shelterOccupancyFilterAvailable');
+  String get shelterOccupancyFilterNearCap =>
+      _t('shelterOccupancyFilterNearCap');
+  String get shelterOccupancyFilterFull => _t('shelterOccupancyFilterFull');
+  String get shelterUpdateCapacityTitle => _t('shelterUpdateCapacityTitle');
+  String get shelterUpdateOccupancyTitle => _t('shelterUpdateOccupancyTitle');
+  String get shelterLabelCapacity => _t('shelterLabelCapacity');
+  String get shelterLabelOccupancy => _t('shelterLabelOccupancy');
+  String get shelterColumnShelterId => _t('shelterColumnShelterId');
+  String get shelterColumnName => _t('shelterColumnName');
+  String get shelterColumnZone => _t('shelterColumnZone');
+  String get shelterColumnStatus => _t('shelterColumnStatus');
+  String get shelterColumnOccupancy => _t('shelterColumnOccupancy');
+  String get shelterColumnContact => _t('shelterColumnContact');
+  String get shelterActionUpdateCapacity => _t('shelterActionUpdateCapacity');
+  String get shelterActionUpdateOccupancy => _t('shelterActionUpdateOccupancy');
+  String get shelterActionSoftDelete => _t('shelterActionSoftDelete');
+  String get systemLogsColumnTimestamp => _t('systemLogsColumnTimestamp');
+  String get systemLogsColumnType => _t('systemLogsColumnType');
+  String get systemLogsColumnAction => _t('systemLogsColumnAction');
+  String get systemLogsColumnAdminId => _t('systemLogsColumnAdminId');
+  String get systemLogsColumnTargetId => _t('systemLogsColumnTargetId');
+  String get reportsColumnReportId => _t('reportsColumnReportId');
+  String get reportsColumnCreatedAt => _t('reportsColumnCreatedAt');
+  String get reportsColumnZone => _t('reportsColumnZone');
+  String get reportsColumnResidentId => _t('reportsColumnResidentId');
+  String get reportsColumnStatus => _t('reportsColumnStatus');
+  String get photoNoUrl => _t('photoNoUrl');
+  String get photoLoadFailed => _t('photoLoadFailed');
+  String get semanticLoginEmail => _t('semanticLoginEmail');
+  String get semanticLoginPassword => _t('semanticLoginPassword');
+  String get semanticRememberMe => _t('semanticRememberMe');
+
+  String reportsNoneForFilter(String filter) =>
+      _t('reportsNoneForFilter').replaceAll('{filter}', filter);
+  String get reportsSelectOne => _t('reportsSelectOne');
+  String reportDetailTitle(String id) =>
+      _t('reportDetailTitle').replaceAll('{id}', id);
+  String get reportsFieldDescription => _t('reportsFieldDescription');
+  String get reportsFieldPhoto => _t('reportsFieldPhoto');
+  String get reportsFieldReviewer => _t('reportsFieldReviewer');
+  String get reportsDecisionLocked => _t('reportsDecisionLocked');
+  String get reportsUnableToLoad => _t('reportsUnableToLoad');
+
+  String get userSearchByEmailOrId => _t('userSearchByEmailOrId');
+  String get usersUnableToLoad => _t('usersUnableToLoad');
+  String get usersEmpty => _t('usersEmpty');
+  String get usersSelectOne => _t('usersSelectOne');
+  String get userAdminProtected => _t('userAdminProtected');
+  String get userActionDeactivate => _t('userActionDeactivate');
+  String get userActionActivate => _t('userActionActivate');
+  String get userRoleOfficial => _t('userRoleOfficial');
+  String get userRoleResident => _t('userRoleResident');
+  String get mapNoCoordinates => _t('mapNoCoordinates');
+  String mapKeyMissing(String lat, String lng) =>
+      _t('mapKeyMissing').replaceAll('{lat}', lat).replaceAll('{lng}', lng);
+
+  String get shelterFilterStatusLabel => _t('shelterFilterStatusLabel');
+  String get shelterFilterZoneLabel => _t('shelterFilterZoneLabel');
+  String get shelterOccupancyLevelLabel => _t('shelterOccupancyLevelLabel');
+  String get shelterSearchByNameOrContact =>
+      _t('shelterSearchByNameOrContact');
+  String shelterActiveCount(int n) =>
+      _t('shelterActiveCount').replaceAll('{n}', '$n');
+  String get sheltersEmptyFiltered => _t('sheltersEmptyFiltered');
+  String get sheltersSelectOne => _t('sheltersSelectOne');
+  String get shelterActionOpen => _t('shelterActionOpen');
+  String get shelterActionClose => _t('shelterActionClose');
+  String get shelterAuditNotice => _t('shelterAuditNotice');
+  String shelterMapLoadFailed(String lat, String lng) =>
+      _t('shelterMapLoadFailed')
+          .replaceAll('{lat}', lat)
+          .replaceAll('{lng}', lng);
+
+  String get systemLogsTypeLabel => _t('systemLogsTypeLabel');
+  String get systemLogsDateLast24h => _t('systemLogsDateLast24h');
+  String get systemLogsDateLast7d => _t('systemLogsDateLast7d');
+  String get systemLogsDateLast30d => _t('systemLogsDateLast30d');
+  String get systemLogsDateAllTime => _t('systemLogsDateAllTime');
+  String get systemLogsSearchNotes => _t('systemLogsSearchNotes');
+  String get systemLogsFilterAction => _t('systemLogsFilterAction');
+  String get systemLogsFilterAdminId => _t('systemLogsFilterAdminId');
+  String get systemLogsFilterTargetId => _t('systemLogsFilterTargetId');
+  String systemLogsMatchingCount(int n) =>
+      _t('systemLogsMatchingCount').replaceAll('{n}', '$n');
+  String get systemLogsUnableToLoad => _t('systemLogsUnableToLoad');
+  String get systemLogsNoMatches => _t('systemLogsNoMatches');
+  String get systemLogsLoadingMore => _t('systemLogsLoadingMore');
+  String get systemLogsSelectLog => _t('systemLogsSelectLog');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -208,6 +393,160 @@ const _strings = <String, Map<String, String>>{
         '{total} devices • {stale} stale / no recent data',
     'opsHealthStaleHint':
         'Stale = no last_seen_at within 10 minutes (tune to your telemetry rate).',
+    'commonCancel': 'Cancel',
+    'commonConfirm': 'Confirm',
+    'commonSave': 'Save',
+    'commonApply': 'Apply',
+    'commonClear': 'Clear',
+    'commonPrevious': 'Previous',
+    'commonNext': 'Next',
+    'sessionTerminatedMessage':
+        'Your session ended. Sign in again to continue.',
+    'authWrongPassword': 'Incorrect password. Try again.',
+    'authUserNotFound': 'No account found for this email.',
+    'authInvalidCredential': 'Invalid email or password.',
+    'authTooManyRequests': 'Too many attempts. Wait and try again.',
+    'authNetworkFailed': 'Network error. Check your connection.',
+    'validationZoneRequired': 'Zone is required.',
+    'validationMessageRequired': 'Message is required.',
+    'validationZoneTooLong': 'Zone is too long.',
+    'validationMessageTooLong': 'Message is too long.',
+    'validationIntegerNonNegative': 'Enter a valid non-negative integer.',
+    'validationRejectionReasonRequired': 'Rejection reason is required.',
+    'reviewNotesLabel': 'Review notes',
+    'reviewNotesHintValidate': 'Optional validation remarks.',
+    'reviewNotesHintReject': 'Reason for rejecting this report.',
+    'reportReviewValidated': 'Report {id} validated.',
+    'reportReviewRejected': 'Report {id} rejected.',
+    'reportReviewFailed': 'Could not update report.',
+    'errorWithDetailsPrefix': 'Error: ',
+    'actionQueueLoadError': 'Unable to load reports.',
+    'actionQueueNoPending': 'No pending reports.',
+    'timeAgoJustNow': 'just now',
+    'timeAgoMinutes': '{n}m ago',
+    'timeAgoHours': '{n}h ago',
+    'timeAgoDays': '{n}d ago',
+    'reportsFilterAll': 'All',
+    'userFilterAll': 'All',
+    'userFilterAdmin': 'Admin',
+    'userFilterOfficial': 'Official',
+    'userFilterResident': 'Resident',
+    'userFilterInactive': 'Inactive',
+    'userRoleUpdated': 'Role updated for {id}.',
+    'userRoleUpdateFailed': 'Failed to update role.',
+    'userActivated': 'User {id} activated.',
+    'userDeactivated': 'User {id} deactivated.',
+    'userStateUpdateFailed': 'Failed to update user state.',
+    'userSoftDeleteTitle': 'Soft delete user',
+    'userSoftDeleteConfirm':
+        'Set {id} inactive and store deleted_at timestamp?',
+    'userSoftDeleted': 'User {id} soft deleted.',
+    'userSoftDeleteFailed': 'Soft delete failed.',
+    'tokensCopied': 'Copied {n} token(s).',
+    'userColumnUserId': 'user_id',
+    'userColumnEmail': 'email',
+    'userColumnUserType': 'user_type',
+    'userColumnActive': 'active',
+    'userColumnTokens': 'tokens',
+    'locationPreview': 'Location preview',
+    'copyTokens': 'Copy tokens',
+    'roleChangeHint': 'Change role',
+    'paginationPage': 'Page',
+    'paginationPageOf': 'Page {current} / {total}',
+    'shelterOpen': 'Open',
+    'shelterClosed': 'Closed',
+    'shelterStatusUpdated': 'Shelter {id} marked as {status}.',
+    'shelterCapacityUpdated': 'Capacity updated for {id}.',
+    'shelterOccupancyUpdated': 'Occupancy updated for {id}.',
+    'shelterStatusUpdateFailed': 'Status update failed.',
+    'shelterCapacityUpdateFailed': 'Capacity update failed.',
+    'shelterOccupancyUpdateFailed': 'Occupancy update failed.',
+    'shelterSoftDeleteTitle': 'Soft delete shelter',
+    'shelterSoftDeleteConfirm':
+        'Set {id} inactive and preserve historical links/logs?',
+    'shelterSoftDeleted': 'Shelter {id} soft deleted.',
+    'shelterSoftDeleteFailed': 'Soft delete failed.',
+    'shelterLoadError': 'Unable to load shelters.',
+    'shelterFilterAll': 'All',
+    'shelterOccupancyFilterAll': 'All',
+    'shelterOccupancyFilterAvailable': 'Available (<80%)',
+    'shelterOccupancyFilterNearCap': 'Near cap (80–99%)',
+    'shelterOccupancyFilterFull': 'Full (100%)',
+    'shelterUpdateCapacityTitle': 'Update capacity',
+    'shelterUpdateOccupancyTitle': 'Update occupancy',
+    'shelterLabelCapacity': 'capacity',
+    'shelterLabelOccupancy': 'current_occupancy',
+    'shelterColumnShelterId': 'shelter_id',
+    'shelterColumnName': 'name',
+    'shelterColumnZone': 'zone',
+    'shelterColumnStatus': 'status',
+    'shelterColumnOccupancy': 'occupancy',
+    'shelterColumnContact': 'contact',
+    'shelterActionUpdateCapacity': 'Update capacity',
+    'shelterActionUpdateOccupancy': 'Update occupancy',
+    'shelterActionSoftDelete': 'Soft delete',
+    'systemLogsColumnTimestamp': 'timestamp',
+    'systemLogsColumnType': 'type',
+    'systemLogsColumnAction': 'action',
+    'systemLogsColumnAdminId': 'admin_id',
+    'systemLogsColumnTargetId': 'target_id',
+    'reportsColumnReportId': 'report_id',
+    'reportsColumnCreatedAt': 'created_at',
+    'reportsColumnZone': 'zone',
+    'reportsColumnResidentId': 'resident_id',
+    'reportsColumnStatus': 'status',
+    'photoNoUrl': 'No photo URL',
+    'photoLoadFailed': 'Unable to load photo',
+    'semanticLoginEmail': 'Email address',
+    'semanticLoginPassword': 'Password',
+    'semanticRememberMe': 'Remember me on this device',
+    'reportsNoneForFilter': 'No reports found for {filter}.',
+    'reportsSelectOne': 'Select a report to inspect details.',
+    'reportDetailTitle': 'Report {id}',
+    'reportsFieldDescription': 'Description',
+    'reportsFieldPhoto': 'Photo evidence',
+    'reportsFieldReviewer': 'Reviewer history',
+    'reportsDecisionLocked':
+        'Decision already finalized. Reopen is blocked in v1.',
+    'reportsUnableToLoad': 'Unable to load reports.',
+    'userSearchByEmailOrId': 'Search by email or user_id',
+    'usersUnableToLoad': 'Unable to load users.',
+    'usersEmpty': 'No users found.',
+    'usersSelectOne': 'Select a user to inspect details.',
+    'userAdminProtected':
+        'Admin accounts are protected from role/state changes.',
+    'userActionDeactivate': 'Deactivate',
+    'userActionActivate': 'Activate',
+    'userRoleOfficial': 'official',
+    'userRoleResident': 'resident',
+    'mapNoCoordinates': 'No coordinates available',
+    'mapKeyMissing': 'Google Maps key missing.\nCoordinates: {lat}, {lng}',
+    'shelterFilterStatusLabel': 'Status',
+    'shelterFilterZoneLabel': 'Zone',
+    'shelterOccupancyLevelLabel': 'Occupancy level',
+    'shelterSearchByNameOrContact': 'Search by shelter name or contact',
+    'shelterActiveCount': '{n} active shelters',
+    'sheltersEmptyFiltered': 'No shelters found for current filters.',
+    'sheltersSelectOne': 'Select a shelter to inspect details.',
+    'shelterActionOpen': 'Open',
+    'shelterActionClose': 'Close',
+    'shelterAuditNotice':
+        'All changes are logged to System_Logs as immutable audit records.',
+    'shelterMapLoadFailed': 'Map failed to load.\nCoordinates: {lat}, {lng}',
+    'systemLogsTypeLabel': 'Type',
+    'systemLogsDateLast24h': 'Last 24h',
+    'systemLogsDateLast7d': 'Last 7d',
+    'systemLogsDateLast30d': 'Last 30d',
+    'systemLogsDateAllTime': 'All time',
+    'systemLogsSearchNotes': 'Search notes/ids',
+    'systemLogsFilterAction': 'Filter action',
+    'systemLogsFilterAdminId': 'Filter admin_id',
+    'systemLogsFilterTargetId': 'Filter target_id',
+    'systemLogsMatchingCount': '{n} matching logs',
+    'systemLogsUnableToLoad': 'Unable to load system logs.',
+    'systemLogsNoMatches': 'No logs found for the current filters.',
+    'systemLogsLoadingMore': 'Loading…',
+    'systemLogsSelectLog': 'Select a log entry to inspect details.',
   },
   'fil': {
     'appTitle': 'HydroAlert Admin',
@@ -289,5 +628,159 @@ const _strings = <String, Map<String, String>>{
         '{total} device • {stale} walang bagong data / stale',
     'opsHealthStaleHint':
         'Stale = walang last_seen_at sa loob ng 10 minuto.',
+    'commonCancel': 'Kanselahin',
+    'commonConfirm': 'Kumpirmahin',
+    'commonSave': 'I-save',
+    'commonApply': 'Ilapat',
+    'commonClear': 'I-clear',
+    'commonPrevious': 'Nakaraan',
+    'commonNext': 'Susunod',
+    'sessionTerminatedMessage':
+        'Natapos ang session. Mag-sign in muli para magpatuloy.',
+    'authWrongPassword': 'Maling password. Subukan muli.',
+    'authUserNotFound': 'Walang account sa email na ito.',
+    'authInvalidCredential': 'Hindi wastong email o password.',
+    'authTooManyRequests': 'Sobrang daming pagsubok. Maghintay at subukan muli.',
+    'authNetworkFailed': 'Error sa network. Suriin ang koneksyon.',
+    'validationZoneRequired': 'Kailangan ang zone.',
+    'validationMessageRequired': 'Kailangan ang mensahe.',
+    'validationZoneTooLong': 'Masyadong mahaba ang zone.',
+    'validationMessageTooLong': 'Masyadong mahaba ang mensahe.',
+    'validationIntegerNonNegative': 'Maglagay ng wastong integer ≥ 0.',
+    'validationRejectionReasonRequired': 'Kailangan ang dahilan ng pag-reject.',
+    'reviewNotesLabel': 'Mga tala sa review',
+    'reviewNotesHintValidate': 'Opsyonal na remarks sa validation.',
+    'reviewNotesHintReject': 'Dahilan kung bakit ire-reject ang report.',
+    'reportReviewValidated': 'Na-validate ang report {id}.',
+    'reportReviewRejected': 'Na-reject ang report {id}.',
+    'reportReviewFailed': 'Hindi na-update ang report.',
+    'errorWithDetailsPrefix': 'Error: ',
+    'actionQueueLoadError': 'Hindi ma-load ang mga report.',
+    'actionQueueNoPending': 'Walang pending na report.',
+    'timeAgoJustNow': 'ngayon lang',
+    'timeAgoMinutes': '{n}m ang nakalipas',
+    'timeAgoHours': '{n}h ang nakalipas',
+    'timeAgoDays': '{n} araw ang nakalipas',
+    'reportsFilterAll': 'Lahat',
+    'userFilterAll': 'Lahat',
+    'userFilterAdmin': 'Admin',
+    'userFilterOfficial': 'Official',
+    'userFilterResident': 'Resident',
+    'userFilterInactive': 'Hindi aktibo',
+    'userRoleUpdated': 'Na-update ang role para sa {id}.',
+    'userRoleUpdateFailed': 'Hindi na-update ang role.',
+    'userActivated': 'Na-activate ang user {id}.',
+    'userDeactivated': 'Na-deactivate ang user {id}.',
+    'userStateUpdateFailed': 'Hindi na-update ang estado ng user.',
+    'userSoftDeleteTitle': 'Soft delete ng user',
+    'userSoftDeleteConfirm':
+        'Itakda ang {id} na inactive at magtala ng deleted_at?',
+    'userSoftDeleted': 'Na-soft delete ang user {id}.',
+    'userSoftDeleteFailed': 'Nabigo ang soft delete.',
+    'tokensCopied': 'Kinopya ang {n} token.',
+    'userColumnUserId': 'user_id',
+    'userColumnEmail': 'email',
+    'userColumnUserType': 'user_type',
+    'userColumnActive': 'active',
+    'userColumnTokens': 'tokens',
+    'locationPreview': 'Preview ng lokasyon',
+    'copyTokens': 'Kopyahin ang tokens',
+    'roleChangeHint': 'Palitan ang role',
+    'paginationPage': 'Pahina',
+    'paginationPageOf': 'Pahina {current} / {total}',
+    'shelterOpen': 'Bukas',
+    'shelterClosed': 'Sarado',
+    'shelterStatusUpdated': 'Ang shelter {id} ay minarkahan bilang {status}.',
+    'shelterCapacityUpdated': 'Na-update ang capacity para sa {id}.',
+    'shelterOccupancyUpdated': 'Na-update ang occupancy para sa {id}.',
+    'shelterStatusUpdateFailed': 'Nabigo ang pag-update ng status.',
+    'shelterCapacityUpdateFailed': 'Nabigo ang pag-update ng capacity.',
+    'shelterOccupancyUpdateFailed': 'Nabigo ang pag-update ng occupancy.',
+    'shelterSoftDeleteTitle': 'Soft delete ng shelter',
+    'shelterSoftDeleteConfirm':
+        'Itakda ang {id} na inactive at panatilihin ang history?',
+    'shelterSoftDeleted': 'Na-soft delete ang shelter {id}.',
+    'shelterSoftDeleteFailed': 'Nabigo ang soft delete.',
+    'shelterLoadError': 'Hindi ma-load ang mga shelter.',
+    'shelterFilterAll': 'Lahat',
+    'shelterOccupancyFilterAll': 'Lahat',
+    'shelterOccupancyFilterAvailable': 'May bakante (<80%)',
+    'shelterOccupancyFilterNearCap': 'Malapit puno (80–99%)',
+    'shelterOccupancyFilterFull': 'Puno (100%)',
+    'shelterUpdateCapacityTitle': 'I-update ang capacity',
+    'shelterUpdateOccupancyTitle': 'I-update ang occupancy',
+    'shelterLabelCapacity': 'capacity',
+    'shelterLabelOccupancy': 'current_occupancy',
+    'shelterColumnShelterId': 'shelter_id',
+    'shelterColumnName': 'pangalan',
+    'shelterColumnZone': 'zone',
+    'shelterColumnStatus': 'status',
+    'shelterColumnOccupancy': 'occupancy',
+    'shelterColumnContact': 'contact',
+    'shelterActionUpdateCapacity': 'I-update ang capacity',
+    'shelterActionUpdateOccupancy': 'I-update ang occupancy',
+    'shelterActionSoftDelete': 'Soft delete',
+    'systemLogsColumnTimestamp': 'timestamp',
+    'systemLogsColumnType': 'type',
+    'systemLogsColumnAction': 'action',
+    'systemLogsColumnAdminId': 'admin_id',
+    'systemLogsColumnTargetId': 'target_id',
+    'reportsColumnReportId': 'report_id',
+    'reportsColumnCreatedAt': 'created_at',
+    'reportsColumnZone': 'zone',
+    'reportsColumnResidentId': 'resident_id',
+    'reportsColumnStatus': 'status',
+    'photoNoUrl': 'Walang photo URL',
+    'photoLoadFailed': 'Hindi ma-load ang larawan',
+    'semanticLoginEmail': 'Email address',
+    'semanticLoginPassword': 'Password',
+    'semanticRememberMe': 'Tandaan ako sa device na ito',
+    'reportsNoneForFilter': 'Walang report para sa {filter}.',
+    'reportsSelectOne': 'Pumili ng report para tingnan ang detalye.',
+    'reportDetailTitle': 'Report {id}',
+    'reportsFieldDescription': 'Deskripsyon',
+    'reportsFieldPhoto': 'Larawan bilang ebidensya',
+    'reportsFieldReviewer': 'Kasaysayan ng reviewer',
+    'reportsDecisionLocked':
+        'Tapos na ang desisyon. Hindi pa suportado ang muling buksan sa v1.',
+    'reportsUnableToLoad': 'Hindi ma-load ang mga report.',
+    'userSearchByEmailOrId': 'Maghanap ayon sa email o user_id',
+    'usersUnableToLoad': 'Hindi ma-load ang mga user.',
+    'usersEmpty': 'Walang user na natagpuan.',
+    'usersSelectOne': 'Pumili ng user para tingnan ang detalye.',
+    'userAdminProtected':
+        'Protektado ang mga admin account mula sa pagbabago ng role/estado.',
+    'userActionDeactivate': 'I-deactivate',
+    'userActionActivate': 'I-activate',
+    'userRoleOfficial': 'official',
+    'userRoleResident': 'resident',
+    'mapNoCoordinates': 'Walang coordinates',
+    'mapKeyMissing': 'Walang Google Maps key.\nCoordinates: {lat}, {lng}',
+    'shelterFilterStatusLabel': 'Status',
+    'shelterFilterZoneLabel': 'Zone',
+    'shelterOccupancyLevelLabel': 'Antas ng occupancy',
+    'shelterSearchByNameOrContact': 'Maghanap ayon sa pangalan o contact',
+    'shelterActiveCount': '{n} aktibong shelter',
+    'sheltersEmptyFiltered': 'Walang shelter sa kasalukuyang filter.',
+    'sheltersSelectOne': 'Pumili ng shelter para tingnan ang detalye.',
+    'shelterActionOpen': 'Buksan',
+    'shelterActionClose': 'Isara',
+    'shelterAuditNotice':
+        'Lahat ng pagbabago ay naka-log sa System_Logs bilang audit record.',
+    'shelterMapLoadFailed': 'Hindi na-load ang mapa.\nCoordinates: {lat}, {lng}',
+    'systemLogsTypeLabel': 'Uri',
+    'systemLogsDateLast24h': 'Huling 24h',
+    'systemLogsDateLast7d': 'Huling 7 araw',
+    'systemLogsDateLast30d': 'Huling 30 araw',
+    'systemLogsDateAllTime': 'Lahat',
+    'systemLogsSearchNotes': 'Hanapin sa notes/ids',
+    'systemLogsFilterAction': 'I-filter ang action',
+    'systemLogsFilterAdminId': 'I-filter ang admin_id',
+    'systemLogsFilterTargetId': 'I-filter ang target_id',
+    'systemLogsMatchingCount': '{n} tumutugmang log',
+    'systemLogsUnableToLoad': 'Hindi ma-load ang system logs.',
+    'systemLogsNoMatches': 'Walang log sa kasalukuyang filter.',
+    'systemLogsLoadingMore': 'Naglo-load…',
+    'systemLogsSelectLog': 'Pumili ng log entry para sa detalye.',
   },
 };

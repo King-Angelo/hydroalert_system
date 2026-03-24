@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/theme/admin_theme.dart';
+import '../../../core/ui/app_feedback.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/user_management_repository.dart';
 
 class UserManagementPage extends StatefulWidget {
@@ -125,6 +127,23 @@ class _UserManagementPageState extends State<UserManagementPage> {
     _syncSelectionWithCurrentPage();
   }
 
+  String _filterLabel(AppLocalizations l10n, String filter) {
+    switch (filter) {
+      case 'All':
+        return l10n.userFilterAll;
+      case 'Admin':
+        return l10n.userFilterAdmin;
+      case 'Official':
+        return l10n.userFilterOfficial;
+      case 'Resident':
+        return l10n.userFilterResident;
+      case 'Inactive':
+        return l10n.userFilterInactive;
+      default:
+        return filter;
+    }
+  }
+
   Future<void> _updateRole(String nextRole) async {
     final user = _selectedUser;
     if (user == null || user.userType == 'admin') return;
@@ -138,15 +157,17 @@ class _UserManagementPageState extends State<UserManagementPage> {
         adminId: widget.adminUserId,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Role updated for ${user.userId}.')),
-      );
+      showAppSnackBar(context, context.l10n.userRoleUpdated(user.userId));
       _pages.remove(_pageIndex);
       await _loadPage(pageIndex: _pageIndex, force: true);
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update role: $error')),
+      showAppSnackBar(
+        context,
+        context.l10n.errorWithDetails(
+          '${context.l10n.userRoleUpdateFailed} ${truncateErrorDetails(error)}',
+        ),
+        isError: true,
       );
     } finally {
       if (mounted) {
@@ -167,16 +188,20 @@ class _UserManagementPageState extends State<UserManagementPage> {
         adminId: widget.adminUserId,
       );
       if (!mounted) return;
-      final action = user.isActive ? 'deactivated' : 'activated';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('User ${user.userId} $action.')),
-      );
+      final msg = user.isActive
+          ? context.l10n.userDeactivated(user.userId)
+          : context.l10n.userActivated(user.userId);
+      showAppSnackBar(context, msg);
       _pages.remove(_pageIndex);
       await _loadPage(pageIndex: _pageIndex, force: true);
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update user state: $error')),
+      showAppSnackBar(
+        context,
+        context.l10n.errorWithDetails(
+          '${context.l10n.userStateUpdateFailed} ${truncateErrorDetails(error)}',
+        ),
+        isError: true,
       );
     } finally {
       if (mounted) {
@@ -189,21 +214,20 @@ class _UserManagementPageState extends State<UserManagementPage> {
     final user = _selectedUser;
     if (user == null || user.userType == 'admin') return;
 
+    final l10n = context.l10n;
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Soft Delete User'),
-        content: Text(
-          'Set ${user.userId} as inactive and store deleted_at timestamp?',
-        ),
+        title: Text(l10n.userSoftDeleteTitle),
+        content: Text(l10n.userSoftDeleteConfirm(user.userId)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Confirm'),
+            child: Text(l10n.commonConfirm),
           ),
         ],
       ),
@@ -217,15 +241,17 @@ class _UserManagementPageState extends State<UserManagementPage> {
         adminId: widget.adminUserId,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('User ${user.userId} soft deleted.')),
-      );
+      showAppSnackBar(context, context.l10n.userSoftDeleted(user.userId));
       _pages.remove(_pageIndex);
       await _loadPage(pageIndex: _pageIndex, force: true);
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Soft delete failed: $error')),
+      showAppSnackBar(
+        context,
+        context.l10n.errorWithDetails(
+          '${context.l10n.userSoftDeleteFailed} ${truncateErrorDetails(error)}',
+        ),
+        isError: true,
       );
     } finally {
       if (mounted) {
@@ -240,8 +266,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
     final content = user.deviceTokens.join('\n');
     await Clipboard.setData(ClipboardData(text: content));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Copied ${user.deviceTokens.length} token(s).')),
+    showAppSnackBar(
+      context,
+      context.l10n.tokensCopied(user.deviceTokens.length),
     );
   }
 
@@ -249,12 +276,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
   Widget build(BuildContext context) {
     final page = _pages[_pageIndex];
     final items = page?.items ?? const <ManagedUserRecord>[];
+    final l10n = context.l10n;
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final narrow = constraints.maxWidth < 1250;
-        final listPane = _buildListPane(items: items, page: page);
-        final detailPane = _buildDetailPane();
+        final listPane = _buildListPane(l10n: l10n, items: items, page: page);
+        final detailPane = _buildDetailPane(l10n: l10n);
 
         if (narrow) {
           return Column(
@@ -278,6 +306,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
   }
 
   Widget _buildListPane({
+    required AppLocalizations l10n,
     required List<ManagedUserRecord> items,
     required UserManagementPageResult? page,
   }) {
@@ -293,7 +322,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               children: _filters.map((filter) {
                 final selected = filter == _filter;
                 return ChoiceChip(
-                  label: Text(filter),
+                  label: Text(_filterLabel(l10n, filter)),
                   selected: selected,
                   onSelected: (_) {
                     if (_filter == filter) return;
@@ -305,9 +334,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
             ),
             const SizedBox(height: 10),
             TextField(
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                labelText: 'Search by email or user_id',
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search),
+                labelText: l10n.userSearchByEmailOrId,
               ),
               onSubmitted: (value) {
                 setState(() => _searchQuery = value);
@@ -315,24 +344,24 @@ class _UserManagementPageState extends State<UserManagementPage> {
               },
             ),
             const SizedBox(height: 10),
-            _buildTableHeader(),
+            _buildTableHeader(l10n),
             const Divider(color: AdminColors.border, height: 1),
-            Expanded(child: _buildTableBody(items: items)),
+            Expanded(child: _buildTableBody(l10n: l10n, items: items)),
             const SizedBox(height: 8),
             Row(
               children: [
-                Text('Page ${_pageIndex + 1}'),
+                Text('${l10n.paginationPage} ${_pageIndex + 1}'),
                 const Spacer(),
                 OutlinedButton(
                   onPressed: _pageIndex > 0 && !_loading ? _goPreviousPage : null,
-                  child: const Text('Previous'),
+                  child: Text(l10n.commonPrevious),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton(
                   onPressed: !_loading && (page?.hasNextPage ?? false)
                       ? _goNextPage
                       : null,
-                  child: const Text('Next'),
+                  child: Text(l10n.commonNext),
                 ),
               ],
             ),
@@ -342,23 +371,26 @@ class _UserManagementPageState extends State<UserManagementPage> {
     );
   }
 
-  Widget _buildTableHeader() {
+  Widget _buildTableHeader(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       color: AdminColors.surfaceAlt,
-      child: const Row(
+      child: Row(
         children: [
-          Expanded(flex: 3, child: Text('user_id')),
-          Expanded(flex: 4, child: Text('email')),
-          Expanded(flex: 2, child: Text('user_type')),
-          Expanded(flex: 2, child: Text('active')),
-          Expanded(flex: 2, child: Text('tokens')),
+          Expanded(flex: 3, child: Text(l10n.userColumnUserId)),
+          Expanded(flex: 4, child: Text(l10n.userColumnEmail)),
+          Expanded(flex: 2, child: Text(l10n.userColumnUserType)),
+          Expanded(flex: 2, child: Text(l10n.userColumnActive)),
+          Expanded(flex: 2, child: Text(l10n.userColumnTokens)),
         ],
       ),
     );
   }
 
-  Widget _buildTableBody({required List<ManagedUserRecord> items}) {
+  Widget _buildTableBody({
+    required AppLocalizations l10n,
+    required List<ManagedUserRecord> items,
+  }) {
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -366,7 +398,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     if (_error != null) {
       return Center(
         child: Text(
-          'Unable to load users.\n$_error',
+          '${l10n.usersUnableToLoad}\n$_error',
           textAlign: TextAlign.center,
           style: Theme.of(context)
               .textTheme
@@ -379,7 +411,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     if (items.isEmpty) {
       return Center(
         child: Text(
-          'No users found.',
+          l10n.usersEmpty,
           style: Theme.of(context)
               .textTheme
               .bodySmall
@@ -426,13 +458,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
     );
   }
 
-  Widget _buildDetailPane() {
+  Widget _buildDetailPane({required AppLocalizations l10n}) {
     final user = _selectedUser;
     if (user == null) {
       return Card(
         child: Center(
           child: Text(
-            'Select a user to inspect details.',
+            l10n.usersSelectOne,
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium
@@ -464,23 +496,24 @@ class _UserManagementPageState extends State<UserManagementPage> {
               _kv('deleted_at', user.deletedAt == null ? '-' : _formatDateTime(user.deletedAt!)),
               _kv('barangay', user.barangay ?? '-'),
               const SizedBox(height: 12),
-              Text('Location Preview', style: Theme.of(context).textTheme.titleSmall),
+              Text(l10n.locationPreview,
+                  style: Theme.of(context).textTheme.titleSmall),
               const SizedBox(height: 6),
-              _buildMapPreview(user, mapsKey),
+              _buildMapPreview(l10n, user, mapsKey),
               const SizedBox(height: 12),
               Row(
                 children: [
                   OutlinedButton.icon(
                     onPressed: user.deviceTokens.isEmpty ? null : _copyTokens,
                     icon: const Icon(Icons.copy, size: 16),
-                    label: const Text('Copy tokens'),
+                    label: Text(l10n.copyTokens),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
               if (!canManage)
                 Text(
-                  'Admin accounts are protected from role/state changes.',
+                  l10n.userAdminProtected,
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
@@ -494,15 +527,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     value: user.userType == 'official' || user.userType == 'resident'
                         ? user.userType
                         : null,
-                    hint: const Text('Change role'),
-                    items: const [
+                    hint: Text(l10n.roleChangeHint),
+                    items: [
                       DropdownMenuItem(
                         value: 'official',
-                        child: Text('official'),
+                        child: Text(l10n.userRoleOfficial),
                       ),
                       DropdownMenuItem(
                         value: 'resident',
-                        child: Text('resident'),
+                        child: Text(l10n.userRoleResident),
                       ),
                     ],
                     onChanged: !canManage || isSubmitting
@@ -514,11 +547,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   ),
                   FilledButton(
                     onPressed: !canManage || isSubmitting ? null : _toggleActive,
-                    child: Text(user.isActive ? 'Deactivate' : 'Activate'),
+                    child: Text(
+                      user.isActive
+                          ? l10n.userActionDeactivate
+                          : l10n.userActionActivate,
+                    ),
                   ),
                   OutlinedButton(
                     onPressed: !canManage || isSubmitting ? null : _softDelete,
-                    child: const Text('Soft Delete'),
+                    child: Text(l10n.userSoftDeleteTitle),
                   ),
                   if (isSubmitting)
                     const SizedBox(
@@ -535,15 +572,21 @@ class _UserManagementPageState extends State<UserManagementPage> {
     );
   }
 
-  Widget _buildMapPreview(ManagedUserRecord user, String mapsKey) {
+  Widget _buildMapPreview(
+    AppLocalizations l10n,
+    ManagedUserRecord user,
+    String mapsKey,
+  ) {
     final lat = user.latitude;
     final lng = user.longitude;
     if (lat == null || lng == null) {
-      return _coordinatesCard('No coordinates available');
+      return _coordinatesCard(l10n.mapNoCoordinates);
     }
 
     if (mapsKey.isEmpty) {
-      return _coordinatesCard('Google Maps key missing.\nCoordinates: $lat, $lng');
+      return _coordinatesCard(
+        l10n.mapKeyMissing('$lat', '$lng'),
+      );
     }
 
     final uri = Uri.https('maps.googleapis.com', '/maps/api/staticmap', {

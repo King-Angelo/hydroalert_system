@@ -8,6 +8,8 @@
 
 See repo **[`docs/environment_separation_p0.md`](../../docs/environment_separation_p0.md)**.
 
+**Hardening (P1):** **[`docs/admin_app_hardening_p1.md`](../../docs/admin_app_hardening_p1.md)** — localization, session re-auth, validation, accessibility.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

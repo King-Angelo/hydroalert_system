@@ -17,6 +17,10 @@ class AuthSignInResult {
 }
 
 abstract class AuthService {
+  /// When the Firebase session ends unexpectedly (sign-out, revocation, etc.)
+  /// while the admin shell may still be mounted. Mock implementation never emits.
+  Stream<void> get sessionTerminated;
+
   Future<AuthSignInResult> signIn({
     required String email,
     required String password,

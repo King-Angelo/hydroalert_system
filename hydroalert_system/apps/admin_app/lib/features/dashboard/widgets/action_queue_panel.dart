@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/admin_theme.dart';
+import '../../../core/ui/app_feedback.dart';
+import '../../../core/validation/admin_input_limits.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../reports/data/report_workflow_repository.dart';
 
@@ -40,16 +42,16 @@ class _ActionQueuePanelState extends State<ActionQueuePanel> {
         reviewNotes: notes,
       );
       if (!mounted) return;
-      final action = decision == ReportReviewDecision.validated
-          ? 'validated'
-          : 'rejected';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Report ${report.reportId} $action.')),
-      );
+      final msg = decision == ReportReviewDecision.validated
+          ? context.l10n.reportReviewValidated(report.reportId)
+          : context.l10n.reportReviewRejected(report.reportId);
+      showAppSnackBar(context, msg);
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to review report: $error')),
+      showAppSnackBar(
+        context,
+        context.l10n.errorWithDetails(truncateErrorDetails(error)),
+        isError: true,
       );
     } finally {
       if (mounted) {
@@ -74,17 +76,18 @@ class _ActionQueuePanelState extends State<ActionQueuePanel> {
             controller: controller,
             minLines: 2,
             maxLines: 4,
+            maxLength: AdminInputLimits.reviewNotesMaxLength,
             decoration: InputDecoration(
-              labelText: 'Review notes',
+              labelText: l10n.reviewNotesLabel,
               hintText: isValidate
-                  ? 'Verified based on report details and evidence.'
-                  : 'Reason for rejecting this report.',
+                  ? l10n.reviewNotesHintValidate
+                  : l10n.reviewNotesHintReject,
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n.commonCancel),
             ),
             FilledButton(
               onPressed: () {
@@ -145,7 +148,7 @@ class _ActionQueuePanelState extends State<ActionQueuePanel> {
                   if (snapshot.hasError) {
                     return Center(
                       child: Text(
-                        'Unable to load reports.\n${snapshot.error}',
+                        '${l10n.actionQueueLoadError}\n${snapshot.error}',
                         textAlign: TextAlign.center,
                         style: Theme.of(context)
                             .textTheme
@@ -163,7 +166,7 @@ class _ActionQueuePanelState extends State<ActionQueuePanel> {
                   if (items.isEmpty) {
                     return Center(
                       child: Text(
-                        'No pending reports.',
+                        l10n.actionQueueNoPending,
                         style: Theme.of(context)
                             .textTheme
                             .bodySmall
@@ -278,10 +281,11 @@ class _ActionQueuePanelState extends State<ActionQueuePanel> {
   }
 
   String _formatAge(DateTime createdAt) {
+    final l10n = context.l10n;
     final diff = DateTime.now().difference(createdAt);
-    if (diff.inMinutes < 1) return 'just now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    return '${diff.inDays}d ago';
+    if (diff.inMinutes < 1) return l10n.timeAgoJustNow;
+    if (diff.inMinutes < 60) return l10n.timeAgoMinutes(diff.inMinutes);
+    if (diff.inHours < 24) return l10n.timeAgoHours(diff.inHours);
+    return l10n.timeAgoDays(diff.inDays);
   }
 }

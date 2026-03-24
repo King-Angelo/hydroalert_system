@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/admin_theme.dart';
+import '../../../core/ui/app_feedback.dart';
+import '../../../core/validation/admin_input_limits.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/report_workflow_repository.dart';
 
@@ -148,19 +150,19 @@ class _ReportsPageState extends State<ReportsPage> {
       );
 
       if (!mounted) return;
-      final actionText = decision == ReportReviewDecision.validated
-          ? context.l10n.validate.toLowerCase()
-          : context.l10n.reject.toLowerCase();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Report ${report.reportId} $actionText.')),
-      );
+      final msg = decision == ReportReviewDecision.validated
+          ? context.l10n.reportReviewValidated(report.reportId)
+          : context.l10n.reportReviewRejected(report.reportId);
+      showAppSnackBar(context, msg);
 
       _pages.remove(_pageIndex);
       await _loadPage(pageIndex: _pageIndex, force: true);
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to review report: $error')),
+      showAppSnackBar(
+        context,
+        context.l10n.errorWithDetails(truncateErrorDetails(error)),
+        isError: true,
       );
     } finally {
       if (mounted) {
@@ -195,11 +197,12 @@ class _ReportsPageState extends State<ReportsPage> {
                     controller: controller,
                     minLines: 2,
                     maxLines: 4,
+                    maxLength: AdminInputLimits.reviewNotesMaxLength,
                     decoration: InputDecoration(
-                      labelText: 'Review notes',
+                      labelText: l10n.reviewNotesLabel,
                       hintText: isValidate
-                          ? 'Optional validation remarks.'
-                          : 'Reason for rejecting this report.',
+                          ? l10n.reviewNotesHintValidate
+                          : l10n.reviewNotesHintReject,
                       errorText: validationError,
                     ),
                   ),
@@ -208,14 +211,14 @@ class _ReportsPageState extends State<ReportsPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(l10n.commonCancel),
                 ),
                 FilledButton(
                   onPressed: () {
                     final text = controller.text.trim();
                     if (!isValidate && text.isEmpty) {
                       setDialogState(() {
-                        validationError = 'Rejection reason is required.';
+                        validationError = l10n.validationRejectionReasonRequired;
                       });
                       return;
                     }
@@ -299,29 +302,30 @@ class _ReportsPageState extends State<ReportsPage> {
               }).toList(),
             ),
             const SizedBox(height: 10),
-            _buildTableHeader(context),
+            _buildTableHeader(context, l10n),
             const Divider(color: AdminColors.border, height: 1),
             Expanded(
               child: _buildTableBody(
                 context: context,
+                l10n: l10n,
                 items: items,
               ),
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                Text('Page ${_pageIndex + 1}'),
+                Text('${l10n.paginationPage} ${_pageIndex + 1}'),
                 const Spacer(),
                 OutlinedButton(
                   onPressed: _pageIndex > 0 && !_loading ? _goToPreviousPage : null,
-                  child: const Text('Previous'),
+                  child: Text(l10n.commonPrevious),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton(
                   onPressed: !_loading && (currentPage?.hasNextPage ?? false)
                       ? _goToNextPage
                       : null,
-                  child: const Text('Next'),
+                  child: Text(l10n.commonNext),
                 ),
               ],
             ),
@@ -331,17 +335,17 @@ class _ReportsPageState extends State<ReportsPage> {
     );
   }
 
-  Widget _buildTableHeader(BuildContext context) {
+  Widget _buildTableHeader(BuildContext context, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       color: AdminColors.surfaceAlt,
-      child: const Row(
+      child: Row(
         children: [
-          Expanded(flex: 3, child: Text('report_id')),
-          Expanded(flex: 3, child: Text('created_at')),
-          Expanded(flex: 2, child: Text('zone')),
-          Expanded(flex: 3, child: Text('resident_id')),
-          Expanded(flex: 2, child: Text('status')),
+          Expanded(flex: 3, child: Text(l10n.reportsColumnReportId)),
+          Expanded(flex: 3, child: Text(l10n.reportsColumnCreatedAt)),
+          Expanded(flex: 2, child: Text(l10n.reportsColumnZone)),
+          Expanded(flex: 3, child: Text(l10n.reportsColumnResidentId)),
+          Expanded(flex: 2, child: Text(l10n.reportsColumnStatus)),
         ],
       ),
     );
@@ -349,6 +353,7 @@ class _ReportsPageState extends State<ReportsPage> {
 
   Widget _buildTableBody({
     required BuildContext context,
+    required AppLocalizations l10n,
     required List<IncidentReportRecord> items,
   }) {
     if (_loading) {
@@ -358,7 +363,7 @@ class _ReportsPageState extends State<ReportsPage> {
     if (_error != null) {
       return Center(
         child: Text(
-          'Unable to load reports.\n$_error',
+          '${l10n.reportsUnableToLoad}\n$_error',
           textAlign: TextAlign.center,
           style: Theme.of(context)
               .textTheme
@@ -371,7 +376,7 @@ class _ReportsPageState extends State<ReportsPage> {
     if (items.isEmpty) {
       return Center(
         child: Text(
-          'No reports found for $_statusFilter.',
+          l10n.reportsNoneForFilter(_statusLabel(l10n, _statusFilter)),
           style: Theme.of(context)
               .textTheme
               .bodySmall
@@ -424,7 +429,7 @@ class _ReportsPageState extends State<ReportsPage> {
       return Card(
         child: Center(
           child: Text(
-            'Select a report to inspect details.',
+            l10n.reportsSelectOne,
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium
@@ -445,7 +450,7 @@ class _ReportsPageState extends State<ReportsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Report ${report.reportId}',
+                l10n.reportDetailTitle(report.reportId),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
@@ -456,21 +461,21 @@ class _ReportsPageState extends State<ReportsPage> {
               _kv('Coordinates', _formatCoordinates(report)),
               const SizedBox(height: 10),
               Text(
-                'Description',
+                l10n.reportsFieldDescription,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: 4),
               Text(report.description ?? '-'),
               const SizedBox(height: 12),
               Text(
-                'Photo Evidence',
+                l10n.reportsFieldPhoto,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: 6),
-              _buildPhotoPreview(report),
+              _buildPhotoPreview(context, l10n, report),
               const SizedBox(height: 12),
               Text(
-                'Reviewer History',
+                l10n.reportsFieldReviewer,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: 4),
@@ -484,7 +489,7 @@ class _ReportsPageState extends State<ReportsPage> {
               const SizedBox(height: 12),
               if (!isPending)
                 Text(
-                  'Decision already finalized. Reopen is blocked in v1.',
+                  l10n.reportsDecisionLocked,
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
@@ -522,14 +527,18 @@ class _ReportsPageState extends State<ReportsPage> {
     );
   }
 
-  Widget _buildPhotoPreview(IncidentReportRecord report) {
+  Widget _buildPhotoPreview(
+    BuildContext context,
+    AppLocalizations l10n,
+    IncidentReportRecord report,
+  ) {
     final url = report.photoUrl;
     if (url == null || url.isEmpty) {
       return Container(
         height: 180,
         color: AdminColors.surfaceAlt,
         alignment: Alignment.center,
-        child: const Text('No photo URL'),
+        child: Text(l10n.photoNoUrl),
       );
     }
 
@@ -548,7 +557,7 @@ class _ReportsPageState extends State<ReportsPage> {
                 return Container(
                   color: AdminColors.surfaceAlt,
                   alignment: Alignment.center,
-                  child: const Text('Unable to load photo'),
+                  child: Text(l10n.photoLoadFailed),
                 );
               },
             ),
@@ -567,6 +576,8 @@ class _ReportsPageState extends State<ReportsPage> {
 
   String _statusLabel(AppLocalizations l10n, String status) {
     switch (status) {
+      case 'All':
+        return l10n.reportsFilterAll;
       case 'Pending':
         return l10n.statusPending;
       case 'Validated':

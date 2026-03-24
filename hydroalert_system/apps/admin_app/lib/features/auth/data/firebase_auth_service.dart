@@ -16,6 +16,10 @@ class FirebaseAuthService implements AuthService {
   static const _usersCollection = 'Users';
 
   @override
+  Stream<void> get sessionTerminated =>
+      _auth.idTokenChanges().where((user) => user == null).map((_) {});
+
+  @override
   Future<AuthSignInResult> signIn({
     required String email,
     required String password,

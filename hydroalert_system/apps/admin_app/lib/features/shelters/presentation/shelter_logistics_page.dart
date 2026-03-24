@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/admin_theme.dart';
+import '../../../core/ui/app_feedback.dart';
+import '../../../l10n/app_localizations.dart';
 import '../data/shelter_logistics_repository.dart';
 
 class ShelterLogisticsPage extends StatefulWidget {
@@ -86,6 +88,35 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
     return (filtered.length / _pageSize).ceil();
   }
 
+  String _statusFilterLabel(AppLocalizations l10n, String value) {
+    switch (value) {
+      case 'All':
+        return l10n.shelterFilterAll;
+      case 'Open':
+        return l10n.shelterOpen;
+      case 'Closed':
+        return l10n.shelterClosed;
+      default:
+        return value;
+    }
+  }
+
+  String _occupancyFilterLabel(
+    AppLocalizations l10n,
+    ShelterOccupancyFilter f,
+  ) {
+    switch (f) {
+      case ShelterOccupancyFilter.all:
+        return l10n.shelterOccupancyFilterAll;
+      case ShelterOccupancyFilter.available:
+        return l10n.shelterOccupancyFilterAvailable;
+      case ShelterOccupancyFilter.nearCapacity:
+        return l10n.shelterOccupancyFilterNearCap;
+      case ShelterOccupancyFilter.full:
+        return l10n.shelterOccupancyFilterFull;
+    }
+  }
+
   List<ShelterRecord> _pageItems(List<ShelterRecord> filtered) {
     final totalPages = _totalPages(filtered);
     if (_pageIndex >= totalPages) {
@@ -124,13 +155,21 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
         adminId: widget.adminUserId,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Shelter ${shelter.shelterId} marked as $nextStatus.')),
+      final l10n = context.l10n;
+      final statusWord =
+          nextStatus == 'Open' ? l10n.shelterOpen : l10n.shelterClosed;
+      showAppSnackBar(
+        context,
+        l10n.shelterStatusUpdated(shelter.shelterId, statusWord),
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Status update failed: $error')),
+      showAppSnackBar(
+        context,
+        context.l10n.errorWithDetails(
+          '${context.l10n.shelterStatusUpdateFailed} ${truncateErrorDetails(error)}',
+        ),
+        isError: true,
       );
     } finally {
       if (mounted) {
@@ -140,9 +179,11 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
   }
 
   Future<void> _editCapacity(ShelterRecord shelter) async {
+    final l10n = context.l10n;
     final value = await _openNumberDialog(
-      title: 'Update Capacity',
-      label: 'capacity',
+      l10n: l10n,
+      title: l10n.shelterUpdateCapacityTitle,
+      label: l10n.shelterLabelCapacity,
       initialValue: shelter.capacity,
     );
     if (value == null) return;
@@ -155,13 +196,18 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
         adminId: widget.adminUserId,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Capacity updated for ${shelter.shelterId}.')),
+      showAppSnackBar(
+        context,
+        context.l10n.shelterCapacityUpdated(shelter.shelterId),
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Capacity update failed: $error')),
+      showAppSnackBar(
+        context,
+        context.l10n.errorWithDetails(
+          '${context.l10n.shelterCapacityUpdateFailed} ${truncateErrorDetails(error)}',
+        ),
+        isError: true,
       );
     } finally {
       if (mounted) {
@@ -171,9 +217,11 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
   }
 
   Future<void> _editOccupancy(ShelterRecord shelter) async {
+    final l10n = context.l10n;
     final value = await _openNumberDialog(
-      title: 'Update Occupancy',
-      label: 'current_occupancy',
+      l10n: l10n,
+      title: l10n.shelterUpdateOccupancyTitle,
+      label: l10n.shelterLabelOccupancy,
       initialValue: shelter.currentOccupancy,
     );
     if (value == null) return;
@@ -186,13 +234,18 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
         adminId: widget.adminUserId,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Occupancy updated for ${shelter.shelterId}.')),
+      showAppSnackBar(
+        context,
+        context.l10n.shelterOccupancyUpdated(shelter.shelterId),
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Occupancy update failed: $error')),
+      showAppSnackBar(
+        context,
+        context.l10n.errorWithDetails(
+          '${context.l10n.shelterOccupancyUpdateFailed} ${truncateErrorDetails(error)}',
+        ),
+        isError: true,
       );
     } finally {
       if (mounted) {
@@ -202,21 +255,20 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
   }
 
   Future<void> _softDelete(ShelterRecord shelter) async {
+    final l10n = context.l10n;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Soft Delete Shelter'),
-        content: Text(
-          'Set ${shelter.shelterId} as inactive and preserve historical links/logs?',
-        ),
+        title: Text(l10n.shelterSoftDeleteTitle),
+        content: Text(l10n.shelterSoftDeleteConfirm(shelter.shelterId)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Confirm'),
+            child: Text(l10n.commonConfirm),
           ),
         ],
       ),
@@ -230,13 +282,18 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
         adminId: widget.adminUserId,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Shelter ${shelter.shelterId} soft deleted.')),
+      showAppSnackBar(
+        context,
+        context.l10n.shelterSoftDeleted(shelter.shelterId),
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Soft delete failed: $error')),
+      showAppSnackBar(
+        context,
+        context.l10n.errorWithDetails(
+          '${context.l10n.shelterSoftDeleteFailed} ${truncateErrorDetails(error)}',
+        ),
+        isError: true,
       );
     } finally {
       if (mounted) {
@@ -246,6 +303,7 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
   }
 
   Future<int?> _openNumberDialog({
+    required AppLocalizations l10n,
     required String title,
     required String label,
     required int initialValue,
@@ -271,20 +329,20 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(l10n.commonCancel),
                 ),
                 FilledButton(
                   onPressed: () {
                     final value = int.tryParse(controller.text.trim());
                     if (value == null || value < 0) {
                       setDialogState(() {
-                        validationError = 'Enter a valid non-negative integer.';
+                        validationError = l10n.validationIntegerNonNegative;
                       });
                       return;
                     }
                     Navigator.of(context).pop(value);
                   },
-                  child: const Text('Save'),
+                  child: Text(l10n.commonSave),
                 ),
               ],
             );
@@ -302,11 +360,12 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
     return StreamBuilder<List<ShelterRecord>>(
       stream: widget.shelterLogisticsRepository.watchShelters(),
       builder: (context, snapshot) {
+        final l10n = context.l10n;
         if (snapshot.hasError) {
           return Card(
             child: Center(
               child: Text(
-                'Unable to load shelters.\n${snapshot.error}',
+                '${l10n.shelterLoadError}\n${snapshot.error}',
                 textAlign: TextAlign.center,
                 style: Theme.of(context)
                     .textTheme
@@ -330,8 +389,8 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
         return LayoutBuilder(
           builder: (context, constraints) {
             final narrow = constraints.maxWidth < 1260;
-            final listPane = _buildListPane(filtered, pageItems);
-            final detailPane = _buildDetailPane();
+            final listPane = _buildListPane(l10n, filtered, pageItems);
+            final detailPane = _buildDetailPane(l10n);
 
             if (narrow) {
               return Column(
@@ -356,7 +415,11 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
     );
   }
 
-  Widget _buildListPane(List<ShelterRecord> filtered, List<ShelterRecord> pageItems) {
+  Widget _buildListPane(
+    AppLocalizations l10n,
+    List<ShelterRecord> filtered,
+    List<ShelterRecord> pageItems,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -373,11 +436,13 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
                   child: DropdownButtonFormField<String>(
                     initialValue: _statusFilter,
                     isExpanded: true,
-                    decoration: const InputDecoration(labelText: 'Status'),
+                    decoration: InputDecoration(
+                      labelText: l10n.shelterFilterStatusLabel,
+                    ),
                     items: _statusFilters
                         .map((value) => DropdownMenuItem(
                               value: value,
-                              child: Text(value),
+                              child: Text(_statusFilterLabel(l10n, value)),
                             ))
                         .toList(),
                     onChanged: (value) {
@@ -394,11 +459,17 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
                   child: DropdownButtonFormField<String>(
                     initialValue: _zoneFilter,
                     isExpanded: true,
-                    decoration: const InputDecoration(labelText: 'Zone'),
+                    decoration: InputDecoration(
+                      labelText: l10n.shelterFilterZoneLabel,
+                    ),
                     items: _zoneFilters
                         .map((value) => DropdownMenuItem(
                               value: value,
-                              child: Text(value),
+                              child: Text(
+                                value == 'All'
+                                    ? l10n.shelterFilterAll
+                                    : value,
+                              ),
                             ))
                         .toList(),
                     onChanged: (value) {
@@ -415,23 +486,37 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
                   child: DropdownButtonFormField<ShelterOccupancyFilter>(
                     initialValue: _occupancyFilter,
                     isExpanded: true,
-                    decoration: const InputDecoration(labelText: 'Occupancy Level'),
-                    items: const [
+                    decoration: InputDecoration(
+                      labelText: l10n.shelterOccupancyLevelLabel,
+                    ),
+                    items: [
                       DropdownMenuItem(
                         value: ShelterOccupancyFilter.all,
-                        child: Text('All'),
+                        child: Text(_occupancyFilterLabel(
+                          l10n,
+                          ShelterOccupancyFilter.all,
+                        )),
                       ),
                       DropdownMenuItem(
                         value: ShelterOccupancyFilter.available,
-                        child: Text('Available (<80%)'),
+                        child: Text(_occupancyFilterLabel(
+                          l10n,
+                          ShelterOccupancyFilter.available,
+                        )),
                       ),
                       DropdownMenuItem(
                         value: ShelterOccupancyFilter.nearCapacity,
-                        child: Text('Near cap (80-99%)'),
+                        child: Text(_occupancyFilterLabel(
+                          l10n,
+                          ShelterOccupancyFilter.nearCapacity,
+                        )),
                       ),
                       DropdownMenuItem(
                         value: ShelterOccupancyFilter.full,
-                        child: Text('Full (100%)'),
+                        child: Text(_occupancyFilterLabel(
+                          l10n,
+                          ShelterOccupancyFilter.full,
+                        )),
                       ),
                     ],
                     onChanged: (value) {
@@ -451,9 +536,9 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
                 Expanded(
                   child: TextField(
                     controller: _searchController,
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      labelText: 'Search by shelter name or contact',
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.search),
+                      labelText: l10n.shelterSearchByNameOrContact,
                     ),
                     onSubmitted: (value) {
                       setState(() {
@@ -471,7 +556,7 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
                       _pageIndex = 0;
                     });
                   },
-                  child: const Text('Apply'),
+                  child: Text(l10n.commonApply),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton(
@@ -482,36 +567,42 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
                       _pageIndex = 0;
                     });
                   },
-                  child: const Text('Clear'),
+                  child: Text(l10n.commonClear),
                 ),
               ],
             ),
             const SizedBox(height: 10),
-            _buildTableHeader(),
+            _buildTableHeader(l10n),
             const Divider(color: AdminColors.border, height: 1),
-            Expanded(child: _buildTableBody(pageItems)),
+            Expanded(child: _buildTableBody(l10n, pageItems)),
             const SizedBox(height: 8),
             Row(
               children: [
-                Text('Page ${_pageIndex + 1} / ${_totalPages(filtered)}'),
+                Text(
+                  l10n.paginationPageOf(
+                    _pageIndex + 1,
+                    _totalPages(filtered),
+                  ),
+                ),
                 const SizedBox(width: 12),
                 Text(
-                  '${filtered.length} active shelters',
-                  style: const TextStyle(color: AdminColors.textMuted, fontSize: 12),
+                  l10n.shelterActiveCount(filtered.length),
+                  style:
+                      const TextStyle(color: AdminColors.textMuted, fontSize: 12),
                 ),
                 const Spacer(),
                 OutlinedButton(
                   onPressed: _pageIndex > 0
                       ? () => setState(() => _pageIndex -= 1)
                       : null,
-                  child: const Text('Previous'),
+                  child: Text(l10n.commonPrevious),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton(
                   onPressed: (_pageIndex + 1) < _totalPages(filtered)
                       ? () => setState(() => _pageIndex += 1)
                       : null,
-                  child: const Text('Next'),
+                  child: Text(l10n.commonNext),
                 ),
               ],
             ),
@@ -521,28 +612,28 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
     );
   }
 
-  Widget _buildTableHeader() {
+  Widget _buildTableHeader(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       color: AdminColors.surfaceAlt,
-      child: const Row(
+      child: Row(
         children: [
-          Expanded(flex: 2, child: Text('shelter_id')),
-          Expanded(flex: 3, child: Text('name')),
-          Expanded(flex: 2, child: Text('zone')),
-          Expanded(flex: 2, child: Text('status')),
-          Expanded(flex: 3, child: Text('occupancy')),
-          Expanded(flex: 2, child: Text('contact')),
+          Expanded(flex: 2, child: Text(l10n.shelterColumnShelterId)),
+          Expanded(flex: 3, child: Text(l10n.shelterColumnName)),
+          Expanded(flex: 2, child: Text(l10n.shelterColumnZone)),
+          Expanded(flex: 2, child: Text(l10n.shelterColumnStatus)),
+          Expanded(flex: 3, child: Text(l10n.shelterColumnOccupancy)),
+          Expanded(flex: 2, child: Text(l10n.shelterColumnContact)),
         ],
       ),
     );
   }
 
-  Widget _buildTableBody(List<ShelterRecord> items) {
+  Widget _buildTableBody(AppLocalizations l10n, List<ShelterRecord> items) {
     if (items.isEmpty) {
       return Center(
         child: Text(
-          'No shelters found for current filters.',
+          l10n.sheltersEmptyFiltered,
           style: Theme.of(context)
               .textTheme
               .bodySmall
@@ -571,7 +662,11 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
                   Expanded(
                     flex: 2,
                     child: Text(
-                      shelter.status,
+                      shelter.status == 'Open'
+                          ? l10n.shelterOpen
+                          : shelter.status == 'Closed'
+                              ? l10n.shelterClosed
+                              : shelter.status,
                       style: TextStyle(
                         color: shelter.status == 'Open'
                             ? AdminColors.primary
@@ -593,13 +688,13 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
     );
   }
 
-  Widget _buildDetailPane() {
+  Widget _buildDetailPane(AppLocalizations l10n) {
     final shelter = _selected;
     if (shelter == null) {
       return Card(
         child: Center(
           child: Text(
-            'Select a shelter to inspect details.',
+            l10n.sheltersSelectOne,
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium
@@ -631,11 +726,11 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
               _kv('updated_at', _formatDateTime(shelter.updatedAt)),
               const SizedBox(height: 12),
               Text(
-                'Location Preview',
+                l10n.locationPreview,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: 6),
-              _buildMapPreview(shelter, mapsKey),
+              _buildMapPreview(l10n, shelter, mapsKey),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
@@ -643,19 +738,23 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
                 children: [
                   FilledButton(
                     onPressed: isSubmitting ? null : () => _toggleStatus(shelter),
-                    child: Text(shelter.status == 'Open' ? 'Close' : 'Open'),
+                    child: Text(
+                      shelter.status == 'Open'
+                          ? l10n.shelterActionClose
+                          : l10n.shelterActionOpen,
+                    ),
                   ),
                   OutlinedButton(
                     onPressed: isSubmitting ? null : () => _editCapacity(shelter),
-                    child: const Text('Update Capacity'),
+                    child: Text(l10n.shelterActionUpdateCapacity),
                   ),
                   OutlinedButton(
                     onPressed: isSubmitting ? null : () => _editOccupancy(shelter),
-                    child: const Text('Update Occupancy'),
+                    child: Text(l10n.shelterActionUpdateOccupancy),
                   ),
                   OutlinedButton(
                     onPressed: isSubmitting ? null : () => _softDelete(shelter),
-                    child: const Text('Soft Delete'),
+                    child: Text(l10n.shelterActionSoftDelete),
                   ),
                   if (isSubmitting)
                     const SizedBox(
@@ -667,7 +766,7 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
               ),
               const SizedBox(height: 10),
               Text(
-                'All changes are logged to System_Logs as immutable audit records.',
+                l10n.shelterAuditNotice,
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall
@@ -680,15 +779,19 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
     );
   }
 
-  Widget _buildMapPreview(ShelterRecord shelter, String mapsKey) {
+  Widget _buildMapPreview(
+    AppLocalizations l10n,
+    ShelterRecord shelter,
+    String mapsKey,
+  ) {
     final lat = shelter.latitude;
     final lng = shelter.longitude;
     if (lat == null || lng == null) {
-      return _coordinatesCard('No coordinates available');
+      return _coordinatesCard(l10n.mapNoCoordinates);
     }
 
     if (mapsKey.isEmpty) {
-      return _coordinatesCard('Google Maps key missing.\nCoordinates: $lat, $lng');
+      return _coordinatesCard(l10n.mapKeyMissing('$lat', '$lng'));
     }
 
     final uri = Uri.https('maps.googleapis.com', '/maps/api/staticmap', {
@@ -708,7 +811,9 @@ class _ShelterLogisticsPageState extends State<ShelterLogisticsPage> {
           uri.toString(),
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            return _coordinatesCard('Map failed to load.\nCoordinates: $lat, $lng');
+            return _coordinatesCard(
+              l10n.shelterMapLoadFailed('$lat', '$lng'),
+            );
           },
         ),
       ),
