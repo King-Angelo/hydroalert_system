@@ -52,7 +52,7 @@ See **`docs/examples/backend-api.env.example`** for a full list.
 | Mechanism | Purpose |
 |-----------|---------|
 | `HYDRO_ENV` | `dev` / `staging` / `production` — label only (see `RuntimeEnvironment`); does **not** switch Firebase project by itself. |
-| `HYDROADMIN_API_BASE_URL` | Must be the **API base URL for that environment** (no trailing slash). |
+| `HYDROADMIN_API_BASE_URL` | Must be the **API base URL for that environment** (no trailing slash). See **`docs/phase_a4_admin_api_url.md`**. |
 | **`firebase_options.dart`** | **Dev:** barrel exporting **`firebase_options_dev.dart`**. **Staging/prod:** regenerate per lane (CI secret or gitignored file) — **`docs/FLUTTERFIRE_BUILD_LANES.md`**. |
 
 **Build examples**

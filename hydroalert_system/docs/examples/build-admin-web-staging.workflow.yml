@@ -26,6 +26,7 @@ jobs:
           test -n "$OPTIONS"
           printf '%s\n' "$OPTIONS" > lib/firebase_options.dart
       - run: flutter pub get
+      # Replace URL or use: --dart-define=HYDROADMIN_API_BASE_URL=${{ secrets.HYDROADMIN_API_BASE_URL_STAGING }}
       - run: |
           flutter build web \
             --dart-define=HYDRO_ENV=staging \
