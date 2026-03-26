@@ -61,3 +61,4 @@ For production, mirror the same pattern with your **prod API** URL (prefer a **s
 
 - **`docs/environment_separation_p0.md`** — multi-env overview  
 - **`apps/admin_app/lib/core/config/admin_api_config.dart`** — define key name and trimming  
+- **`docs/phase_a5_smoke_firestore.md`** — after API URL works, smoke-test Firestore screens (Phase A5)  

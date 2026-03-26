@@ -6,6 +6,8 @@ import '../../alerts/data/manual_override_api_client.dart';
 import '../../alerts/presentation/zone_manual_alert_card.dart';
 import '../../iot_devices/data/iot_devices_repository.dart';
 import '../../reports/data/report_workflow_repository.dart';
+import '../../system_logs/data/system_logs_repository.dart';
+import '../data/activity_log_mapper.dart';
 import '../data/mock_dashboard_data.dart';
 import '../widgets/action_queue_panel.dart';
 import '../widgets/mock_map_panel.dart';
@@ -17,12 +19,14 @@ class DashboardPage extends StatelessWidget {
     required this.reportWorkflowRepository,
     required this.adminUserId,
     required this.iotDevicesRepository,
+    required this.systemLogsRepository,
     this.manualOverrideApiClient,
   });
 
   final ReportWorkflowRepository reportWorkflowRepository;
   final String adminUserId;
   final IotDevicesRepository iotDevicesRepository;
+  final SystemLogsRepository systemLogsRepository;
   final ManualOverrideApiClient? manualOverrideApiClient;
 
   @override
@@ -39,7 +43,7 @@ class DashboardPage extends StatelessWidget {
                   iotDevicesRepository: iotDevicesRepository,
                 ),
                 const SizedBox(height: 16),
-                const _SituationPane(),
+                _SituationPane(systemLogsRepository: systemLogsRepository),
                 const SizedBox(height: 16),
                 ZoneManualAlertCard(apiClient: manualOverrideApiClient),
                 const SizedBox(height: 16),
@@ -67,7 +71,7 @@ class DashboardPage extends StatelessWidget {
                       iotDevicesRepository: iotDevicesRepository,
                     ),
                     const SizedBox(height: 16),
-                    const _SituationPane(),
+                    _SituationPane(systemLogsRepository: systemLogsRepository),
                     const SizedBox(height: 16),
                     ZoneManualAlertCard(apiClient: manualOverrideApiClient),
                   ],
@@ -90,7 +94,9 @@ class DashboardPage extends StatelessWidget {
 }
 
 class _SituationPane extends StatelessWidget {
-  const _SituationPane();
+  const _SituationPane({required this.systemLogsRepository});
+
+  final SystemLogsRepository systemLogsRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -125,33 +131,66 @@ class _SituationPane extends StatelessWidget {
               children: [
                 Text(l10n.activityFeed, style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 8),
-                ...mockActivityFeed.map((item) {
-                  Color dotColor = AdminColors.primary;
-                  if (item.severity == 'critical') dotColor = AdminColors.danger;
-                  if (item.severity == 'warning') dotColor = AdminColors.warning;
-
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: dotColor,
-                            shape: BoxShape.circle,
+                StreamBuilder<List<SystemLogRecord>>(
+                  stream: systemLogsRepository.watchRecentLogs(limit: 20),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Text(
+                        l10n.activityFeedLoadError('${snapshot.error}'),
+                        style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      );
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text('${item.message} — ${item.timeAgo}'),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
+                      );
+                    }
+                    final entries = activityEntriesFromSystemLogs(snapshot.data ?? []);
+                    if (entries.isEmpty) {
+                      return Text(
+                        l10n.activityFeedEmpty,
+                        style: const TextStyle(color: AdminColors.textMuted),
+                      );
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: entries.map((item) {
+                        var dotColor = AdminColors.primary;
+                        if (item.severity == 'critical') dotColor = AdminColors.danger;
+                        if (item.severity == 'warning') dotColor = AdminColors.warning;
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(top: 4),
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: dotColor,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text('${item.message} — ${item.timeAgo}'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
               ],
             ),
           ),

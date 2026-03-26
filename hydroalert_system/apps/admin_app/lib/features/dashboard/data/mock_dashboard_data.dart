@@ -46,29 +46,6 @@ const mockTelemetryMetrics = <TelemetryMetric>[
   TelemetryMetric(label: 'Rainfall', value: '76', unit: 'mm/h', status: 'Heavy'),
 ];
 
-const mockActivityFeed = <ActivityLogEntry>[
-  ActivityLogEntry(
-    message: 'Critical: Water level exceeded threshold at Station #12',
-    timeAgo: '2m ago',
-    severity: 'critical',
-  ),
-  ActivityLogEntry(
-    message: 'Manual sensor heartbeat check completed for Node-03',
-    timeAgo: '7m ago',
-    severity: 'normal',
-  ),
-  ActivityLogEntry(
-    message: 'Resident flood image submitted for Zone B',
-    timeAgo: '11m ago',
-    severity: 'warning',
-  ),
-  ActivityLogEntry(
-    message: 'FCM broadcast dry-run acknowledged by 82% devices',
-    timeAgo: '18m ago',
-    severity: 'normal',
-  ),
-];
-
 const mockActionQueue = <ActionQueueItem>[
   ActionQueueItem(
     reportId: 'RPT-0112',

@@ -124,6 +124,7 @@ class _AdminShellPageState extends State<AdminShellPage> {
           reportWorkflowRepository: widget.reportWorkflowRepository,
           adminUserId: widget.adminUserId,
           iotDevicesRepository: widget.iotDevicesRepository,
+          systemLogsRepository: widget.systemLogsRepository,
           manualOverrideApiClient: widget.manualOverrideApiClient,
         );
       case _NavSection.incidentVerification:

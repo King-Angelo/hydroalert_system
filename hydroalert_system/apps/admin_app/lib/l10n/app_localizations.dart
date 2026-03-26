@@ -67,6 +67,9 @@ class AppLocalizations {
   String get placeholderSuffix => _t('placeholderSuffix');
   String get situationPane => _t('situationPane');
   String get activityFeed => _t('activityFeed');
+  String get activityFeedEmpty => _t('activityFeedEmpty');
+  String activityFeedLoadError(String details) =>
+      '${_t('activityFeedLoadErrorPrefix')}$details';
   String get actionQueue => _t('actionQueue');
   String get actionQueuePlaceholder => _t('actionQueuePlaceholder');
   String get validate => _t('validate');
@@ -364,6 +367,8 @@ const _strings = <String, Map<String, String>>{
     'placeholderSuffix': 'placeholder',
     'situationPane': 'Situation Pane',
     'activityFeed': 'Activity Feed',
+    'activityFeedEmpty': 'No recent activity in System_Logs.',
+    'activityFeedLoadErrorPrefix': 'Could not load activity: ',
     'actionQueue': 'Action Queue',
     'actionQueuePlaceholder': 'Incident verification placeholder panel',
     'validate': 'Validate',
@@ -604,6 +609,8 @@ const _strings = <String, Map<String, String>>{
     'placeholderSuffix': 'placeholder',
     'situationPane': 'Situation Pane',
     'activityFeed': 'Activity Feed',
+    'activityFeedEmpty': 'Walang kamakailang aktibidad sa System_Logs.',
+    'activityFeedLoadErrorPrefix': 'Hindi ma-load ang aktibidad: ',
     'actionQueue': 'Action Queue',
     'actionQueuePlaceholder': 'Placeholder panel para sa beripikasyon ng insidente',
     'validate': 'I-validate',
