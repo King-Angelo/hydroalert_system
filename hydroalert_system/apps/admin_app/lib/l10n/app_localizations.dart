@@ -35,6 +35,11 @@ class AppLocalizations {
   String get rememberMe => _t('rememberMe');
   String get forgotPassword => _t('forgotPassword');
   String get signIn => _t('signIn');
+  String get signInWithGoogle => _t('signInWithGoogle');
+  String get loginDividerOr => _t('loginDividerOr');
+  String get authGoogleUnavailable =>
+      _t('authGoogleUnavailable');
+  String get authGoogleCancelled => _t('authGoogleCancelled');
   String get signOut => _t('signOut');
   String get emailRequired => _t('emailRequired');
   String get emailInvalid => _t('emailInvalid');
@@ -327,6 +332,11 @@ const _strings = <String, Map<String, String>>{
     'rememberMe': 'Remember Me',
     'forgotPassword': 'Forgot password?',
     'signIn': 'Sign In',
+    'signInWithGoogle': 'Continue with Google',
+    'loginDividerOr': 'or',
+    'authGoogleUnavailable':
+        'Google sign-in is not available in this build.',
+    'authGoogleCancelled': 'Google sign-in was cancelled.',
     'signOut': 'Sign out',
     'emailRequired': 'Email is required',
     'emailInvalid': 'Enter a valid email',
@@ -561,6 +571,11 @@ const _strings = <String, Map<String, String>>{
     'rememberMe': 'Tandaan Ako',
     'forgotPassword': 'Nakalimutan ang password?',
     'signIn': 'Mag-sign In',
+    'signInWithGoogle': 'Magpatuloy gamit ang Google',
+    'loginDividerOr': 'o',
+    'authGoogleUnavailable':
+        'Hindi available ang Google sign-in sa build na ito.',
+    'authGoogleCancelled': 'Kinansela ang Google sign-in.',
     'signOut': 'Mag-sign out',
     'emailRequired': 'Kailangan ang email',
     'emailInvalid': 'Maglagay ng wastong email',

@@ -62,6 +62,13 @@ Future<void> main() async {
     firebaseReady: firebaseReady,
   );
 
+  if (kDebugMode) {
+    debugPrint(
+      'HydroAlert admin: authService=${authService.runtimeType} '
+      '(FirebaseAuthService provides real ID tokens for the HTTP API).',
+    );
+  }
+
   ManualOverrideApiClient? manualOverrideClient;
   if (firebaseReady && AdminApiConfig.isConfigured) {
     manualOverrideClient = ManualOverrideApiClient(

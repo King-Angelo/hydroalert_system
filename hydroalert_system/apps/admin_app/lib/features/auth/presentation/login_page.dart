@@ -84,6 +84,28 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Future<void> _handleGoogleLogin() async {
+    final l10n = context.l10n;
+    if (_submitting) return;
+    setState(() => _submitting = true);
+
+    final result = await widget.authService.signInWithGoogle();
+
+    if (!mounted) return;
+    setState(() => _submitting = false);
+
+    if (result.ok) {
+      Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+      return;
+    }
+
+    showAppSnackBar(
+      context,
+      _errorMessage(l10n, result.errorCode),
+      isError: true,
+    );
+  }
+
   Future<void> _handleForgotPassword() async {
     final l10n = context.l10n;
     final email = _emailController.text.trim();
@@ -124,6 +146,12 @@ class _LoginPageState extends State<LoginPage> {
         return l10n.authNetworkFailed;
       case 'mock-invalid-input':
         return l10n.mockSignInFailed;
+      case 'auth-google-unavailable':
+      case 'auth-google-web-only':
+        return l10n.authGoogleUnavailable;
+      case 'popup-closed-by-user':
+      case 'cancelled-popup-request':
+        return l10n.authGoogleCancelled;
       default:
         return l10n.authSignInFailed;
     }
@@ -296,6 +324,38 @@ class _LoginPageState extends State<LoginPage> {
                                     )
                                   : Text(l10n.signIn),
                             ),
+                            if (widget.authService.supportsGoogleSignIn) ...[
+                              const SizedBox(height: 14),
+                              Row(
+                                children: [
+                                  const Expanded(child: Divider()),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(horizontal: 12),
+                                    child: Text(
+                                      l10n.loginDividerOr,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: AdminColors.textMuted,
+                                          ),
+                                    ),
+                                  ),
+                                  const Expanded(child: Divider()),
+                                ],
+                              ),
+                              const SizedBox(height: 14),
+                              OutlinedButton.icon(
+                                onPressed:
+                                    _submitting ? null : _handleGoogleLogin,
+                                icon: const Icon(
+                                  Icons.g_mobiledata_rounded,
+                                  size: 28,
+                                ),
+                                label: Text(l10n.signInWithGoogle),
+                              ),
+                            ],
                           ],
                         ),
                       ),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'auth_service.dart';
 
@@ -14,6 +15,35 @@ class FirebaseAuthService implements AuthService {
   final FirebaseFirestore _firestore;
 
   static const _usersCollection = 'Users';
+
+  @override
+  bool get supportsGoogleSignIn => kIsWeb;
+
+  @override
+  Future<AuthSignInResult> signInWithGoogle() async {
+    if (!kIsWeb) {
+      return const AuthSignInResult.failure(errorCode: 'auth-google-web-only');
+    }
+    try {
+      final provider = GoogleAuthProvider();
+      final credential = await _auth.signInWithPopup(provider);
+      final uid = credential.user?.uid;
+      if (uid == null) {
+        await _auth.signOut();
+        return const AuthSignInResult.failure(errorCode: 'auth-no-user');
+      }
+      final adminAllowed = await _isAdminAllowed(uid);
+      if (!adminAllowed) {
+        await _auth.signOut();
+        return const AuthSignInResult.failure(errorCode: 'auth-not-admin');
+      }
+      return AuthSignInResult.success(adminUserId: uid);
+    } on FirebaseAuthException catch (error) {
+      return AuthSignInResult.failure(errorCode: error.code);
+    } catch (_) {
+      return const AuthSignInResult.failure(errorCode: 'auth-unknown');
+    }
+  }
 
   @override
   Stream<void> get sessionTerminated =>

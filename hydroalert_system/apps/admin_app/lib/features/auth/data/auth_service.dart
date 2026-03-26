@@ -21,6 +21,11 @@ abstract class AuthService {
   /// while the admin shell may still be mounted. Mock implementation never emits.
   Stream<void> get sessionTerminated;
 
+  /// Google Sign-In (admin web only when using [FirebaseAuthService]).
+  bool get supportsGoogleSignIn;
+
+  Future<AuthSignInResult> signInWithGoogle();
+
   Future<AuthSignInResult> signIn({
     required String email,
     required String password,

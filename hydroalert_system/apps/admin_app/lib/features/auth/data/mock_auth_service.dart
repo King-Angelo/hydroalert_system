@@ -7,6 +7,14 @@ class MockAuthService implements AuthService {
   Stream<void> get sessionTerminated => const Stream.empty();
 
   @override
+  bool get supportsGoogleSignIn => false;
+
+  @override
+  Future<AuthSignInResult> signInWithGoogle() async {
+    return const AuthSignInResult.failure(errorCode: 'auth-google-unavailable');
+  }
+
+  @override
   Future<AuthSignInResult> signIn({
     required String email,
     required String password,
