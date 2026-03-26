@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1024271924462",
+    "project_id": "hydroalert-dev",
+    "storage_bucket": "hydroalert-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1024271924462:android:d072237051caec04c007ff",
+        "android_client_info": {
+          "package_name": "com.company.hydroalert_resident"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1024271924462-qcf6k50f92rnal5h9g0v6po025ffn237.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmbpGwfdLENxcq_RvsHWrLYt_7lGv5-58"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1024271924462-qcf6k50f92rnal5h9g0v6po025ffn237.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1024271924462-oag6rp6aptk5jg6435jc7jsc0nplmsr2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.residentApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

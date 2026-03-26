@@ -13,6 +13,8 @@ The admin app needs **`DefaultFirebaseOptions`** that match the **Firebase proje
 
 `main.dart` continues to import **`firebase_options.dart`** only.
 
+**Initialization:** The admin app calls **`Firebase.initializeApp`** with **`DefaultFirebaseOptions.currentPlatform`** on every platform. If the checked-in options do not include that platform (e.g. Windows/Linux), **`UnsupportedError`** is caught and the app runs with **mock** repositories—**web** (and **Android** once configured in `firebase_options_dev.dart`) use real Firebase.
+
 ---
 
 ## 2. Regenerate **dev** options

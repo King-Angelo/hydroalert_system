@@ -25,15 +25,20 @@ Future<void> main() async {
   }
   var firebaseReady = false;
   try {
-    if (kIsWeb) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-      await setupFirebaseObservability();
-      firebaseReady = true;
-    }
+    final options = DefaultFirebaseOptions.currentPlatform;
+    await Firebase.initializeApp(options: options);
+    await setupFirebaseObservability();
+    firebaseReady = true;
+  } on UnsupportedError catch (error, stackTrace) {
+    debugPrint(
+      'Firebase is not configured for this platform (${defaultTargetPlatform.name}). '
+      'Admin app is supported on web (Android when options are added). '
+      'Using mock repositories.',
+    );
+    debugPrint('$error');
+    debugPrint('$stackTrace');
   } catch (error, stackTrace) {
-    debugPrint('Firebase init failed; using mock report workflow repository.');
+    debugPrint('Firebase init failed; using mock repositories.');
     debugPrint('$error');
     debugPrint('$stackTrace');
   }

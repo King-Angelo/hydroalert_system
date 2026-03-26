@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "admin_app: Chrome + local API (localhost:8080)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/apps/admin_app",
+      "toolArgs": [
+        "-d",
+        "chrome",
+        "--dart-define=HYDRO_ENV=dev",
+        "--dart-define=HYDROADMIN_API_BASE_URL=http://localhost:8080"
+      ]
+    },
+    {
+      "name": "admin_app: Chrome (Firestore only, no HTTP API)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "cwd": "${workspaceFolder}/apps/admin_app",
+      "toolArgs": ["-d", "chrome", "--dart-define=HYDRO_ENV=dev"]
+    }
+  ]
+}

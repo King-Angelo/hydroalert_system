@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"android":{"default":{"projectId":"hydroalert-dev","appId":"1:1024271924462:android:d072237051caec04c007ff","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"hydroalert-dev","configurations":{"android":"1:1024271924462:android:d072237051caec04c007ff","web":"1:1024271924462:web:25e6d432b6e6fef9c007ff"}}}}}}

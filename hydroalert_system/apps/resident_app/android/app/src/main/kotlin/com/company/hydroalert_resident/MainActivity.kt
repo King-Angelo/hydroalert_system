@@ -1,4 +1,4 @@
-package com.example.resident_app
+package com.company.hydroalert_resident
 
 import io.flutter.embedding.android.FlutterActivity
 
