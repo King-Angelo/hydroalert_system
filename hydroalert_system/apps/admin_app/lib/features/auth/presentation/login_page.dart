@@ -207,10 +207,11 @@ class _LoginPageState extends State<LoginPage> {
                             Text(
                               l10n.loginTitle,
                               textAlign: TextAlign.center,
-                              style: GoogleFonts.orbitron(
+                              style: GoogleFonts.inter(
                                 textStyle:
                                     Theme.of(context).textTheme.titleLarge,
-                                letterSpacing: 0.8,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.2,
                               ),
                             ),
                             const SizedBox(height: 18),

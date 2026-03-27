@@ -8,6 +8,8 @@ class IotDeviceRow {
     this.lastSeenAt,
     this.waterLevelCm,
     this.firmwareVersion,
+    this.latitude,
+    this.longitude,
   });
 
   final String deviceId;
@@ -19,6 +21,13 @@ class IotDeviceRow {
   /// Latest snapshot: three channels in cm, or null if missing.
   final List<double>? waterLevelCm;
   final String? firmwareVersion;
+
+  /// From Firestore `location.{lat,lng}` when present.
+  final double? latitude;
+  final double? longitude;
+
+  bool get hasMapCoordinates =>
+      latitude != null && longitude != null;
 }
 
 abstract class IotDevicesRepository {

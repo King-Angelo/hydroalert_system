@@ -139,7 +139,7 @@ Water-level monitoring stations (ESP32). One document per physical device.
 | `device_id` | string | yes | Same as document ID |
 | `name` | string | no | Human label (e.g. bridge upstream) |
 | `zone` | string | no | Aligns with shelters / reports |
-| `location` | map | no | `{ lat?, lng? }` |
+| `location` | map | no | `{ lat?, lng? }` (admin dashboard situation map reads this for markers when `HYDROADMIN_GOOGLE_MAPS_API_KEY` is set) |
 | `sensor_count` | number | yes | `3` for P0 (three water-level channels) |
 | `firmware_version` | string | no | e.g. `0.1.0` |
 | `is_active` | boolean | yes | Admin can disable a unit |

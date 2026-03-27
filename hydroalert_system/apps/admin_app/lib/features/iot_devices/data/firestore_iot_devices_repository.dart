@@ -44,6 +44,14 @@ class FirestoreIotDevicesRepository implements IotDevicesRepository {
 
     final fw = (data['firmware_version'] as String?)?.trim();
 
+    double? lat;
+    double? lng;
+    final loc = data['location'];
+    if (loc is Map<String, dynamic>) {
+      lat = _toDouble(loc['lat'] ?? loc['latitude']);
+      lng = _toDouble(loc['lng'] ?? loc['longitude'] ?? loc['lon']);
+    }
+
     return IotDeviceRow(
       deviceId: id,
       name: name,
@@ -52,6 +60,14 @@ class FirestoreIotDevicesRepository implements IotDevicesRepository {
       lastSeenAt: lastSeen,
       waterLevelCm: levels,
       firmwareVersion: fw,
+      latitude: lat,
+      longitude: lng,
     );
+  }
+
+  static double? _toDouble(Object? raw) {
+    if (raw is num) return raw.toDouble();
+    if (raw is String) return double.tryParse(raw.trim());
+    return null;
   }
 }

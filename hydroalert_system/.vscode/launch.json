@@ -10,8 +10,10 @@
       "toolArgs": [
         "-d",
         "chrome",
+        "--web-port=8081",
         "--dart-define=HYDRO_ENV=dev",
-        "--dart-define=HYDROADMIN_API_BASE_URL=http://localhost:8080"
+        "--dart-define=HYDROADMIN_API_BASE_URL=http://localhost:8080",
+        "--dart-define=HYDROADMIN_GOOGLE_MAPS_API_KEY=AIzaSyAnK7Btq9NJQYjiWS0C0BkrfdYYjoPJZ-M"
       ]
     },
     {
@@ -20,7 +22,13 @@
       "request": "launch",
       "program": "lib/main.dart",
       "cwd": "${workspaceFolder}/apps/admin_app",
-      "toolArgs": ["-d", "chrome", "--dart-define=HYDRO_ENV=dev"]
+      "toolArgs": [
+        "-d",
+        "chrome",
+        "--web-port=8081",
+        "--dart-define=HYDRO_ENV=dev",
+        "--dart-define=HYDROADMIN_GOOGLE_MAPS_API_KEY=AIzaSyAnK7Btq9NJQYjiWS0C0BkrfdYYjoPJZ-M"
+      ]
     }
   ]
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/admin_theme.dart';
 import '../../../l10n/app_localizations.dart';
@@ -10,8 +11,8 @@ import '../../system_logs/data/system_logs_repository.dart';
 import '../data/activity_log_mapper.dart';
 import '../data/mock_dashboard_data.dart';
 import '../widgets/action_queue_panel.dart';
-import '../widgets/mock_map_panel.dart';
 import '../widgets/operations_health_panel.dart';
+import '../widgets/situation_map_panel.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({
@@ -43,7 +44,10 @@ class DashboardPage extends StatelessWidget {
                   iotDevicesRepository: iotDevicesRepository,
                 ),
                 const SizedBox(height: 16),
-                _SituationPane(systemLogsRepository: systemLogsRepository),
+                _SituationPane(
+                  systemLogsRepository: systemLogsRepository,
+                  iotDevicesRepository: iotDevicesRepository,
+                ),
                 const SizedBox(height: 16),
                 ZoneManualAlertCard(apiClient: manualOverrideApiClient),
                 const SizedBox(height: 16),
@@ -71,7 +75,10 @@ class DashboardPage extends StatelessWidget {
                       iotDevicesRepository: iotDevicesRepository,
                     ),
                     const SizedBox(height: 16),
-                    _SituationPane(systemLogsRepository: systemLogsRepository),
+                    _SituationPane(
+                  systemLogsRepository: systemLogsRepository,
+                  iotDevicesRepository: iotDevicesRepository,
+                ),
                     const SizedBox(height: 16),
                     ZoneManualAlertCard(apiClient: manualOverrideApiClient),
                   ],
@@ -94,9 +101,13 @@ class DashboardPage extends StatelessWidget {
 }
 
 class _SituationPane extends StatelessWidget {
-  const _SituationPane({required this.systemLogsRepository});
+  const _SituationPane({
+    required this.systemLogsRepository,
+    required this.iotDevicesRepository,
+  });
 
   final SystemLogsRepository systemLogsRepository;
+  final IotDevicesRepository iotDevicesRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -118,9 +129,11 @@ class _SituationPane extends StatelessWidget {
               .toList(),
         ),
         const SizedBox(height: 16),
-        const SizedBox(
+        SizedBox(
           height: 330,
-          child: MockMapPanel(assetPath: 'assets/images/mock_map.png'),
+          child: SituationMapPanel(
+            iotDevicesRepository: iotDevicesRepository,
+          ),
         ),
         const SizedBox(height: 16),
         Card(
@@ -245,8 +258,8 @@ class _MetricCard extends StatelessWidget {
                 color: statusColor,
                 boxShadow: [
                   BoxShadow(
-                    color: statusColor.withValues(alpha: 0.55),
-                    blurRadius: 10,
+                    color: statusColor.withValues(alpha: 0.45),
+                    blurRadius: 12,
                     spreadRadius: -2,
                   ),
                 ],
@@ -261,10 +274,11 @@ class _MetricCard extends StatelessWidget {
                   children: [
                     Text(
                       metric.label.toUpperCase(),
-                      style: const TextStyle(
-                        letterSpacing: 1.1,
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.2,
                         color: AdminColors.textMuted,
-                        fontSize: 12,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -273,24 +287,35 @@ class _MetricCard extends StatelessWidget {
                       children: [
                         Text(
                           metric.value,
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w700,
+                            height: 1.05,
+                            color: AdminColors.textPrimary,
+                          ),
                         ),
                         const SizedBox(width: 6),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 4),
-                          child: Text(metric.unit),
+                          child: Text(
+                            metric.unit,
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: AdminColors.textMuted,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
                       _localizedStatus(context),
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: statusColor,
                         fontWeight: FontWeight.w600,
-                        letterSpacing: 0.8,
+                        fontSize: 13,
+                        letterSpacing: 0.3,
                       ),
                     ),
                   ],

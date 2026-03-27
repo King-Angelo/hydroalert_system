@@ -75,6 +75,10 @@ class AppLocalizations {
   String get validate => _t('validate');
   String get reject => _t('reject');
   String get situationMapStaticMock => _t('situationMapStaticMock');
+  String get situationMapLive => _t('situationMapLive');
+  String get situationMapNoGeo => _t('situationMapNoGeo');
+  String situationMapLoadError(String details) =>
+      '${_t('situationMapLoadErrorPrefix')}$details';
   String get staticMockMapBadge => _t('staticMockMapBadge');
   String get addMockMapAsset => _t('addMockMapAsset');
   String get statusPending => _t('statusPending');
@@ -374,6 +378,10 @@ const _strings = <String, Map<String, String>>{
     'validate': 'Validate',
     'reject': 'Reject',
     'situationMapStaticMock': 'Situation Map (Static Mock)',
+    'situationMapLive': 'Situation Map',
+    'situationMapNoGeo':
+        'No devices with map coordinates. Set `location: { lat, lng }` on IoT_Devices (or turn off the Maps API key to use the static mock).',
+    'situationMapLoadErrorPrefix': 'Could not load map: ',
     'staticMockMapBadge': 'STATIC MOCK MAP',
     'addMockMapAsset': 'Add assets/images/mock_map.png',
     'statusPending': 'Pending',
@@ -616,6 +624,10 @@ const _strings = <String, Map<String, String>>{
     'validate': 'I-validate',
     'reject': 'I-reject',
     'situationMapStaticMock': 'Situation Map (Static Mock)',
+    'situationMapLive': 'Situation Map',
+    'situationMapNoGeo':
+        'Walang device na may map coordinates. Ilagay ang `location: { lat, lng }` sa IoT_Devices (o alisin ang Maps API key para sa static mock).',
+    'situationMapLoadErrorPrefix': 'Hindi ma-load ang mapa: ',
     'staticMockMapBadge': 'STATIC MOCK MAP',
     'addMockMapAsset': 'Idagdag ang assets/images/mock_map.png',
     'statusPending': 'Pending',

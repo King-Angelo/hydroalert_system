@@ -30,3 +30,4 @@ See `firmware/esp32-hydroalert/` (PlatformIO): anonymous sign-in, NVS refresh to
 
 - Admin SDK bypasses rules for full document management.
 - See [firestore_schema.md](firestore_schema.md) for full field list.
+- Optional **`location`** map (`lat` / `lng` or `latitude` / `longitude`) on `IoT_Devices` drives the **admin dashboard situation map** when Google Maps is configured (`HYDROADMIN_GOOGLE_MAPS_API_KEY`); see `apps/admin_app/README.md`.

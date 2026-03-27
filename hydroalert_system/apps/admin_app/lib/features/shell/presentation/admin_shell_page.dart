@@ -177,15 +177,15 @@ class _AdminShellPageState extends State<AdminShellPage> {
                   ),
                   border: Border(
                     right: BorderSide(
-                      color: AdminColors.primary.withValues(alpha: 0.4),
+                      color: AdminColors.border,
                       width: 1,
                     ),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: AdminColors.primary.withValues(alpha: 0.07),
-                      blurRadius: 24,
-                      offset: const Offset(6, 0),
+                      color: Colors.black.withValues(alpha: 0.25),
+                      blurRadius: 20,
+                      offset: const Offset(4, 0),
                     ),
                   ],
                 ),
@@ -206,30 +206,21 @@ class _AdminShellPageState extends State<AdminShellPage> {
                                   ),
                                 ],
                               )
-                            : ShaderMask(
-                                blendMode: BlendMode.srcIn,
-                                shaderCallback: (bounds) => LinearGradient(
-                                  colors: [
-                                    AdminColors.primary,
-                                    AdminColors.accent,
-                                  ],
-                                ).createShader(bounds),
-                                child: Text(
-                                  l10n.appWordmark,
-                                  style: GoogleFonts.orbitron(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 2.8,
-                                    color: Colors.white,
-                                  ),
+                            : Text(
+                                l10n.appWordmark,
+                                style: GoogleFonts.inter(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: -0.3,
+                                  color: AdminColors.primary,
                                 ),
                               ),
                       ),
                     ),
-                    Divider(
+                    const Divider(
                       height: 1,
                       thickness: 1,
-                      color: AdminColors.primary.withValues(alpha: 0.22),
+                      color: AdminColors.border,
                     ),
                     Expanded(
                       child: ListView.builder(
@@ -270,17 +261,17 @@ class _AdminShellPageState extends State<AdminShellPage> {
                       height: 56,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
-                        color: AdminColors.background.withValues(alpha: 0.92),
-                        border: Border(
+                        color: AdminColors.background.withValues(alpha: 0.96),
+                        border: const Border(
                           bottom: BorderSide(
-                            color: AdminColors.primary.withValues(alpha: 0.28),
+                            color: AdminColors.border,
                           ),
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AdminColors.accent.withValues(alpha: 0.06),
-                            blurRadius: 20,
-                            offset: const Offset(0, 3),
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 12,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
