@@ -1,17 +1,3 @@
-class TelemetryMetric {
-  const TelemetryMetric({
-    required this.label,
-    required this.value,
-    required this.unit,
-    required this.status,
-  });
-
-  final String label;
-  final String value;
-  final String unit;
-  final String status;
-}
-
 class ActivityLogEntry {
   const ActivityLogEntry({
     required this.message,
@@ -39,12 +25,6 @@ class ActionQueueItem {
   final String status;
   final String timeAgo;
 }
-
-const mockTelemetryMetrics = <TelemetryMetric>[
-  TelemetryMetric(label: 'Water Level', value: '2.34', unit: 'm', status: 'Critical'),
-  TelemetryMetric(label: 'Flow Rate', value: '18.2', unit: 'm3/s', status: 'Elevated'),
-  TelemetryMetric(label: 'Rainfall', value: '76', unit: 'mm/h', status: 'Heavy'),
-];
 
 const mockActionQueue = <ActionQueueItem>[
   ActionQueueItem(
