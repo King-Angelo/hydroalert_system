@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import '../../../core/config/admin_api_config.dart';
 import '../../../core/theme/admin_theme.dart';
 import '../../../l10n/app_localizations.dart';
+import '../telemetry/iot_telemetry.dart';
 import '../../iot_devices/data/iot_devices_repository.dart';
 
 /// P1: API reachability + **sensor health** from `IoT_Devices.last_seen_at`.
@@ -23,7 +24,7 @@ class OperationsHealthPanel extends StatefulWidget {
 }
 
 class _OperationsHealthPanelState extends State<OperationsHealthPanel> {
-  static const _staleAfter = Duration(minutes: 10);
+  static final _staleAfter = kTelemetryStaleAfter;
   static const _pingInterval = Duration(seconds: 30);
 
   Timer? _timer;

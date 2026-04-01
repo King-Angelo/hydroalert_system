@@ -66,6 +66,26 @@ class AppLocalizations {
   String get iotDevicesWaterCm => _t('iotDevicesWaterCm');
   String get placeholderSuffix => _t('placeholderSuffix');
   String get situationPane => _t('situationPane');
+  String telemetryStationTitle(String stationNumber, String name) =>
+      _t('telemetryStationTitle')
+          .replaceAll('{n}', stationNumber)
+          .replaceAll('{name}', name);
+  String get telemetryEmpty => _t('telemetryEmpty');
+  String telemetryLoadError(String details) =>
+      '${_t('telemetryLoadErrorPrefix')}$details';
+  String get telemetryNoReading => _t('telemetryNoReading');
+  String get telemetryMetersUnit => _t('telemetryMetersUnit');
+  String get telemetryWaterLevelLabel => _t('telemetryWaterLevelLabel');
+  String get telemetryBadgeOffline => _t('telemetryBadgeOffline');
+  String get telemetryBadgeInactive => _t('telemetryBadgeInactive');
+  String get telemetrySeverityNormal => _t('telemetrySeverityNormal');
+  String get telemetrySeverityAdvisory => _t('telemetrySeverityAdvisory');
+  String get telemetrySeverityAlert => _t('telemetrySeverityAlert');
+  String get telemetrySeverityCritical => _t('telemetrySeverityCritical');
+  String get telemetryBarAdvisory => _t('telemetryBarAdvisory');
+  String get telemetryBarAlert => _t('telemetryBarAlert');
+  String get telemetryBarCritical => _t('telemetryBarCritical');
+  String get telemetryOfflineHint => _t('telemetryOfflineHint');
   String get activityFeed => _t('activityFeed');
   String get activityFeedEmpty => _t('activityFeedEmpty');
   String activityFeedLoadError(String details) =>
@@ -370,6 +390,23 @@ const _strings = <String, Map<String, String>>{
     'iotDevicesWaterCm': 'Water (cm)\nch0 / ch1 / ch2',
     'placeholderSuffix': 'placeholder',
     'situationPane': 'Situation Pane',
+    'telemetryStationTitle': 'Station #{n} · {name}',
+    'telemetryEmpty':
+        'No IoT stations in Firestore yet. Sensor telemetry will appear here.',
+    'telemetryLoadErrorPrefix': 'Could not load telemetry: ',
+    'telemetryNoReading': 'No reading yet',
+    'telemetryMetersUnit': 'meters',
+    'telemetryWaterLevelLabel': 'WATER LEVEL',
+    'telemetryBadgeOffline': 'OFFLINE',
+    'telemetryBadgeInactive': 'INACTIVE',
+    'telemetrySeverityNormal': 'Normal',
+    'telemetrySeverityAdvisory': 'Advisory',
+    'telemetrySeverityAlert': 'Alert',
+    'telemetrySeverityCritical': 'Critical',
+    'telemetryBarAdvisory': 'Advisory (3.5 m)',
+    'telemetryBarAlert': 'Alert (4.5 m)',
+    'telemetryBarCritical': 'Critical (6.0 m)',
+    'telemetryOfflineHint': 'No update in the last 10 minutes.',
     'activityFeed': 'Activity Feed',
     'activityFeedEmpty': 'No recent activity in System_Logs.',
     'activityFeedLoadErrorPrefix': 'Could not load activity: ',
@@ -616,6 +653,23 @@ const _strings = <String, Map<String, String>>{
     'iotDevicesWaterCm': 'Tubig (cm)\nch0 / ch1 / ch2',
     'placeholderSuffix': 'placeholder',
     'situationPane': 'Situation Pane',
+    'telemetryStationTitle': 'Himpilan #{n} · {name}',
+    'telemetryEmpty':
+        'Walang IoT station sa Firestore. Lalabas dito ang telemetry ng sensor.',
+    'telemetryLoadErrorPrefix': 'Hindi ma-load ang telemetry: ',
+    'telemetryNoReading': 'Walang reading pa',
+    'telemetryMetersUnit': 'metro',
+    'telemetryWaterLevelLabel': 'LEVEL NG TUBIG',
+    'telemetryBadgeOffline': 'OFFLINE',
+    'telemetryBadgeInactive': 'HINDI AKTIBO',
+    'telemetrySeverityNormal': 'Normal',
+    'telemetrySeverityAdvisory': 'Advisory',
+    'telemetrySeverityAlert': 'Alert',
+    'telemetrySeverityCritical': 'Critical',
+    'telemetryBarAdvisory': 'Advisory (3.5 m)',
+    'telemetryBarAlert': 'Alert (4.5 m)',
+    'telemetryBarCritical': 'Critical (6.0 m)',
+    'telemetryOfflineHint': 'Walang update sa nakalipas na 10 minuto.',
     'activityFeed': 'Activity Feed',
     'activityFeedEmpty': 'Walang kamakailang aktibidad sa System_Logs.',
     'activityFeedLoadErrorPrefix': 'Hindi ma-load ang aktibidad: ',
