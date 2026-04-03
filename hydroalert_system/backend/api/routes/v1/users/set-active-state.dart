@@ -33,12 +33,27 @@ Future<Response> _onPost(RequestContext context) async {
       return V1FirestoreWrites.notFound('User not found.');
     }
 
-    final beforeActive = snap.data()?['is_active'] == true;
+    final role = snap.data()?['user_type']?.toString().trim().toLowerCase();
+    if (role == 'admin') {
+      return V1FirestoreWrites.conflict(
+        'Admin accounts cannot be modified from this endpoint.',
+      );
+    }
 
-    await userRef.update({
+    final beforeActive = snap.data()?['is_active'] == true;
+    final now = V1FirestoreWrites.tsNow();
+
+    // Match admin_app Firestore SDK: deactivate sets deleted_at; activate clears it.
+    final patch = <Object, Object?>{
       'is_active': isActive,
-      'updated_at': V1FirestoreWrites.tsNow(),
-    });
+      'updated_at': now,
+    };
+    if (!isActive) {
+      patch['deleted_at'] = now;
+    } else {
+      patch['deleted_at'] = FieldValue.delete;
+    }
+    await userRef.update(patch);
 
     final logRef = firestore.collection(V1FirestoreWrites.systemLogs).doc();
     await logRef.set({

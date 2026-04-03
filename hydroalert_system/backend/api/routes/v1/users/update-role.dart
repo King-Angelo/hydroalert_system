@@ -36,6 +36,12 @@ Future<Response> _onPost(RequestContext context) async {
     }
 
     final beforeType = snap.data()?['user_type']?.toString();
+    final beforeNorm = beforeType?.trim().toLowerCase();
+    if (beforeNorm == 'admin') {
+      return V1FirestoreWrites.conflict(
+        'Admin accounts cannot be modified from this endpoint.',
+      );
+    }
 
     await userRef.update({
       'user_type': nextRole,

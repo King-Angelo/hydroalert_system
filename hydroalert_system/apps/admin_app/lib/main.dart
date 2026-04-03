@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
 import 'app.dart';
+import 'core/api/admin_authenticated_http_client.dart';
 import 'core/config/admin_api_config.dart';
 import 'core/config/runtime_environment.dart';
 import 'core/observability/firebase_observability.dart';
@@ -43,20 +44,33 @@ Future<void> main() async {
     debugPrint('$stackTrace');
   }
 
+  final authService = AuthServiceFactory.create(
+    firebaseReady: firebaseReady,
+  );
+
+  AdminAuthenticatedHttpClient? adminApiHttp;
+  if (firebaseReady && AdminApiConfig.isConfigured) {
+    adminApiHttp = AdminAuthenticatedHttpClient(
+      baseUrl: AdminApiConfig.baseUrl,
+      getIdToken: authService.getIdToken,
+      onUnauthorized: authService.signOut,
+    );
+  }
+
   final reportWorkflowRepository = ReportWorkflowRepositoryFactory.create(
     firebaseReady: firebaseReady,
+    privilegedApi: adminApiHttp,
   );
   final userManagementRepository = UserManagementRepositoryFactory.create(
     firebaseReady: firebaseReady,
+    privilegedApi: adminApiHttp,
   );
   final systemLogsRepository = SystemLogsRepositoryFactory.create(
     firebaseReady: firebaseReady,
   );
   final shelterLogisticsRepository = ShelterLogisticsRepositoryFactory.create(
     firebaseReady: firebaseReady,
-  );
-  final authService = AuthServiceFactory.create(
-    firebaseReady: firebaseReady,
+    privilegedApi: adminApiHttp,
   );
   final iotDevicesRepository = IotDevicesRepositoryFactory.create(
     firebaseReady: firebaseReady,
@@ -69,14 +83,8 @@ Future<void> main() async {
     );
   }
 
-  ManualOverrideApiClient? manualOverrideClient;
-  if (firebaseReady && AdminApiConfig.isConfigured) {
-    manualOverrideClient = ManualOverrideApiClient(
-      baseUrl: AdminApiConfig.baseUrl,
-      getIdToken: authService.getIdToken,
-      onUnauthorized: authService.signOut,
-    );
-  }
+  final ManualOverrideApiClient? manualOverrideClient =
+      adminApiHttp != null ? ManualOverrideApiClient.withSharedHttp(adminApiHttp) : null;
 
   runApp(
     AdminApp(

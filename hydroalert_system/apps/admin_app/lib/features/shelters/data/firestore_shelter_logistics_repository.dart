@@ -1,12 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../core/api/admin_authenticated_http_client.dart';
 import 'shelter_logistics_repository.dart';
 
 class FirestoreShelterLogisticsRepository implements ShelterLogisticsRepository {
-  FirestoreShelterLogisticsRepository({required FirebaseFirestore firestore})
-    : _firestore = firestore;
+  FirestoreShelterLogisticsRepository({
+    required FirebaseFirestore firestore,
+    AdminAuthenticatedHttpClient? privilegedApi,
+  }) : _firestore = firestore,
+       _privilegedApi = privilegedApi;
 
   final FirebaseFirestore _firestore;
+
+  final AdminAuthenticatedHttpClient? _privilegedApi;
 
   static const _sheltersCollection = 'Shelters';
   static const _logsCollection = 'System_Logs';
@@ -34,6 +40,15 @@ class FirestoreShelterLogisticsRepository implements ShelterLogisticsRepository 
   }) async {
     if (nextStatus != 'Open' && nextStatus != 'Closed') {
       throw ArgumentError('Status must be Open or Closed.');
+    }
+
+    final api = _privilegedApi;
+    if (api != null) {
+      await api.postJson('/v1/shelters/update-status', {
+        'shelterId': shelterId,
+        'nextStatus': nextStatus,
+      });
+      return;
     }
 
     final shelterRef = _firestore.collection(_sheltersCollection).doc(shelterId);
@@ -80,6 +95,15 @@ class FirestoreShelterLogisticsRepository implements ShelterLogisticsRepository 
   }) async {
     if (nextCapacity < 0) {
       throw ArgumentError('Capacity must be non-negative.');
+    }
+
+    final api = _privilegedApi;
+    if (api != null) {
+      await api.postJson('/v1/shelters/update-capacity', {
+        'shelterId': shelterId,
+        'nextCapacity': nextCapacity,
+      });
+      return;
     }
 
     final shelterRef = _firestore.collection(_sheltersCollection).doc(shelterId);
@@ -133,6 +157,15 @@ class FirestoreShelterLogisticsRepository implements ShelterLogisticsRepository 
       throw ArgumentError('Occupancy must be non-negative.');
     }
 
+    final api = _privilegedApi;
+    if (api != null) {
+      await api.postJson('/v1/shelters/update-occupancy', {
+        'shelterId': shelterId,
+        'nextOccupancy': nextOccupancy,
+      });
+      return;
+    }
+
     final shelterRef = _firestore.collection(_sheltersCollection).doc(shelterId);
     await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(shelterRef);
@@ -179,6 +212,14 @@ class FirestoreShelterLogisticsRepository implements ShelterLogisticsRepository 
     required String shelterId,
     required String adminId,
   }) async {
+    final api = _privilegedApi;
+    if (api != null) {
+      await api.postJson('/v1/shelters/soft-delete', {
+        'shelterId': shelterId,
+      });
+      return;
+    }
+
     final shelterRef = _firestore.collection(_sheltersCollection).doc(shelterId);
     await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(shelterRef);

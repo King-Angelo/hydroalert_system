@@ -3,7 +3,7 @@
 ## Environment (dev / staging / production)
 
 - **`HYDRO_ENV`** — compile-time label: `--dart-define=HYDRO_ENV=dev|staging|production` (see `lib/core/config/runtime_environment.dart`). Shown in debug logs on startup.
-- **`HYDROADMIN_API_BASE_URL`** — backend API base URL for manual override and related calls (no trailing slash).
+- **`HYDROADMIN_API_BASE_URL`** — Dart Frog API base URL (no trailing slash). When set with Firebase ready, privileged writes use **`/v1/reports/review`**, **`/v1/users/*`**, **`/v1/shelters/*`**, **`/v1/alerts/manual-override`**; otherwise the app falls back to direct Firestore writes for those actions. See **[`docs/admin_firestore_api_alignment.md`](../../docs/admin_firestore_api_alignment.md)**.
 - **`HYDROADMIN_GOOGLE_MAPS_API_KEY`** — optional; when set (and the platform supports `google_maps_flutter`), the dashboard **Situation Map** uses Google Maps with markers from **`IoT_Devices.location`** (`lat` / `lng` or `latitude` / `longitude`). When unset, the static PNG mock is used (no key required).
   - **Web:** add the Maps JavaScript API script to **`web/index.html`** with the same key (see comment in that file).
   - **Android:** set **`GOOGLE_MAPS_API_KEY`** in **`android/local.properties`** (passed into the manifest as `com.google.android.geo.API_KEY`).

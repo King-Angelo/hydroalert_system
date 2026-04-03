@@ -3,6 +3,7 @@ import 'package:dart_firebase_admin_plus/firestore.dart';
 
 import 'package:hydroalert_backend_api/src/request_helpers.dart';
 import 'package:hydroalert_backend_api/src/v1_firestore_writes.dart';
+import 'package:hydroalert_backend_api/src/v1_shelter_document.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   return switch (context.request.method) {
@@ -28,11 +29,27 @@ Future<Response> _onPost(RequestContext context) async {
       return V1FirestoreWrites.notFound('Shelter not found.');
     }
 
+    final data = snap.data()!;
+    if (!v1ShelterIsActive(data)) {
+      return V1FirestoreWrites.ok({
+        'status': 'ok',
+        'operation': 'shelters.softDelete',
+        'shelterId': shelterId,
+        'message': 'Already inactive.',
+      });
+    }
+
     final now = V1FirestoreWrites.tsNow();
+    // Match admin_app: close + root/nested flags and timestamps.
     await ref.update({
       'is_active': false,
+      'status': 'Closed',
       'deleted_at': now,
       'updated_at': now,
+      'shelter_details.is_active': false,
+      'shelter_details.status': 'Closed',
+      'shelter_details.deleted_at': now,
+      'shelter_details.updated_at': now,
     });
 
     final logRef = firestore.collection(V1FirestoreWrites.systemLogs).doc();
