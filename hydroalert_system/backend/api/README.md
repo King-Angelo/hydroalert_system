@@ -71,6 +71,14 @@ Load / soak probe (API must be running or use staging URL):
 dart run tool/qa_load_probe.dart
 ```
 
+**V1 admin route smoke** (health + `/v1/reports|users|shelters` 401 checks; optional Bearer probes):
+
+```bash
+dart run tool/v1_admin_route_smoke.dart
+```
+
+See **[docs/admin_api_v1_smoke.md](../../docs/admin_api_v1_smoke.md)**.
+
 **QA / drills:** [docs/qa_reliability_p1.md](../../docs/qa_reliability_p1.md)
 
 ## Deploy to Render

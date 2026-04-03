@@ -69,5 +69,5 @@ Identities: **`reportId`**, **`targetUserId`**, **`shelterId`** = Firestore docu
 1. **Phase 0** — Inventory (this doc).
 2. **Phase 1** — Shared **`AdminAuthenticatedHttpClient`**.
 3. **Phase 2** — Reports + users + shelters via API when URL configured (**done**); backend drift rows addressed.
-4. **Phase 3** — Env/CORS/release gates per [RELEASE_GATE_CHECKLIST.md](RELEASE_GATE_CHECKLIST.md).
+4. **Phase 3** — Env/CORS/release gates per [RELEASE_GATE_CHECKLIST.md](RELEASE_GATE_CHECKLIST.md). **Automated v1 smoke:** [admin_api_v1_smoke.md](admin_api_v1_smoke.md) (`backend/api/tool/v1_admin_route_smoke.dart`).
 5. **Phase 4** (optional) — Tighten Firestore rules; client writes only for reads.

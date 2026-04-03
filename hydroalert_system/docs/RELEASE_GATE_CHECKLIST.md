@@ -19,6 +19,7 @@ Use this when moving a change **toward staging** or **from staging to production
 ## B. After deploy to **staging**
 
 - [ ] **API health** — `GET /health` on staging base URL returns OK.
+- [ ] **V1 smoke (optional)** — from `backend/api`: `SMOKE_API_BASE=<staging API>` `dart run tool/v1_admin_route_smoke.dart` (tier 1); add `SMOKE_FIREBASE_ID_TOKEN` for tier 2 — see **[docs/admin_api_v1_smoke.md](admin_api_v1_smoke.md)**.
 - [ ] **CORS** — `CORS_ALLOW_ORIGIN` matches **staging** admin origin; manual-override smoke test from staging admin (if used).
 - [ ] **Firebase project** — staging admin build uses **staging** `firebase_options` / project; API `FIREBASE_PROJECT_ID` is **staging**.
 - [ ] **FCM** — use `FCM_DRY_RUN=true` on staging first if you want validation-only.

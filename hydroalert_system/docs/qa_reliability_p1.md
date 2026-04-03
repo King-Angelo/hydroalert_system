@@ -12,6 +12,7 @@ HydroAlert is **safety-adjacent**: barangay staff and responders depend on **tim
 | **Service / API** | Full Dart Frog routes need a running server + Firebase; not in default CI | Staging or local `dart_frog dev` |
 | **E2E (sensor → admin → alert)** | Physical or emulated device → Firestore → (future Cloud Function) → FCM → device | **Staging + checklist** (below) |
 | **Load** | Concurrent `GET /health` (or `/health/detailed`) | `backend/api/tool/qa_load_probe.dart` |
+| **V1 smoke (staging / local)** | Health + privileged **`POST /v1/...`** return **401** without token; optional **404** probes with admin Bearer | `backend/api/tool/v1_admin_route_smoke.dart` — [admin_api_v1_smoke.md](admin_api_v1_smoke.md) |
 | **Network failure** | `ClientException`, HTTP errors on admin API client | `apps/admin_app/test/manual_override_api_client_test.dart` |
 
 ---
@@ -42,6 +43,15 @@ dart run tool/qa_load_probe.dart
 ```
 
 Optional env vars: `QA_API_BASE`, `QA_LOAD_PATH`, `QA_LOAD_CONCURRENCY`, `QA_LOAD_ROUNDS` (see script header).
+
+**V1 admin route smoke** (API must be reachable; optional admin ID token):
+
+```bash
+cd backend/api
+SMOKE_API_BASE=https://your-api.example.com dart run tool/v1_admin_route_smoke.dart
+```
+
+See [admin_api_v1_smoke.md](admin_api_v1_smoke.md) for `SMOKE_FIREBASE_ID_TOKEN` (tier 2).
 
 ---
 
