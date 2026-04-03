@@ -1,12 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../core/api/admin_authenticated_http_client.dart';
 import 'report_workflow_repository.dart';
 
 class FirestoreReportWorkflowRepository implements ReportWorkflowRepository {
-  FirestoreReportWorkflowRepository({required FirebaseFirestore firestore})
-    : _firestore = firestore;
+  FirestoreReportWorkflowRepository({
+    required FirebaseFirestore firestore,
+    AdminAuthenticatedHttpClient? privilegedApi,
+  }) : _firestore = firestore,
+       _privilegedApi = privilegedApi;
 
   final FirebaseFirestore _firestore;
+
+  /// When non-null (API base URL configured), [reviewReport] uses [POST /v1/reports/review].
+  final AdminAuthenticatedHttpClient? _privilegedApi;
 
   static const _reportsCollection = 'Incident_Reports';
   static const _logsCollection = 'System_Logs';
@@ -69,6 +76,18 @@ class FirestoreReportWorkflowRepository implements ReportWorkflowRepository {
     required String adminId,
     required String reviewNotes,
   }) async {
+    final api = _privilegedApi;
+    if (api != null) {
+      final decisionStr =
+          decision == ReportReviewDecision.validated ? 'validated' : 'rejected';
+      await api.postJson('/v1/reports/review', {
+        'reportId': reportId,
+        'decision': decisionStr,
+        'reviewNotes': reviewNotes.trim(),
+      });
+      return;
+    }
+
     final reportRef = _firestore.collection(_reportsCollection).doc(reportId);
     final logRef = _firestore.collection(_logsCollection).doc();
 

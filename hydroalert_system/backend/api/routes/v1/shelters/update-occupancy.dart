@@ -3,6 +3,7 @@ import 'package:dart_firebase_admin_plus/firestore.dart';
 
 import 'package:hydroalert_backend_api/src/request_helpers.dart';
 import 'package:hydroalert_backend_api/src/v1_firestore_writes.dart';
+import 'package:hydroalert_backend_api/src/v1_shelter_document.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   return switch (context.request.method) {
@@ -32,21 +33,34 @@ Future<Response> _onPost(RequestContext context) async {
       return V1FirestoreWrites.notFound('Shelter not found.');
     }
     final data = snap.data()!;
-    if (data['is_active'] == false) {
+    if (!v1ShelterIsActive(data)) {
       return V1FirestoreWrites.conflict('Shelter is inactive (soft-deleted).');
     }
 
-    final capacity = readFirestoreInt(data['capacity']) ?? 0;
-    if (nextOccupancy > capacity) {
+    final capacity = v1ShelterCapacity(data);
+    if (capacity > 0 && nextOccupancy > capacity) {
       return badRequest(
         'nextOccupancy ($nextOccupancy) cannot exceed capacity ($capacity).',
       );
     }
 
-    final before = readFirestoreInt(data['current_occupancy']);
+    final currentOcc = v1ShelterOccupancy(data);
+    if (currentOcc == nextOccupancy) {
+      return V1FirestoreWrites.ok({
+        'status': 'ok',
+        'operation': 'shelters.updateOccupancy',
+        'shelterId': shelterId,
+        'nextOccupancy': nextOccupancy,
+        'message': 'No change.',
+      });
+    }
+
+    final now = V1FirestoreWrites.tsNow();
     await ref.update({
       'current_occupancy': nextOccupancy,
-      'updated_at': V1FirestoreWrites.tsNow(),
+      'updated_at': now,
+      'shelter_details.current_occupancy': nextOccupancy,
+      'shelter_details.updated_at': now,
     });
 
     final logRef = firestore.collection(V1FirestoreWrites.systemLogs).doc();
@@ -57,7 +71,7 @@ Future<Response> _onPost(RequestContext context) async {
         adminId: adminUid,
       ),
       'target_shelter_id': shelterId,
-      'before': {'current_occupancy': before},
+      'before': {'current_occupancy': currentOcc},
       'after': {'current_occupancy': nextOccupancy},
     });
 

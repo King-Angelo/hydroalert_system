@@ -3,6 +3,7 @@ import 'package:dart_firebase_admin_plus/firestore.dart';
 
 import 'package:hydroalert_backend_api/src/request_helpers.dart';
 import 'package:hydroalert_backend_api/src/v1_firestore_writes.dart';
+import 'package:hydroalert_backend_api/src/v1_shelter_document.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   return switch (context.request.method) {
@@ -32,14 +33,28 @@ Future<Response> _onPost(RequestContext context) async {
       return V1FirestoreWrites.notFound('Shelter not found.');
     }
     final data = snap.data()!;
-    if (data['is_active'] == false) {
+    if (!v1ShelterIsActive(data)) {
       return V1FirestoreWrites.conflict('Shelter is inactive (soft-deleted).');
     }
 
-    final before = data['status']?.toString();
+    final before = v1ShelterStatus(data);
+    if (before == nextStatus) {
+      return V1FirestoreWrites.ok({
+        'status': 'ok',
+        'operation': 'shelters.updateStatus',
+        'shelterId': shelterId,
+        'nextStatus': nextStatus,
+        'message': 'No change.',
+      });
+    }
+
+    final now = V1FirestoreWrites.tsNow();
+    // Match admin_app: root + nested shelter_details.* for dashboards that read either.
     await ref.update({
       'status': nextStatus,
-      'updated_at': V1FirestoreWrites.tsNow(),
+      'updated_at': now,
+      'shelter_details.status': nextStatus,
+      'shelter_details.updated_at': now,
     });
 
     final logRef = firestore.collection(V1FirestoreWrites.systemLogs).doc();

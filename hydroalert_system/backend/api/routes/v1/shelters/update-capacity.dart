@@ -3,6 +3,7 @@ import 'package:dart_firebase_admin_plus/firestore.dart';
 
 import 'package:hydroalert_backend_api/src/request_helpers.dart';
 import 'package:hydroalert_backend_api/src/v1_firestore_writes.dart';
+import 'package:hydroalert_backend_api/src/v1_shelter_document.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   return switch (context.request.method) {
@@ -32,11 +33,11 @@ Future<Response> _onPost(RequestContext context) async {
       return V1FirestoreWrites.notFound('Shelter not found.');
     }
     final data = snap.data()!;
-    if (data['is_active'] == false) {
+    if (!v1ShelterIsActive(data)) {
       return V1FirestoreWrites.conflict('Shelter is inactive (soft-deleted).');
     }
 
-    final currentOcc = readFirestoreInt(data['current_occupancy']) ?? 0;
+    final currentOcc = v1ShelterOccupancy(data);
     if (nextCapacity < currentOcc) {
       return badRequest(
         'nextCapacity ($nextCapacity) cannot be less than current '
@@ -44,10 +45,23 @@ Future<Response> _onPost(RequestContext context) async {
       );
     }
 
-    final before = readFirestoreInt(data['capacity']);
+    final currentCap = v1ShelterCapacity(data);
+    if (currentCap == nextCapacity) {
+      return V1FirestoreWrites.ok({
+        'status': 'ok',
+        'operation': 'shelters.updateCapacity',
+        'shelterId': shelterId,
+        'nextCapacity': nextCapacity,
+        'message': 'No change.',
+      });
+    }
+
+    final now = V1FirestoreWrites.tsNow();
     await ref.update({
       'capacity': nextCapacity,
-      'updated_at': V1FirestoreWrites.tsNow(),
+      'updated_at': now,
+      'shelter_details.capacity': nextCapacity,
+      'shelter_details.updated_at': now,
     });
 
     final logRef = firestore.collection(V1FirestoreWrites.systemLogs).doc();
@@ -58,7 +72,7 @@ Future<Response> _onPost(RequestContext context) async {
         adminId: adminUid,
       ),
       'target_shelter_id': shelterId,
-      'before': {'capacity': before},
+      'before': {'capacity': currentCap},
       'after': {'capacity': nextCapacity},
     });
 

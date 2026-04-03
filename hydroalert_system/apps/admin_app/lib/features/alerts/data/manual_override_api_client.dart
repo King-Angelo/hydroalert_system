@@ -1,6 +1,6 @@
-import 'dart:convert';
-
 import 'package:http/http.dart' as http;
+
+import '../../../core/api/admin_authenticated_http_client.dart';
 
 /// Calls `POST /v1/alerts/manual-override` with the admin Firebase ID token.
 class ManualOverrideApiClient {
@@ -9,16 +9,25 @@ class ManualOverrideApiClient {
     required Future<String?> Function() getIdToken,
     this.onUnauthorized,
     http.Client? httpClient,
-  })  : _baseUrl = baseUrl.replaceAll(RegExp(r'/$'), ''),
-        _getIdToken = getIdToken,
-        _http = httpClient ?? http.Client();
+  })  : _http = AdminAuthenticatedHttpClient(
+          baseUrl: baseUrl,
+          getIdToken: getIdToken,
+          onUnauthorized: onUnauthorized,
+          httpClient: httpClient,
+        ),
+        _ownsHttp = true;
 
-  /// Called when the API returns 401 (e.g. expired session). Usually [AuthService.signOut].
+  /// Reuses [http] (e.g. from [main]); do not call [close] on the shared client here.
+  ManualOverrideApiClient.withSharedHttp(AdminAuthenticatedHttpClient http)
+    : _http = http,
+      _ownsHttp = false,
+      onUnauthorized = null;
+
+  /// Passed only for the default constructor; shared instance ignores this field.
   final Future<void> Function()? onUnauthorized;
 
-  final String _baseUrl;
-  final Future<String?> Function() _getIdToken;
-  final http.Client _http;
+  final AdminAuthenticatedHttpClient _http;
+  final bool _ownsHttp;
 
   /// Returns decoded JSON body on success; throws on network / non-2xx.
   Future<Map<String, dynamic>> sendManualOverride({
@@ -26,50 +35,22 @@ class ManualOverrideApiClient {
     required String message,
     required String targetZone,
   }) async {
-    final token = await _getIdToken();
-    if (token == null || token.isEmpty) {
-      throw StateError('No ID token — sign in with Firebase as admin.');
-    }
-
-    final uri = Uri.parse('$_baseUrl/v1/alerts/manual-override');
-    final resp = await _http.post(
-      uri,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
+    try {
+      return await _http.postJson('/v1/alerts/manual-override', {
         'severity': severity,
         'message': message,
         'targetZone': targetZone.trim(),
-      }),
-    );
-
-    Map<String, dynamic>? body;
-    try {
-      if (resp.body.isNotEmpty) {
-        final decoded = jsonDecode(resp.body);
-        if (decoded is Map<String, dynamic>) body = decoded;
-      }
-    } catch (_) {}
-
-    if (resp.statusCode == 401) {
-      try {
-        await onUnauthorized?.call();
-      } catch (_) {
-        // Best-effort: still surface API error to caller.
-      }
+      });
+    } on AdminApiHttpException catch (e) {
+      throw ManualOverrideApiException(e.statusCode, e.message);
     }
-
-    if (resp.statusCode < 200 || resp.statusCode >= 300) {
-      final msg = body?['message']?.toString() ?? resp.body;
-      throw ManualOverrideApiException(resp.statusCode, msg);
-    }
-
-    return body ?? <String, dynamic>{};
   }
 
-  void close() => _http.close();
+  void close() {
+    if (_ownsHttp) {
+      _http.close();
+    }
+  }
 }
 
 class ManualOverrideApiException implements Exception {

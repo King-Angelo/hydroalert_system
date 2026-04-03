@@ -24,6 +24,7 @@ On pull requests and pushes to `main`/`master`, **[`.github/workflows/ci.yml`](.
 ## Admin app hardening (P1)
 
 - **[docs/admin_app_hardening_p1.md](docs/admin_app_hardening_p1.md)** — localization, error UX, session re-auth, validation, accessibility checklist.
+- **[docs/admin_firestore_api_alignment.md](docs/admin_firestore_api_alignment.md)** — Firestore vs Dart Frog `v1` mutations (inventory, drift, phases).
 
 ## Operations & Compliance (P1)
 

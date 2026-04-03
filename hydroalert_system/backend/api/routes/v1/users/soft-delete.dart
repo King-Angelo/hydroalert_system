@@ -31,6 +31,13 @@ Future<Response> _onPost(RequestContext context) async {
       return V1FirestoreWrites.notFound('User not found.');
     }
 
+    final role = snap.data()?['user_type']?.toString().trim().toLowerCase();
+    if (role == 'admin') {
+      return V1FirestoreWrites.conflict(
+        'Admin accounts cannot be modified from this endpoint.',
+      );
+    }
+
     final now = V1FirestoreWrites.tsNow();
     await userRef.update({
       'is_active': false,

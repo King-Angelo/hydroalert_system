@@ -1,12 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../core/api/admin_authenticated_http_client.dart';
 import 'user_management_repository.dart';
 
 class FirestoreUserManagementRepository implements UserManagementRepository {
-  FirestoreUserManagementRepository({required FirebaseFirestore firestore})
-    : _firestore = firestore;
+  FirestoreUserManagementRepository({
+    required FirebaseFirestore firestore,
+    AdminAuthenticatedHttpClient? privilegedApi,
+  }) : _firestore = firestore,
+       _privilegedApi = privilegedApi;
 
   final FirebaseFirestore _firestore;
+
+  final AdminAuthenticatedHttpClient? _privilegedApi;
 
   static const _usersCollection = 'Users';
   static const _logsCollection = 'System_Logs';
@@ -80,9 +86,18 @@ class FirestoreUserManagementRepository implements UserManagementRepository {
     required String nextRole,
     required String adminId,
   }) async {
+    final api = _privilegedApi;
     final normalizedRole = nextRole.trim().toLowerCase();
     if (normalizedRole != 'official' && normalizedRole != 'resident') {
       throw ArgumentError('Role must be either official or resident.');
+    }
+
+    if (api != null) {
+      await api.postJson('/v1/users/update-role', {
+        'targetUserId': targetUserId,
+        'nextRole': normalizedRole,
+      });
+      return;
     }
 
     final userRef = _firestore.collection(_usersCollection).doc(targetUserId);
@@ -122,6 +137,15 @@ class FirestoreUserManagementRepository implements UserManagementRepository {
     required bool isActive,
     required String adminId,
   }) async {
+    final api = _privilegedApi;
+    if (api != null) {
+      await api.postJson('/v1/users/set-active-state', {
+        'targetUserId': targetUserId,
+        'isActive': isActive,
+      });
+      return;
+    }
+
     final userRef = _firestore.collection(_usersCollection).doc(targetUserId);
     await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(userRef);
@@ -163,6 +187,14 @@ class FirestoreUserManagementRepository implements UserManagementRepository {
     required String targetUserId,
     required String adminId,
   }) async {
+    final api = _privilegedApi;
+    if (api != null) {
+      await api.postJson('/v1/users/soft-delete', {
+        'targetUserId': targetUserId,
+      });
+      return;
+    }
+
     final userRef = _firestore.collection(_usersCollection).doc(targetUserId);
     await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(userRef);
