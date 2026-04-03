@@ -49,7 +49,9 @@ git push origin main
    - **Region:** Choose nearest (e.g. Singapore, Oregon)
    - **Plan:** Free
 
-4. **Environment Variables** (Add in Render dashboard):
+4. **Phase 3 (after first deploy)** — `GET /health` on your URL; tier-1 smoke: from `hydroalert_system/backend/api` run `dart run tool/v1_admin_route_smoke.dart` with `SMOKE_API_BASE` set ([`docs/admin_api_v1_smoke.md`](../../docs/admin_api_v1_smoke.md)); set `CORS_ALLOW_ORIGIN` when admin web has a fixed origin. Full list: [`docs/RELEASE_GATE_CHECKLIST.md`](../../docs/RELEASE_GATE_CHECKLIST.md) section B.
+
+5. **Environment Variables** (Add in Render dashboard):
 
    | Key | Value | Notes |
    |-----|-------|-------|
@@ -71,7 +73,7 @@ git push origin main
    - Copy the entire content (including `{` and `}`)
    - Paste as the value of `FIREBASE_SERVICE_ACCOUNT_JSON` in Render
 
-5. Click **Create Web Service**
+6.  Click **Create Web Service**
 
 Render will build the Docker image and deploy. First deploy may take ~5–10 minutes.
 

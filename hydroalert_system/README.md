@@ -15,7 +15,7 @@ Firebase CLI aliases live in **[`.firebaserc`](.firebaserc)**. Replace `hydroale
 
 ## CI (release gate)
 
-On pull requests and pushes to `main`/`master`, **[`.github/workflows/ci.yml`](.github/workflows/ci.yml)** runs: **Backend API** (`dart analyze`, `dart test`), **shared_models** (`dart test`), **Admin app** (`flutter analyze`, `flutter test`), and **Firebase options policy** (blocks committing production Firebase project id into tracked `firebase_options*.dart`). **Repo root for GitHub** should be this folder (`hydroalert_system`); if your remote root is the parent directory, move `.github` to the repo root and prefix paths (e.g. `hydroalert_system/backend/api`). Required check names for branch protection: **`docs/GITHUB_BRANCH_PROTECTION.md`**.
+On pull requests and pushes to `main`/`master`, **[`../.github/workflows/ci.yml`](../.github/workflows/ci.yml)** at **repository root** runs: **Backend API** (`dart analyze`, `dart test`), **shared_models** (`dart test`), **Admin app** (`flutter analyze`, `flutter test`), and **Firebase options policy** (blocks committing production Firebase project id into tracked `firebase_options*.dart`). **GitHub layout:** For **`King-Angelo/hydroalert_system`**, workflows live at the **repository root** (parent of this folder). Job working directories use the `hydroalert_system/` prefix. Required check names: **`docs/GITHUB_BRANCH_PROTECTION.md`**.
 
 ## Observability (P1)
 

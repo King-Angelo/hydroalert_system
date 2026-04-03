@@ -1,0 +1,29 @@
+# Phase 3 — optional tier-1 API smoke (no secrets). Run from Actions → this workflow → Run workflow.
+# See hydroalert_system/docs/admin_api_v1_smoke.md
+
+name: API smoke (tier 1)
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_base:
+        description: API origin, no trailing slash
+        required: true
+        type: string
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hydroalert_system/backend/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - run: dart pub get
+      - name: Tier 1 smoke
+        env:
+          SMOKE_API_BASE: ${{ github.event.inputs.api_base }}
+        run: dart run tool/v1_admin_route_smoke.dart

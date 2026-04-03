@@ -15,7 +15,7 @@
 ### 2. Normal deploy (prod)
 
 1. Merge tested changes to the release branch per team policy.  
-2. CI green ([`ci.yml`](../../.github/workflows/ci.yml)).  
+2. CI green ([`ci.yml`](../../../.github/workflows/ci.yml) at repository root).  
 3. Render deploys from connected branch (auto or manual — document which you use in [artifact_merge_register.md](artifact_merge_register.md) note).  
 4. Post-deploy: hit health endpoint; spot-check admin login and **System Logs** write path.
 

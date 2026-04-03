@@ -1,14 +1,16 @@
 # Release gate checklist (P0)
 
-**Related:** Institutional ops/compliance context and rollback narrative — **[operations_compliance_p1/README.md](operations_compliance_p1/README.md)**.
+**Related:** Institutional ops/compliance context and rollback narrative — **[operations_compliance_p1/README.md](operations_compliance_p1/README.md)**. **Phase 3** (admin + API gates): **[admin_firestore_api_alignment.md](admin_firestore_api_alignment.md)**.
 
 Use this when moving a change **toward staging** or **from staging to production**. Adapt names to your branching model.
+
+**Where work happens:** Items below mix **repo** (code, docs, local terminal), **GitHub**, **Render**, **Firebase**, and **browser**. Section **A** is mostly repo + GitHub. Section **B** is mostly Render + Firebase + terminal/browser.
 
 ---
 
 ## A. Before merge to `main` (or shared integration branch)
 
-- [ ] **CI green** — PR checks pass: `Backend API (dart analyze)`, `shared_models (test)`, `Admin app (flutter analyze)`, `Firebase options policy (no prod project in repo)`.
+- [ ] **CI green** — PR checks pass: `Backend API (analyze + test)`, `shared_models (test)`, `Admin app (analyze + test)`, `Firebase options policy (no prod project in repo)`.
 - [ ] **Branch protection** — `main` requires the above checks (see **`docs/GITHUB_BRANCH_PROTECTION.md`**).
 - [ ] **No secrets** — no service account JSON, `.env` with real values, or private keys in the diff.
 - [ ] **Firestore** — if schema/rules/indexes changed: plan deploy to **staging** (and later prod) with correct `firebase use`.
@@ -16,13 +18,14 @@ Use this when moving a change **toward staging** or **from staging to production
 
 ---
 
-## B. After deploy to **staging**
+## B. After deploy to **staging** (Phase 3)
 
 - [ ] **API health** — `GET /health` on staging base URL returns OK.
-- [ ] **V1 smoke (optional)** — from `backend/api`: `SMOKE_API_BASE=<staging API>` `dart run tool/v1_admin_route_smoke.dart` (tier 1); add `SMOKE_FIREBASE_ID_TOKEN` for tier 2 — see **[docs/admin_api_v1_smoke.md](admin_api_v1_smoke.md)**.
-- [ ] **CORS** — `CORS_ALLOW_ORIGIN` matches **staging** admin origin; manual-override smoke test from staging admin (if used).
+- [ ] **Tier 1 smoke** — from repo: `hydroalert_system/backend/api` → set `SMOKE_API_BASE` to staging API (no trailing slash), then `dart run tool/v1_admin_route_smoke.dart`. **Or** in GitHub: **Actions** → **API smoke (tier 1)** → **Run workflow** → paste API URL — see **[admin_api_v1_smoke.md](admin_api_v1_smoke.md)**.
+- [ ] **Tier 2 smoke (optional)** — same script with `SMOKE_FIREBASE_ID_TOKEN` (active admin) — same doc.
+- [ ] **CORS** — in **Render**, `CORS_ALLOW_ORIGIN` matches **staging** admin origin; test from real admin URL in browser.
 - [ ] **Firebase project** — staging admin build uses **staging** `firebase_options` / project; API `FIREBASE_PROJECT_ID` is **staging**.
-- [ ] **FCM** — use `FCM_DRY_RUN=true` on staging first if you want validation-only.
+- [ ] **FCM** — on staging use `FCM_DRY_RUN=true` first if you want validation-only pushes.
 
 ---
 

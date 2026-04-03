@@ -6,7 +6,7 @@ Enforce that **`main`** (and optionally **`develop`**) cannot move forward unles
 
 ## 1. Prerequisites
 
-- Repository root on GitHub is **`hydroalert_system`** (so `.github/workflows/ci.yml` runs), **or** you have adjusted workflow paths to match your repo root.
+- **CI** workflows are at **repository** **root**: [`.github/workflows/ci.yml`](../../../.github/workflows/ci.yml) (parent of `hydroalert_system/` on **`King-Angelo/hydroalert_system`**).
 - The **CI** workflow has run at least once on a PR so GitHub registers the check names (Settings → Rules won’t list unknown checks until they appear in the UI once).
 
 ---
@@ -27,7 +27,7 @@ Suggested settings:
 | **Require status checks to pass** | Enable |
 | **Require branches to be up to date before merging** | Enable (recommended) |
 
-Under **Status checks that are required**, add these **exact** names (they come from the `name:` field of each job in `.github/workflows/ci.yml`):
+Under **Status checks that are required**, add these **exact** names (they come from the `name:` field of each job in **repository root** `.github/workflows/ci.yml`):
 
 1. `Backend API (analyze + test)`
 2. `shared_models (test)`
@@ -59,6 +59,7 @@ If the repo lives under an organization, an owner can define **repository rules*
 
 ## 5. Related
 
-- **`.github/workflows/ci.yml`**
+- **Repository root** **`.github/workflows/ci.yml`**
+- **Optional (Phase 3):** **`.github/workflows/api-smoke-tier1.yml`** — manual smoke only; not a required branch check.
 - **`docs/RELEASE_GATE_CHECKLIST.md`**
 - **`docs/environment_separation_p0.md`**

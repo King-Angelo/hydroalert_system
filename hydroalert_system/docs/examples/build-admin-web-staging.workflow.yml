@@ -1,7 +1,9 @@
-# Copy to `.github/workflows/build-admin-web-staging.yml` to enable.
+# Copy to repository root `.github/workflows/build-admin-web-staging.yml` to enable.
+# If your Git root IS `hydroalert_system` (no parent folder), change `working-directory`
+# and `path` to `apps/admin_app` only.
 # Secret: full contents of FlutterFire-generated `firebase_options.dart` for **staging**.
 #
-# See docs/FLUTTERFIRE_BUILD_LANES.md
+# See hydroalert_system/docs/FLUTTERFIRE_BUILD_LANES.md
 
 name: Build admin web (staging)
 
@@ -13,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/admin_app
+        working-directory: hydroalert_system/apps/admin_app
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -34,4 +36,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: admin-web-staging
-          path: apps/admin_app/build/web/
+          path: hydroalert_system/apps/admin_app/build/web/

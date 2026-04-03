@@ -101,5 +101,5 @@ flutter build web \
 ## Related
 
 - **`docs/environment_separation_p0.md`**
-- **`.github/workflows/ci.yml`**
+- **Repository root** **`.github/workflows/ci.yml`**
 - Optional workflow template: **`docs/examples/build-admin-web-staging.workflow.yml`**

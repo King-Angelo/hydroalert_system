@@ -23,15 +23,18 @@
 
 ```bash
 dart pub get
-set SMOKE_API_BASE=https://your-staging-api.onrender.com
+SMOKE_API_BASE=https://your-staging-api.onrender.com dart run tool/v1_admin_route_smoke.dart
+```
+
+**PowerShell** (same folder):
+
+```powershell
+dart pub get
+$env:SMOKE_API_BASE = "https://your-staging-api.onrender.com"
 dart run tool/v1_admin_route_smoke.dart
 ```
 
-On Unix:
-
-```bash
-SMOKE_API_BASE=https://your-staging-api.onrender.com dart run tool/v1_admin_route_smoke.dart
-```
+**CI:** repository root **Actions** → **API smoke (tier 1)** → **Run workflow** → paste API URL (see root `.github/workflows/api-smoke-tier1.yml`).
 
 ---
 
@@ -49,8 +52,14 @@ Uses synthetic document IDs; expects **404** (not found), which proves the **tok
 **Run:**
 
 ```bash
-set SMOKE_API_BASE=https://your-staging-api.onrender.com
-set SMOKE_FIREBASE_ID_TOKEN=eyJ...
+SMOKE_API_BASE=https://your-staging-api.onrender.com SMOKE_FIREBASE_ID_TOKEN=eyJ... dart run tool/v1_admin_route_smoke.dart
+```
+
+**PowerShell:**
+
+```powershell
+$env:SMOKE_API_BASE = "https://your-staging-api.onrender.com"
+$env:SMOKE_FIREBASE_ID_TOKEN = "eyJ..."
 dart run tool/v1_admin_route_smoke.dart
 ```
 

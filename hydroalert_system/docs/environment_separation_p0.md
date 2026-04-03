@@ -81,7 +81,7 @@ flutter build web \
 
 Use **[RELEASE_GATE_CHECKLIST.md](RELEASE_GATE_CHECKLIST.md)** before promoting **staging → production**.
 
-**Automation (P0):** GitHub Actions **`.github/workflows/ci.yml`** runs `dart analyze` on the backend, `dart test` on `shared_models`, `flutter analyze` on `admin_app`, and a **Firebase options policy** job on PRs — a minimum gate; it does **not** deploy.
+**Automation (P0):** GitHub Actions **`.github/workflows/ci.yml`** at **repository root** runs `dart analyze` on the backend, `dart test` on `shared_models`, `flutter analyze` on `admin_app`, and a **Firebase options policy** job on PRs — a minimum gate; it does **not** deploy.
 
 **Branch protection:** Require those checks on **`main`** — steps in **[`docs/GITHUB_BRANCH_PROTECTION.md`](GITHUB_BRANCH_PROTECTION.md)**.
 
@@ -101,7 +101,7 @@ Use **[RELEASE_GATE_CHECKLIST.md](RELEASE_GATE_CHECKLIST.md)** before promoting 
 | Firestore rules / indexes | `firestore.rules`, `firestore.indexes.json` |
 | Backend env template | `docs/examples/backend-api.env.example` |
 | Render notes | `backend/api/DEPLOY_RENDER.md` |
-| PR CI (analyze / test) | `.github/workflows/ci.yml` |
+| PR CI (analyze / test) | Repository root `.github/workflows/ci.yml` |
 | Branch protection how-to | `docs/GITHUB_BRANCH_PROTECTION.md` |
 | Render: one service per tier | `docs/RENDER_PER_ENVIRONMENT.md` |
 | FlutterFire build lanes | `docs/FLUTTERFIRE_BUILD_LANES.md` |
