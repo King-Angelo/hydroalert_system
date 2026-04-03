@@ -1,0 +1,25 @@
+# Render Blueprint — HydroAlert API (single default service; usually **dev**).
+#
+# Git root for github.com/King-Angelo/hydroalert_system only contains the folder
+# `hydroalert_system/` (backend/, packages/, apps/ are inside it). Set rootDir
+# accordingly — NOT backend/api alone, and NOT the word "Dockerfile".
+#
+# More envs: hydroalert_system/docs/examples/render-multi-env.yaml
+# Secrets: set FIREBASE_SERVICE_ACCOUNT_JSON etc. in the dashboard — never commit.
+
+services:
+  - type: web
+    name: hydroalert-api
+    runtime: docker
+    rootDir: hydroalert_system
+    dockerfilePath: backend/api/Dockerfile
+    dockerContext: .
+    region: oregon
+    plan: free
+    buildFilter:
+      paths:
+        - hydroalert_system/backend/api/**
+        - hydroalert_system/packages/shared_models/**
+    envVars:
+      - key: FIREBASE_PROJECT_ID
+        value: hydroalert-dev

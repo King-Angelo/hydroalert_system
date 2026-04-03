@@ -6,8 +6,9 @@ Deploy the Dart Frog backend to [Render](https://render.com) (no GCP billing req
 
 | Git remote root | Render **Root Directory** | Render **Dockerfile Path** |
 |-----------------|---------------------------|----------------------------|
-| **`hydroalert_system`** (repo has `apps/`, `backend/`, `packages/` at top level) | **`./`** (leave empty or `.`) | **`backend/api/Dockerfile`** |
-| **`Development_of_hydroalert`** (repo has `hydroalert_system/` inside) | **`hydroalert_system`** | **`backend/api/Dockerfile`** |
+| **`King-Angelo/hydroalert_system`** (clone has a single top-level folder **`hydroalert_system/`**) | **`hydroalert_system`** | **`backend/api/Dockerfile`** |
+| **`hydroalert_system`** fork with `apps/`, `backend/`, `packages/` at **repo** root | **`./`** (leave empty) | **`backend/api/Dockerfile`** |
+| **`Development_of_hydroalert`** (parent repo with `hydroalert_system/` inside) | **`hydroalert_system`** | **`backend/api/Dockerfile`** |
 
 Do **not** set Root Directory to **`backend/api` only** — Docker will not see **`packages/shared_models`** and `dart pub get` will fail (e.g. exit code **66**).
 
@@ -113,8 +114,9 @@ If using backup/retention endpoints, add jobs at [cron-job.org](https://cron-job
 
 | Issue | Fix |
 |-------|-----|
-| **`invalid local` / `lstat .../backend`** | Root Directory is not the monorepo root, or Dockerfile path does not match. Use the table at the top: root = folder that contains **`packages/`** and **`backend/`**, Dockerfile Path = **`backend/api/Dockerfile`**. |
-| **`open Dockerfile: no such file or directory`** | Set **Dockerfile Path** to **`backend/api/Dockerfile`** (not `./Dockerfile` at repo root). **Root Directory** must still be the monorepo root, not `backend/api`. |
+| **`Root directory "Dockerfile" does not exist`** | **Root Directory** must be a **folder name** (e.g. **`hydroalert_system`** for this GitHub repo), not the Dockerfile path. Put **`backend/api/Dockerfile`** only in **Dockerfile Path**. |
+| **`invalid local` / `lstat .../backend`** | Render is resolving paths from the **Git** root, but **`backend/`** lives under **`hydroalert_system/`**. Set **Root Directory** to **`hydroalert_system`** (see table). |
+| **`open Dockerfile: no such file or directory`** | **Root Directory** = monorepo folder; **Dockerfile Path** = **`backend/api/Dockerfile`** (relative to that root). |
 | Build fails on `dart_frog build` or **`dart pub get` exit 66** | Same as above — context must include **`packages/shared_models`**. |
 | Firestore permission denied | Verify `FIREBASE_SERVICE_ACCOUNT_JSON` is valid and has Firestore access |
 | 502 Bad Gateway | Check Render logs; service may be starting. Wait for cold start. |

@@ -4,9 +4,10 @@
 # contains both `packages/` and `backend/api/`), because pubspec uses:
 #   shared_models: path: ../../packages/shared_models
 #
-# On Render:
-#   Root Directory: hydroalert_system   (or your repo root if it *is* hydroalert_system)
+# On Render (github.com/King-Angelo/hydroalert_system):
+#   Root Directory: hydroalert_system
 #   Dockerfile Path: backend/api/Dockerfile
+# If your Git root already contains backend/ + packages/ at top level, Root Directory: . (empty)
 
 FROM dart:stable AS build
 

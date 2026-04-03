@@ -4,21 +4,24 @@
 # **Do not** put `FIREBASE_SERVICE_ACCOUNT_JSON` or `CRON_SECRET` in Git — add those
 # in the Render dashboard for each service after the blueprint syncs.
 #
-# If your Git repo root is the parent of `hydroalert_system`, set `rootDir: hydroalert_system`
-# on each service (paths below stay the same relative to that folder).
+# This layout matches github.com/King-Angelo/hydroalert_system: project files live
+# under `hydroalert_system/` at the Git root. Use rootDir: hydroalert_system (not
+# backend/api, not "Dockerfile"). buildFilter paths are always repo-root-relative.
 #
-# Do NOT use rootDir: backend/api — the Docker build needs packages/shared_models.
+# If your Git root IS `hydroalert_system` (apps/ backend/ at top level), omit rootDir
+# and change buildFilter to backend/api/** and packages/shared_models/**.
 
 services:
   - type: web
     name: hydroalert-api-dev
     runtime: docker
+    rootDir: hydroalert_system
     dockerfilePath: backend/api/Dockerfile
     dockerContext: .
     buildFilter:
       paths:
-        - backend/api/**
-        - packages/shared_models/**
+        - hydroalert_system/backend/api/**
+        - hydroalert_system/packages/shared_models/**
     region: oregon
     plan: free
     envVars:
@@ -30,12 +33,13 @@ services:
   - type: web
     name: hydroalert-api-staging
     runtime: docker
+    rootDir: hydroalert_system
     dockerfilePath: backend/api/Dockerfile
     dockerContext: .
     buildFilter:
       paths:
-        - backend/api/**
-        - packages/shared_models/**
+        - hydroalert_system/backend/api/**
+        - hydroalert_system/packages/shared_models/**
     region: oregon
     plan: free
     envVars:
@@ -47,12 +51,13 @@ services:
   - type: web
     name: hydroalert-api-production
     runtime: docker
+    rootDir: hydroalert_system
     dockerfilePath: backend/api/Dockerfile
     dockerContext: .
     buildFilter:
       paths:
-        - backend/api/**
-        - packages/shared_models/**
+        - hydroalert_system/backend/api/**
+        - hydroalert_system/packages/shared_models/**
     region: oregon
     plan: free
     envVars:

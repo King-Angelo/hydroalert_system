@@ -15,7 +15,7 @@ Each **environment** (dev / staging / production) must have its **own** deploy t
 For **each** service:
 
 1. **New +** → **Web Service** (or add a second/third service from the same repo).
-2. **Root Directory:** monorepo root only — **`./`** if the Git root is **`hydroalert_system`**, or **`hydroalert_system`** if that folder is inside a larger repo. **Not** `backend/api` (Docker needs `packages/shared_models`). **Dockerfile Path:** `backend/api/Dockerfile`.
+2. **Root Directory:** the folder that contains **`backend/`** and **`packages/`** — for **github.com/King-Angelo/hydroalert_system** use **`hydroalert_system`**. For a repo where those folders sit at the Git root, use **`./`**. **Not** `backend/api`, and **not** the literal text `Dockerfile`. **Dockerfile Path:** `backend/api/Dockerfile`.
 3. **Runtime:** Docker (same `Dockerfile` for all).
 4. **Branch (optional):** e.g. `develop` → dev, `main` → staging + production with **promotion** via separate services (not the same service switching projects).
 
@@ -65,7 +65,7 @@ Local development: keep JSON under `backend/api/config/` (folder is **gitignored
 
 ## 4. Blueprint (`render.yaml`)
 
-The repo may include a **single-service** `render.yaml` for quick starts. For **three** services from one blueprint, see **`docs/examples/render-multi-env.yaml`** (copy into `render.yaml` or deploy services manually).
+The **Git repository root** includes **`render.yaml`** (same level as the **`hydroalert_system/`** folder). For **three** services, see **`hydroalert_system/docs/examples/render-multi-env.yaml`** (copy into root `render.yaml` or create services manually).
 
 **Secrets:** Do **not** put `FIREBASE_SERVICE_ACCOUNT_JSON` or `CRON_SECRET` in Git. After the blueprint creates services, open each service in the dashboard and add secrets there.
 
