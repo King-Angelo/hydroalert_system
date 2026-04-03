@@ -29,16 +29,18 @@ jobs:
   shared-models:
     name: shared_models (test)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: hydroalert_system/packages/shared_models
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: stable
-      - run: dart pub get
-      - run: dart test
+          channel: stable
+      # packages/shared_models uses resolution: workspace; pub must resolve apps/* too (Flutter SDK).
+      - name: Resolve workspace
+        run: flutter pub get
+        working-directory: hydroalert_system
+      - name: Test shared_models
+        run: dart test
+        working-directory: hydroalert_system/packages/shared_models
 
   admin-app:
     name: Admin app (analyze + test)
