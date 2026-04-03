@@ -7,14 +7,24 @@
 #
 # Deploy: Render Dashboard → New → Blueprint → connect repo.
 # Secrets (service account JSON, CRON_SECRET): set per service in the dashboard — never commit.
+#
+# If your Git root is a parent folder (repo contains `hydroalert_system/` as a subfolder),
+# add under this service:  rootDir: hydroalert_system
 
 services:
   - type: web
     name: hydroalert-api
     runtime: docker
-    rootDir: backend/api
+    # Do NOT set rootDir to backend/api — Render would hide packages/shared_models
+    # and break the Dockerfile (see backend/api/DEPLOY_RENDER.md).
+    dockerfilePath: backend/api/Dockerfile
+    dockerContext: .
     region: oregon
     plan: free
+    buildFilter:
+      paths:
+        - backend/api/**
+        - packages/shared_models/**
     envVars:
       - key: FIREBASE_PROJECT_ID
         value: hydroalert-dev

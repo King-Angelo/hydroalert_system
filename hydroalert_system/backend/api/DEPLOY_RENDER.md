@@ -2,7 +2,14 @@
 
 Deploy the Dart Frog backend to [Render](https://render.com) (no GCP billing required).
 
-**Repo layout:** This file lives under `hydroalert_system/backend/api/`. If your Git remote root is **`hydroalert_system`**, use Root Directory **`backend/api`**. If the remote root is the parent folder `Development_of_hydroalert`, use **`hydroalert_system/backend/api`** instead.
+**Repo layout:** The API **`Dockerfile` must build with context = the folder that contains `packages/` and `backend/`** (usually the **`hydroalert_system`** Git root), because **`pubspec.yaml`** depends on **`path: ../../packages/shared_models`**.
+
+| Git remote root | Render **Root Directory** | Render **Dockerfile Path** |
+|-----------------|---------------------------|----------------------------|
+| **`hydroalert_system`** (repo has `apps/`, `backend/`, `packages/` at top level) | **`./`** (leave empty or `.`) | **`backend/api/Dockerfile`** |
+| **`Development_of_hydroalert`** (repo has `hydroalert_system/` inside) | **`hydroalert_system`** | **`backend/api/Dockerfile`** |
+
+Do **not** set Root Directory to **`backend/api` only** — Docker will not see **`packages/shared_models`** and `dart pub get` will fail (e.g. exit code **66**).
 
 **Environment separation (P0):** Use **one Render Web Service per environment** (dev / staging / production) with **different** `FIREBASE_PROJECT_ID`, service account JSON, and secrets. Do not point staging at the prod Firebase project. See **[`docs/RENDER_PER_ENVIRONMENT.md`](../../docs/RENDER_PER_ENVIRONMENT.md)** (matrix + SA JSON per tier), [`docs/environment_separation_p0.md`](../../docs/environment_separation_p0.md), and [`docs/RELEASE_GATE_CHECKLIST.md`](../../docs/RELEASE_GATE_CHECKLIST.md). Blueprint example: [`docs/examples/render-multi-env.yaml`](../../docs/examples/render-multi-env.yaml).
 
@@ -35,7 +42,8 @@ git push origin main
 2. Connect your GitHub account and select the repo (`Development_of_hydroalert` or similar)
 3. **Settings:**
    - **Name:** `hydroalert-api`
-   - **Root Directory:** `backend/api` *(if repo root is `hydroalert_system`)* — or `hydroalert_system/backend/api` *(if repo root is the parent folder)*
+   - **Root Directory:** see table above *(monorepo root, **not** `backend/api` alone)*
+   - **Dockerfile Path:** `backend/api/Dockerfile`
    - **Environment:** `Docker`
    - **Region:** Choose nearest (e.g. Singapore, Oregon)
    - **Plan:** Free
@@ -105,7 +113,8 @@ If using backup/retention endpoints, add jobs at [cron-job.org](https://cron-job
 
 | Issue | Fix |
 |-------|-----|
-| **`open Dockerfile: no such file or directory`** | Wrong Root Directory. Try `backend/api` (if repo root is `hydroalert_system`). Or use **Blueprint** deploy: Dashboard → New → Blueprint → connect repo — `render.yaml` in the repo configures the path. |
-| Build fails on `dart_frog build` | Ensure Root Directory is correct and Dockerfile exists at that path |
+| **`invalid local` / `lstat .../backend`** | Root Directory is not the monorepo root, or Dockerfile path does not match. Use the table at the top: root = folder that contains **`packages/`** and **`backend/`**, Dockerfile Path = **`backend/api/Dockerfile`**. |
+| **`open Dockerfile: no such file or directory`** | Set **Dockerfile Path** to **`backend/api/Dockerfile`** (not `./Dockerfile` at repo root). **Root Directory** must still be the monorepo root, not `backend/api`. |
+| Build fails on `dart_frog build` or **`dart pub get` exit 66** | Same as above — context must include **`packages/shared_models`**. |
 | Firestore permission denied | Verify `FIREBASE_SERVICE_ACCOUNT_JSON` is valid and has Firestore access |
 | 502 Bad Gateway | Check Render logs; service may be starting. Wait for cold start. |

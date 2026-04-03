@@ -4,14 +4,21 @@
 # **Do not** put `FIREBASE_SERVICE_ACCOUNT_JSON` or `CRON_SECRET` in Git — add those
 # in the Render dashboard for each service after the blueprint syncs.
 #
-# If your Git repo root is the parent of `hydroalert_system`, change `rootDir` to
-# `hydroalert_system/backend/api` for every service.
+# If your Git repo root is the parent of `hydroalert_system`, set `rootDir: hydroalert_system`
+# on each service (paths below stay the same relative to that folder).
+#
+# Do NOT use rootDir: backend/api — the Docker build needs packages/shared_models.
 
 services:
   - type: web
     name: hydroalert-api-dev
     runtime: docker
-    rootDir: backend/api
+    dockerfilePath: backend/api/Dockerfile
+    dockerContext: .
+    buildFilter:
+      paths:
+        - backend/api/**
+        - packages/shared_models/**
     region: oregon
     plan: free
     envVars:
@@ -23,7 +30,12 @@ services:
   - type: web
     name: hydroalert-api-staging
     runtime: docker
-    rootDir: backend/api
+    dockerfilePath: backend/api/Dockerfile
+    dockerContext: .
+    buildFilter:
+      paths:
+        - backend/api/**
+        - packages/shared_models/**
     region: oregon
     plan: free
     envVars:
@@ -35,7 +47,12 @@ services:
   - type: web
     name: hydroalert-api-production
     runtime: docker
-    rootDir: backend/api
+    dockerfilePath: backend/api/Dockerfile
+    dockerContext: .
+    buildFilter:
+      paths:
+        - backend/api/**
+        - packages/shared_models/**
     region: oregon
     plan: free
     envVars:

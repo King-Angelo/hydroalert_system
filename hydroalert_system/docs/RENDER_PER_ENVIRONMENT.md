@@ -15,7 +15,7 @@ Each **environment** (dev / staging / production) must have its **own** deploy t
 For **each** service:
 
 1. **New +** → **Web Service** (or add a second/third service from the same repo).
-2. **Root Directory:** `backend/api` if the Git repo root is `hydroalert_system`, else `hydroalert_system/backend/api`.
+2. **Root Directory:** monorepo root only — **`./`** if the Git root is **`hydroalert_system`**, or **`hydroalert_system`** if that folder is inside a larger repo. **Not** `backend/api` (Docker needs `packages/shared_models`). **Dockerfile Path:** `backend/api/Dockerfile`.
 3. **Runtime:** Docker (same `Dockerfile` for all).
 4. **Branch (optional):** e.g. `develop` → dev, `main` → staging + production with **promotion** via separate services (not the same service switching projects).
 
