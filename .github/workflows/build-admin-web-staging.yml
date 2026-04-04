@@ -1,0 +1,65 @@
+# Staging admin web build: injects firebase_options from secret (Option A).
+# Prerequisites — GitHub repo secrets:
+#   ADMIN_FIREBASE_OPTIONS_STAGING_DART — full FlutterFire-generated Dart file (see FLUTTERFIRE_BUILD_LANES.md)
+#   HYDROADMIN_API_BASE_URL_STAGING — optional; used when api_base input is empty
+#
+# Paths assume Git root contains hydroalert_system/ (King-Angelo/hydroalert_system layout).
+
+name: Build admin web (staging)
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_base:
+        description: Staging API URL (no trailing slash). Leave empty to use secret HYDROADMIN_API_BASE_URL_STAGING.
+        required: false
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hydroalert_system/apps/admin_app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Inject Firebase options (staging)
+        env:
+          OPTIONS: ${{ secrets.ADMIN_FIREBASE_OPTIONS_STAGING_DART }}
+        run: |
+          test -n "$OPTIONS" || (echo "Set secret ADMIN_FIREBASE_OPTIONS_STAGING_DART (see hydroalert_system/docs/FLUTTERFIRE_BUILD_LANES.md)" && exit 1)
+          printf '%s\n' "$OPTIONS" > lib/firebase_options.dart
+
+      - run: flutter pub get
+
+      - name: Resolve API base URL
+        id: api
+        env:
+          INPUT_API: ${{ github.event.inputs.api_base }}
+          SECRET_API: ${{ secrets.HYDROADMIN_API_BASE_URL_STAGING }}
+        run: |
+          API_BASE="${INPUT_API:-}"
+          if [ -z "$API_BASE" ]; then API_BASE="${SECRET_API:-}"; fi
+          if [ -z "$API_BASE" ]; then
+            echo "::error::Provide workflow input api_base or secret HYDROADMIN_API_BASE_URL_STAGING"
+            exit 1
+          fi
+          echo "base=$API_BASE" >> "$GITHUB_OUTPUT"
+
+      - name: Build web (staging)
+        env:
+          HYDROADMIN_API_BASE_URL: ${{ steps.api.outputs.base }}
+        run: |
+          flutter build web \
+            --dart-define=HYDRO_ENV=staging \
+            --dart-define=HYDROADMIN_API_BASE_URL="$HYDROADMIN_API_BASE_URL"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: admin-web-staging
+          path: hydroalert_system/apps/admin_app/build/web/

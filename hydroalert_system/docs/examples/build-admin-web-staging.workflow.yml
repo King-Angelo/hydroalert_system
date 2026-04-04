@@ -1,39 +1,7 @@
-# Copy to repository root `.github/workflows/build-admin-web-staging.yml` to enable.
-# If your Git root IS `hydroalert_system` (no parent folder), change `working-directory`
-# and `path` to `apps/admin_app` only.
-# Secret: full contents of FlutterFire-generated `firebase_options.dart` for **staging**.
+# Superseded: the canonical workflow lives at repository root:
+#   .github/workflows/build-admin-web-staging.yml
 #
-# See hydroalert_system/docs/FLUTTERFIRE_BUILD_LANES.md
+# This file is retained as a short reference only. Do not copy — use the root workflow.
 
-name: Build admin web (staging)
-
-on:
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: hydroalert_system/apps/admin_app
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-      - name: Inject Firebase options for staging
-        env:
-          OPTIONS: ${{ secrets.ADMIN_FIREBASE_OPTIONS_STAGING_DART }}
-        run: |
-          test -n "$OPTIONS"
-          printf '%s\n' "$OPTIONS" > lib/firebase_options.dart
-      - run: flutter pub get
-      # Replace URL or use: --dart-define=HYDROADMIN_API_BASE_URL=${{ secrets.HYDROADMIN_API_BASE_URL_STAGING }}
-      - run: |
-          flutter build web \
-            --dart-define=HYDRO_ENV=staging \
-            --dart-define=HYDROADMIN_API_BASE_URL=https://hydroalert-api-staging.onrender.com
-      - uses: actions/upload-artifact@v4
-        with:
-          name: admin-web-staging
-          path: hydroalert_system/apps/admin_app/build/web/
+name: (moved) Build admin web (staging)
+# see ../../.github/workflows/build-admin-web-staging.yml
