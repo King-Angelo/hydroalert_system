@@ -66,6 +66,7 @@ Repo → **Settings** → **Secrets and variables** → **Actions** → **New re
 |------|--------|
 | **`ADMIN_FIREBASE_OPTIONS_STAGING_DART`** | Full pasted contents of the generated Dart file (multiline). |
 | **`HYDROADMIN_API_BASE_URL_STAGING`** *(optional)* | e.g. `https://your-staging-api.onrender.com` (no trailing slash). |
+| **`HYDROADMIN_GOOGLE_MAPS_API_KEY`** *(optional)* | Use the same browser key as in **`apps/admin_app/web/index.html`** locally. If omitted, staging builds keep the **static mock** Situation Map (`MapsConfig` stays empty). If set, CI rewrites the script `key=` in `index.html` and passes `--dart-define=HYDROADMIN_GOOGLE_MAPS_API_KEY=...`. In Google Cloud → API key restrictions, add referrer `https://hydroalert-staging.web.app/*` (and `http://localhost:*/*` for local). |
 
 If you skip the URL secret, you must pass the same URL when you **Run workflow** as input **`api_base`**.
 

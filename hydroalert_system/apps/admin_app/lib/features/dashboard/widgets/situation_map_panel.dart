@@ -13,7 +13,11 @@ import 'mock_map_panel.dart';
 
 /// Situation map: Google Maps when [MapsConfig.isConfigured] and the platform
 /// supports `google_maps_flutter`; otherwise [MockMapPanel].
-class SituationMapPanel extends StatelessWidget {
+///
+/// On **web**, `google.maps` can appear slightly after the first frame (or after
+/// the script in `index.html` finishes). This widget briefly polls so we do not
+/// stick on the static mock when the JS API is only milliseconds late.
+class SituationMapPanel extends StatefulWidget {
   const SituationMapPanel({
     super.key,
     required this.iotDevicesRepository,
@@ -23,7 +27,7 @@ class SituationMapPanel extends StatelessWidget {
   final IotDevicesRepository iotDevicesRepository;
   final String mockAssetPath;
 
-  static bool _platformSupportsMapsSdk() {
+  static bool platformSupportsMapsSdk() {
     if (kIsWeb) return true;
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -35,12 +39,74 @@ class SituationMapPanel extends StatelessWidget {
   }
 
   @override
+  State<SituationMapPanel> createState() => _SituationMapPanelState();
+}
+
+class _SituationMapPanelState extends State<SituationMapPanel> {
+  static const _webPollAttempts = 80;
+  static const _webPollDelay = Duration(milliseconds: 100);
+
+  bool _webMapsPollDone = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsWeb &&
+        SituationMapPanel.platformSupportsMapsSdk() &&
+        !MapsConfig.isConfigured) {
+      _pollWebMapsReady();
+    } else {
+      _webMapsPollDone = true;
+    }
+  }
+
+  Future<void> _pollWebMapsReady() async {
+    for (var i = 0; i < _webPollAttempts && mounted; i++) {
+      if (MapsConfig.isConfigured) {
+        setState(() {});
+        return;
+      }
+      await Future<void>.delayed(_webPollDelay);
+    }
+    if (mounted) {
+      setState(() => _webMapsPollDone = true);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (!MapsConfig.isConfigured || !_platformSupportsMapsSdk()) {
-      return MockMapPanel(assetPath: mockAssetPath);
+    if (!SituationMapPanel.platformSupportsMapsSdk()) {
+      return MockMapPanel(assetPath: widget.mockAssetPath);
+    }
+
+    if (kIsWeb && !_webMapsPollDone && !MapsConfig.isConfigured) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.situationMapLive,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              const Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (!MapsConfig.isConfigured) {
+      return MockMapPanel(assetPath: widget.mockAssetPath);
     }
     return _LiveSituationMap(
-      iotDevicesRepository: iotDevicesRepository,
+      iotDevicesRepository: widget.iotDevicesRepository,
     );
   }
 }
