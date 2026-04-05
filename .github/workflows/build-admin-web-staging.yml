@@ -53,7 +53,7 @@ jobs:
           path = pathlib.Path("web/index.html")
           text = path.read_text(encoding="utf-8")
           text2, n = re.subn(
-              r'(https://maps\.googleapis\.com/maps/api/js\?key=)[^"\'>\s]+',
+              r'(https://maps\.googleapis\.com/maps/api/js\?key=)([^&"\'>\s]+)',
               r"\1" + key,
               text,
               count=1,
