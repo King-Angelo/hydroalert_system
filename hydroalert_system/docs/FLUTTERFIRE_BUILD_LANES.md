@@ -40,21 +40,44 @@ export 'firebase_options_dev.dart';
 
 ## 3. Staging / production lanes (do not commit prod)
 
-### Option A — CI writes `firebase_options.dart` (recommended for prod)
+### Option A — CI writes `firebase_options.dart` (recommended for staging / prod)
 
-1. On a secure machine, run **`flutterfire configure`** against the **staging** or **production** Firebase project and capture the generated **`lib/firebase_options.dart`** content (full file with `class DefaultFirebaseOptions`).
-2. Store that content in a **secret** (e.g. GitHub Actions secret `ADMIN_FIREBASE_OPTIONS_STAGING_DART` or `..._PRODUCTION_DART`).
-3. In the deploy workflow, **before** `flutter build web`:
+The **repository** workflow **[`.github/workflows/build-admin-web-staging.yml`](../../.github/workflows/build-admin-web-staging.yml)** (repo root) injects options from a secret, then runs `flutter build web`. Tracked **`firebase_options.dart`** stays a dev **barrel**; the job overwrites it only inside the runner.
 
-   ```bash
-   # Example: secret holds the entire Dart file contents
-   echo "$ADMIN_FIREBASE_OPTIONS_STAGING_DART" > apps/admin_app/lib/firebase_options.dart
-   ```
+#### One-time: generate the secret file for **staging** (`hydroalert-staging`)
 
-4. Build with the same **`--dart-define`** values you already use (`HYDRO_ENV`, `HYDROADMIN_API_BASE_URL`).
-5. **Do not** commit the generated `firebase_options.dart` from that job; artifacts are the **build output** only.
+On a trusted machine (with Flutter + Firebase CLI logged in):
 
-The **repository** keeps the dev barrel + `firebase_options_dev.dart`; production text never lands on `main`.
+```bash
+cd hydroalert_system/apps/admin_app
+dart pub global activate flutterfire_cli
+flutterfire configure --project=hydroalert-staging --platforms=web --out=lib/firebase_options.staging.dart
+```
+
+Open **`lib/firebase_options.staging.dart`** — copy the **entire** file (from the first `//` or `import` through the last `}`). That string must define **`DefaultFirebaseOptions`** the same way a normal FlutterFire **`firebase_options.dart`** does.
+
+That path is **gitignored** (see root **`.gitignore`**). Do **not** commit it; keep the content only in **GitHub Actions secrets**.
+
+#### One-time: GitHub Actions secrets
+
+Repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**:
+
+| Name | Value |
+|------|--------|
+| **`ADMIN_FIREBASE_OPTIONS_STAGING_DART`** | Full pasted contents of the generated Dart file (multiline). |
+| **`HYDROADMIN_API_BASE_URL_STAGING`** *(optional)* | e.g. `https://your-staging-api.onrender.com` (no trailing slash). |
+
+If you skip the URL secret, you must pass the same URL when you **Run workflow** as input **`api_base`**.
+
+#### Run the build
+
+GitHub → **Actions** → **Build admin web (staging)** → **Run workflow** → optional **api_base** → run.
+
+Download artifact **`admin-web-staging`** (`build/web` contents). Deploy that folder to Firebase Hosting for **`hydroalert-staging`** (e.g. `firebase deploy --only hosting` with **`firebase use staging`** from **`hydroalert_system/`**).
+
+#### Production
+
+Use the same pattern with a **different** secret (e.g. `ADMIN_FIREBASE_OPTIONS_PRODUCTION_DART`) and a **separate** workflow or job — **do not** put production options in the staging secret.
 
 ### Option B — Local staging build (optional)
 
@@ -86,15 +109,35 @@ If your production Firebase project ID changes, update **`.firebaserc`** so the 
 
 ---
 
-## 5. Example: manual staging web build
+## 5. Manual staging web build + Hosting deploy
+
+**Prerequisite:** `firebase_options` must target **`hydroalert-staging`** for this build (Option B: generate `lib/firebase_options.staging.dart`, then temporarily set `lib/firebase_options.dart` to `export 'firebase_options.staging.dart';` — **do not commit**). Or use the **CI workflow** and download the artifact.
+
+From **`hydroalert_system/`** (after `flutter build web`):
 
 ```bash
+firebase use staging
 cd apps/admin_app
-# After injecting the correct firebase_options.dart for staging:
 flutter build web \
   --dart-define=HYDRO_ENV=staging \
-  --dart-define=HYDROADMIN_API_BASE_URL=https://hydroalert-api-staging.onrender.com
+  --dart-define=HYDROADMIN_API_BASE_URL=https://YOUR-STAGING-API.onrender.com
+cd ../..
+firebase deploy --only hosting
 ```
+
+**PowerShell** (line continuation is `` ` ``):
+
+```powershell
+firebase use staging
+cd apps/admin_app
+flutter build web `
+  --dart-define=HYDRO_ENV=staging `
+  --dart-define=HYDROADMIN_API_BASE_URL=https://YOUR-STAGING-API.onrender.com
+cd ../..
+firebase deploy --only hosting
+```
+
+Root **`firebase.json`** maps Hosting **`public`** to **`apps/admin_app/build/web`** so deploy uses the Flutter output. Set **`CORS_ALLOW_ORIGIN`** on the **staging** Render API to your **Hosting** URL (e.g. `https://hydroalert-staging.web.app`).
 
 ---
 
@@ -102,4 +145,5 @@ flutter build web \
 
 - **`docs/environment_separation_p0.md`**
 - **Repository root** **`.github/workflows/ci.yml`**
-- Optional workflow template: **`docs/examples/build-admin-web-staging.workflow.yml`**
+- Live workflow (repo root): **`build-admin-web-staging.yml`**
+- Legacy copy snapshot: **`docs/examples/build-admin-web-staging.workflow.yml`** (prefer root workflow)
