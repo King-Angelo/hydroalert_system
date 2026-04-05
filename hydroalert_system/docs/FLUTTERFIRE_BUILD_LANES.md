@@ -109,15 +109,35 @@ If your production Firebase project ID changes, update **`.firebaserc`** so the 
 
 ---
 
-## 5. Example: manual staging web build
+## 5. Manual staging web build + Hosting deploy
+
+**Prerequisite:** `firebase_options` must target **`hydroalert-staging`** for this build (Option B: generate `lib/firebase_options.staging.dart`, then temporarily set `lib/firebase_options.dart` to `export 'firebase_options.staging.dart';` — **do not commit**). Or use the **CI workflow** and download the artifact.
+
+From **`hydroalert_system/`** (after `flutter build web`):
 
 ```bash
+firebase use staging
 cd apps/admin_app
-# After injecting the correct firebase_options.dart for staging:
 flutter build web \
   --dart-define=HYDRO_ENV=staging \
-  --dart-define=HYDROADMIN_API_BASE_URL=https://hydroalert-api-staging.onrender.com
+  --dart-define=HYDROADMIN_API_BASE_URL=https://YOUR-STAGING-API.onrender.com
+cd ../..
+firebase deploy --only hosting
 ```
+
+**PowerShell** (line continuation is `` ` ``):
+
+```powershell
+firebase use staging
+cd apps/admin_app
+flutter build web `
+  --dart-define=HYDRO_ENV=staging `
+  --dart-define=HYDROADMIN_API_BASE_URL=https://YOUR-STAGING-API.onrender.com
+cd ../..
+firebase deploy --only hosting
+```
+
+Root **`firebase.json`** maps Hosting **`public`** to **`apps/admin_app/build/web`** so deploy uses the Flutter output. Set **`CORS_ALLOW_ORIGIN`** on the **staging** Render API to your **Hosting** URL (e.g. `https://hydroalert-staging.web.app`).
 
 ---
 
