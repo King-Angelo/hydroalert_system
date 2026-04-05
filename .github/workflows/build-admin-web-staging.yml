@@ -2,6 +2,8 @@
 # Prerequisites — GitHub repo secrets:
 #   ADMIN_FIREBASE_OPTIONS_STAGING_DART — full FlutterFire-generated Dart file (see FLUTTERFIRE_BUILD_LANES.md)
 #   HYDROADMIN_API_BASE_URL_STAGING — optional; used when api_base input is empty
+#   HYDROADMIN_GOOGLE_MAPS_API_KEY — optional; when set, patches web/index.html and passes --dart-define so the
+#     dashboard Situation Map uses Google Maps (same key as in Google Cloud console for this app).
 #
 # Paths assume Git root contains hydroalert_system/ (King-Angelo/hydroalert_system layout).
 
@@ -37,6 +39,30 @@ jobs:
 
       - run: flutter pub get
 
+      - name: Inject Google Maps API key (web)
+        env:
+          MAPS_KEY: ${{ secrets.HYDROADMIN_GOOGLE_MAPS_API_KEY }}
+        run: |
+          if [ -z "$MAPS_KEY" ]; then
+            echo "::warning::Secret HYDROADMIN_GOOGLE_MAPS_API_KEY is empty — situation map will use the static mock. Add the secret and rebuild for live maps."
+            exit 0
+          fi
+          python3 <<'PY'
+          import os, re, pathlib
+          key = os.environ["MAPS_KEY"]
+          path = pathlib.Path("web/index.html")
+          text = path.read_text(encoding="utf-8")
+          text2, n = re.subn(
+              r'(https://maps\.googleapis\.com/maps/api/js\?key=)[^"\'>\s]+',
+              r"\1" + key,
+              text,
+              count=1,
+          )
+          if n != 1:
+              raise SystemExit(f"expected one maps.googleapis.com script key in web/index.html, replaced {n}")
+          path.write_text(text2, encoding="utf-8")
+          PY
+
       - name: Resolve API base URL
         id: api
         env:
@@ -54,10 +80,16 @@ jobs:
       - name: Build web (staging)
         env:
           HYDROADMIN_API_BASE_URL: ${{ steps.api.outputs.base }}
+          MAPS_KEY: ${{ secrets.HYDROADMIN_GOOGLE_MAPS_API_KEY }}
         run: |
+          extra_defs=()
+          if [ -n "$MAPS_KEY" ]; then
+            extra_defs+=(--dart-define=HYDROADMIN_GOOGLE_MAPS_API_KEY="${MAPS_KEY}")
+          fi
           flutter build web \
             --dart-define=HYDRO_ENV=staging \
-            --dart-define=HYDROADMIN_API_BASE_URL="$HYDROADMIN_API_BASE_URL"
+            --dart-define=HYDROADMIN_API_BASE_URL="$HYDROADMIN_API_BASE_URL" \
+            "${extra_defs[@]}"
 
       - uses: actions/upload-artifact@v4
         with:

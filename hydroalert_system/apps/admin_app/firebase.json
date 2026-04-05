@@ -1,1 +1,1 @@
-{"flutter":{"platforms":{"dart":{"lib/firebase_options.dart":{"projectId":"hydroalert-dev","configurations":{"web":"1:1024271924462:web:5a950903eb2760a5c007ff"}}}}}}
+{"flutter":{"platforms":{"dart":{"lib/firebase_options.dart":{"projectId":"hydroalert-dev","configurations":{"web":"1:1024271924462:web:5a950903eb2760a5c007ff"}},"lib/firebase_options.staging.dart":{"projectId":"hydroalert-staging","configurations":{"web":"1:662987559971:web:eb2fef875c3d86b4d40d96"}}}}}}
