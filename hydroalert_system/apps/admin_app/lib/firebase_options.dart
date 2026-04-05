@@ -5,4 +5,4 @@
 // production output). See `docs/FLUTTERFIRE_BUILD_LANES.md`.
 //
 // ignore_for_file: type=lint
-export 'firebase_options.staging.dart';
+export 'firebase_options_dev.dart';
