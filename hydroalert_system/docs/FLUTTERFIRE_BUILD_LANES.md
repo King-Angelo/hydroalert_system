@@ -9,7 +9,8 @@ The admin app needs **`DefaultFirebaseOptions`** that match the **Firebase proje
 | File | Role |
 |------|------|
 | `apps/admin_app/lib/firebase_options_dev.dart` | **Development** project (`hydroalert-dev`). Safe to commit. |
-| `apps/admin_app/lib/firebase_options.dart` | **Barrel** that `export`s `firebase_options_dev.dart` for local dev and `flutter analyze` on PRs. |
+| `apps/admin_app/lib/firebase_options_staging.dart` | **Staging** project (`hydroalert-staging`). Web config is public client-side; commit so local staging builds work. Regenerate with `flutterfire configure --project=hydroalert-staging --platforms=web --out=lib/firebase_options_staging.dart`. |
+| `apps/admin_app/lib/firebase_options.dart` | **Router**: picks dev vs staging from **`HYDRO_ENV`** (`--dart-define=HYDRO_ENV=staging` for staging Hosting). Must match Render **`FIREBASE_PROJECT_ID`**. |
 
 `main.dart` continues to import **`firebase_options.dart`** only.
 
