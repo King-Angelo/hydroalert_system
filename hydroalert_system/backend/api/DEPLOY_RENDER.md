@@ -65,6 +65,7 @@ git push origin main
    | `FCM_INCLUDE_ADMIN_RECIPIENTS` | `false` | `true` = also push to admins whose `location.zone` matches |
    | `ALERT_MIN_INTERVAL_SECONDS` | `120` | Min seconds between sends for the same zone (rate key) |
    | `ALERT_DEDUPE_WINDOW_SECONDS` | `900` | Dedupe bucket size (seconds) for identical payloads |
+   | `CORS_ALLOW_ORIGIN` | `https://hydroalert-staging.web.app` | **Required for Flutter web admin** calling this API from the browser. Use your Hosting URL exactly (no trailing slash). Optional comma-separated second origin: `https://your-project.firebaseapp.com`. |
 
    **FCM / alerting:** See [docs/notifications_fcm_p0.md](../docs/notifications_fcm_p0.md).
 
@@ -127,3 +128,4 @@ If using backup/retention endpoints, add jobs at [cron-job.org](https://cron-job
 | Firestore permission denied | Verify `FIREBASE_SERVICE_ACCOUNT_JSON` is valid and has Firestore access |
 | **`Token verification failed: FormatException: Control character in string`… `private_key`** | Service account JSON on the server is **invalid** (usually literal newlines in `private_key`). Use **`FIREBASE_SERVICE_ACCOUNT_JSON_B64`** or **`jq -c .`** minified JSON — see **Environment Variables** above. Redeploy after fixing. |
 | 502 Bad Gateway | Check Render logs; service may be starting. Wait for cold start. |
+| **CORS** / `No 'Access-Control-Allow-Origin'` on admin web | Set **`CORS_ALLOW_ORIGIN`** on the API service to your Firebase Hosting origin (e.g. `https://hydroalert-staging.web.app`). Redeploy. If you still see 500, check Render logs — unhandled errors now still include CORS headers. |

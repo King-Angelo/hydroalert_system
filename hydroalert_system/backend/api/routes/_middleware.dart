@@ -5,8 +5,12 @@ import 'package:hydroalert_backend_api/src/observability_log.dart';
 
 /// CORS for browser-based admin app → API (e.g. Flutter web).
 ///
-/// Set `CORS_ALLOW_ORIGIN` to a single origin in production (e.g. your admin URL).
+/// Set `CORS_ALLOW_ORIGIN` to your admin web origin (e.g. `https://hydroalert-staging.web.app`).
+/// Comma-separated list is allowed for both `*.web.app` and `*.firebaseapp.com`.
 /// If unset, reflects the request `Origin` or falls back to `*`.
+///
+/// Unhandled errors return JSON 500 **with** CORS headers so the browser does not
+/// hide the failure behind a misleading "no Access-Control-Allow-Origin" message.
 ///
 /// Structured JSON request logs: `OPS_STRUCTURED_LOGS=false` to disable.
 Handler middleware(Handler handler) {
@@ -45,7 +49,14 @@ Handler middleware(Handler handler) {
         'error': e.toString(),
         'stack': st.toString(),
       });
-      rethrow;
+      return Response.json(
+        statusCode: HttpStatus.internalServerError,
+        headers: cors,
+        body: {
+          'error': 'internal_server_error',
+          'message': 'An unexpected error occurred.',
+        },
+      );
     }
   };
 }
@@ -63,7 +74,22 @@ Map<String, Object> _corsHeaders(String? requestOrigin) {
 String _allowOrigin(String? requestOrigin) {
   final fixed = Platform.environment['CORS_ALLOW_ORIGIN']?.trim();
   if (fixed != null && fixed.isNotEmpty) {
-    return fixed;
+    final parts = fixed
+        .split(',')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) {
+      // fall through to reflect Origin
+    } else if (parts.length == 1) {
+      return parts.first;
+    } else {
+      final o = requestOrigin?.trim();
+      if (o != null && o.isNotEmpty && parts.contains(o)) {
+        return o;
+      }
+      return parts.first;
+    }
   }
   final o = requestOrigin?.trim();
   if (o != null && o.isNotEmpty) {
