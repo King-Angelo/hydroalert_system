@@ -33,7 +33,15 @@ class FirebaseAdminService {
 
   /// Ensures Firebase Admin is initialized. Call before verifyAndGetAdminUid.
   Future<void> ensureInitialized() async {
-    if (_app != null) return;
+    // Must require _auth and _firestore, not only _app. If initializeApp succeeded
+    // but Auth or Firestore construction threw, a later call would early-return with
+    // _auth still null → _auth!.verifyIdToken throws "Null check operator used on a null value".
+    if (_app != null && _auth != null && _firestore != null) return;
+
+    _app = null;
+    _auth = null;
+    _firestore = null;
+    _messaging = null;
 
     Credential credential;
     if (_serviceAccountPath != null && _serviceAccountPath!.isNotEmpty) {
