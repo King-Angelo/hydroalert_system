@@ -48,12 +48,26 @@ Middleware _adminAuthMiddleware() {
 
         final next = context.provide<String>(() => adminUid);
         return handler(next);
-      } on Exception catch (e) {
+      } catch (e, _) {
+        // Must not use `on Exception` only: Firebase Admin init throws [StateError]
+        // (e.g. missing GOOGLE_APPLICATION_CREDENTIALS file), which is [Error], not
+        // [Exception]. Those would reach the root middleware as internal_server_error.
+        if (e is StateError) {
+          return Response.json(
+            statusCode: HttpStatus.internalServerError,
+            body: {
+              'error': 'firebase_admin_init_failed',
+              'message': e.toString(),
+              'error_type': 'StateError',
+            },
+          );
+        }
         return Response.json(
           statusCode: HttpStatus.unauthorized,
           body: {
             'error': 'unauthorized',
             'message': 'Token verification failed: ${e.toString()}',
+            'error_type': e.runtimeType.toString(),
           },
         );
       }
