@@ -55,7 +55,7 @@ git push origin main
 
    | Key | Value | Notes |
    |-----|-------|-------|
-   | `FIREBASE_PROJECT_ID` | `hydroalert-dev` | Your Firebase project |
+   | `FIREBASE_PROJECT_ID` | `hydroalert-dev` | **Must match** the Firebase project used by the **admin web** build (`DefaultFirebaseOptions.projectId` / `firebase_options.dart`). If Render uses a different project than the browser app, ID token verification fails (often `TypeError` / “Null check operator” in logs). |
    | `FIREBASE_SERVICE_ACCOUNT_JSON` | `{...}` | **Must be valid JSON.** Prefer **one line** (see below). |
    | `FIREBASE_SERVICE_ACCOUNT_JSON_B64` | *(optional)* | **Recommended on Render:** base64 of the entire `.json` file (no newlines). Avoids paste errors with `private_key`. |
    | `CRON_SECRET` | `your-random-secret` | For cron endpoints (optional) |
@@ -129,4 +129,5 @@ If using backup/retention endpoints, add jobs at [cron-job.org](https://cron-job
 | **`Token verification failed: FormatException: Control character in string`… `private_key`** | Service account JSON on the server is **invalid** (usually literal newlines in `private_key`). Use **`FIREBASE_SERVICE_ACCOUNT_JSON_B64`** or **`jq -c .`** minified JSON — see **Environment Variables** above. Redeploy after fixing. |
 | 502 Bad Gateway | Check Render logs; service may be starting. Wait for cold start. |
 | **CORS** / `No 'Access-Control-Allow-Origin'` on admin web | Set **`CORS_ALLOW_ORIGIN`** on the API service to your Firebase Hosting origin (e.g. `https://hydroalert-staging.web.app`). Redeploy. If you still see 500, check Render logs — unhandled errors now still include CORS headers. |
+| **401** + `Token verification failed` + `_TypeError` / null check | **Project mismatch:** `FIREBASE_PROJECT_ID` on Render must equal the Firebase project your **admin web** uses (check `firebase_options.dart` / build flavor). Rebuild and redeploy admin web if you changed projects; fix Render env and redeploy API. No extra Firebase Hosting “UI” setting fixes this — it is env alignment. |
 | **`POST /v1/alerts/manual-override` → 500** | Open the response JSON in DevTools (or Render logs). **`firestore_error` + `failed_precondition`** often means a **missing composite index** for `Users` (`is_active` + `location.zone`): deploy indexes from the repo with `firebase deploy --only firestore:indexes` to the **same** project as **`FIREBASE_PROJECT_ID`**. **`messaging_error`** → enable **Firebase Cloud Messaging API** in Google Cloud for that project; confirm **`FIREBASE_PROJECT_ID`** matches the Firebase project used by the admin web app. |

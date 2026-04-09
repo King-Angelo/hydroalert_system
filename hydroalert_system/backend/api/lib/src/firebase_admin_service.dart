@@ -94,7 +94,25 @@ class FirebaseAdminService {
   Future<String?> verifyAndGetAdminUid(String idToken) async {
     await ensureInitialized();
 
-    final decoded = await _auth!.verifyIdToken(idToken);
+    final auth = _auth;
+    if (auth == null) {
+      throw StateError('Firebase Auth not initialized after ensureInitialized()');
+    }
+
+    // [TypeError] here is often from Admin SDK JWT parsing (`!` on missing claims)
+    // when the ID token is for a different Firebase project than [projectId].
+    late final DecodedIdToken decoded;
+    try {
+      decoded = await auth.verifyIdToken(idToken);
+    } on TypeError catch (e) {
+      throw Exception(
+        'ID token verification failed. The API uses FIREBASE_PROJECT_ID=$projectId. '
+        'That must match the Firebase project used by the admin web app '
+        '(DefaultFirebaseOptions / firebase_options — same as Hosting). '
+        'If they differ, verification throws inside the Admin SDK. Original: $e',
+      );
+    }
+
     final uid = decoded.uid;
     if (uid.isEmpty) return null;
 
