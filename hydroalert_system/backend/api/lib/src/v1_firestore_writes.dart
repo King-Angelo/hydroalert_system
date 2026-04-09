@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:dart_firebase_admin_plus/firestore.dart';
+import 'package:dart_firebase_admin_plus/messaging.dart';
 
 import 'firebase_admin_service.dart';
 
@@ -31,11 +32,45 @@ class V1FirestoreWrites {
     };
   }
 
+  /// Maps Admin SDK errors to JSON so the admin web snackbar / DevTools show the
+  /// real cause (e.g. missing Firestore composite index URL, FCM sender mismatch).
   static Response firestoreFailure(Object e, StackTrace st) {
+    if (e is FirebaseFirestoreAdminException) {
+      final body = <String, dynamic>{
+        'error': 'firestore_error',
+        'message': '${e.code}: ${e.message}',
+        'firestore_client_code': e.errorCode.code,
+      };
+      if (e.errorCode == FirestoreClientErrorCode.failedPrecondition) {
+        body['hint'] =
+            'If the message mentions an index, open the link in it or deploy '
+            '`firestore.indexes.json` with: firebase deploy --only firestore:indexes '
+            '(same Firebase project as FIREBASE_PROJECT_ID on Render).';
+      }
+      return Response.json(
+        statusCode: HttpStatus.internalServerError,
+        body: body,
+      );
+    }
+    if (e is FirebaseMessagingAdminException) {
+      return Response.json(
+        statusCode: HttpStatus.internalServerError,
+        body: {
+          'error': 'messaging_error',
+          'message': '${e.code}: ${e.message}',
+          'messaging_client_code': e.errorCode.code,
+          'hint':
+              'Confirm Cloud Messaging API is enabled for the Firebase project '
+              'and the service account can use FCM. Check FIREBASE_PROJECT_ID matches '
+              'the project whose Web app issues ID tokens.',
+        },
+      );
+    }
     return Response.json(
       statusCode: HttpStatus.internalServerError,
       body: {
-        'error': 'firestore_error',
+        'error': 'internal_error',
+        'error_type': e.runtimeType.toString(),
         'message': e.toString(),
       },
     );

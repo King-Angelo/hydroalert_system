@@ -16,19 +16,19 @@ Future<Response> onRequest(RequestContext context) async {
 }
 
 Future<Response> _onPost(RequestContext context) async {
-  final body = await readJsonBody(context);
-  final validationError = validateManualOverrideBody(body);
-  if (validationError != null) return badRequest(validationError);
-
-  final payload = body!;
-  final severity = readString(payload['severity'])!;
-  final message = readString(payload['message'])!;
-  final targetZone = readString(payload['targetZone'])!;
-
-  final adminUid = context.read<String>();
-
-  final sw = Stopwatch()..start();
   try {
+    final body = await readJsonBody(context);
+    final validationError = validateManualOverrideBody(body);
+    if (validationError != null) return badRequest(validationError);
+
+    final payload = body!;
+    final severity = readString(payload['severity'])!;
+    final message = readString(payload['message'])!;
+    final targetZone = readString(payload['targetZone'])!;
+
+    final adminUid = context.read<String>();
+
+    final sw = Stopwatch()..start();
     final firestore = await V1FirestoreWrites.db();
     final messaging = await FirebaseAdminService.instance.getMessaging();
 
@@ -75,9 +75,11 @@ Future<Response> _onPost(RequestContext context) async {
       'targetZone': targetZone,
       'push': pushLog,
     });
-  } on FirebaseFirestoreAdminException catch (e) {
-    return V1FirestoreWrites.firestoreFailure(e, StackTrace.current);
+  } on FirebaseFirestoreAdminException catch (e, st) {
+    ObservabilityLog.manualOverrideFailed(error: e, stackTrace: st);
+    return V1FirestoreWrites.firestoreFailure(e, st);
   } catch (e, st) {
+    ObservabilityLog.manualOverrideFailed(error: e, stackTrace: st);
     return V1FirestoreWrites.firestoreFailure(e, st);
   }
 }
