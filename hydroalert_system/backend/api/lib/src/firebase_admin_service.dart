@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_firebase_admin_plus/auth.dart';
@@ -42,6 +43,7 @@ class FirebaseAdminService {
           'GOOGLE_APPLICATION_CREDENTIALS file not found: $_serviceAccountPath',
         );
       }
+      await _repairServiceAccountJsonFileIfNeeded(file);
       credential = Credential.fromServiceAccount(file);
     } else {
       credential = Credential.fromApplicationDefaultCredentials();
@@ -78,6 +80,83 @@ class FirebaseAdminService {
   Future<Messaging> getMessaging() async {
     await ensureInitialized();
     return _messaging ??= Messaging(_app!);
+  }
+
+  /// If [FIREBASE_SERVICE_ACCOUNT_JSON] was pasted with literal newlines inside
+  /// `private_key`, JSON is invalid (`FormatException: Control character in string`).
+  /// Rewrites the file with a valid PEM string (escaped `\n` only).
+  static Future<void> _repairServiceAccountJsonFileIfNeeded(File file) async {
+    var raw = await file.readAsString();
+    if (raw.startsWith('\uFEFF')) {
+      raw = raw.substring(1);
+    }
+    try {
+      jsonDecode(raw);
+      return;
+    } on FormatException {
+      // try repair below
+    }
+    final repaired = _repairServiceAccountJsonString(raw);
+    if (repaired == null) {
+      throw FormatException(
+        'Invalid service account JSON (could not parse or repair private_key). '
+        'Use minified JSON or FIREBASE_SERVICE_ACCOUNT_JSON_B64 — see DEPLOY_RENDER.md.',
+      );
+    }
+    await file.writeAsString(repaired);
+  }
+
+  /// Returns null if the PEM block could not be located or repaired JSON is invalid.
+  static String? _repairServiceAccountJsonString(String raw) {
+    var s = raw;
+    if (s.contains('\r')) {
+      s = s.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+    }
+    try {
+      jsonDecode(s);
+      return s;
+    } on FormatException {
+      // continue
+    }
+
+    final keyPattern = RegExp(r'"private_key"\s*:\s*"');
+    final match = keyPattern.firstMatch(s);
+    if (match == null) return null;
+
+    final valueStart = match.end;
+    final markers = [
+      (
+        begin: '-----BEGIN PRIVATE KEY-----',
+        end: '-----END PRIVATE KEY-----',
+      ),
+      (
+        begin: '-----BEGIN RSA PRIVATE KEY-----',
+        end: '-----END RSA PRIVATE KEY-----',
+      ),
+    ];
+    for (final m in markers) {
+      final pemBeginIdx = s.indexOf(m.begin, valueStart);
+      if (pemBeginIdx < 0) continue;
+      final pemEndIdx = s.indexOf(m.end, pemBeginIdx);
+      if (pemEndIdx < 0) continue;
+      final afterEnd = pemEndIdx + m.end.length;
+      var closeIdx = afterEnd;
+      while (closeIdx < s.length && s[closeIdx] != '"') {
+        closeIdx++;
+      }
+      if (closeIdx >= s.length) return null;
+      final pemInner = s.substring(pemBeginIdx, afterEnd);
+      final suffix = s.substring(closeIdx + 1);
+      final repaired =
+          '${s.substring(0, match.start)}"private_key": ${jsonEncode(pemInner)}$suffix';
+      try {
+        jsonDecode(repaired);
+        return repaired;
+      } on FormatException {
+        return null;
+      }
+    }
+    return null;
   }
 
   Future<bool> _isAdminInFirestore(String uid) async {
