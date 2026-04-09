@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -19,6 +20,10 @@ class FirebaseAdminService {
   Firestore? _firestore;
   Messaging? _messaging;
 
+  /// Single-flight init: concurrent requests must not interleave [ensureInitialized]
+  /// (one could clear fields while another is mid-init → `_auth` null → `_TypeError`).
+  Future<void>? _initInFlight;
+
   static const _usersCollection = 'Users';
 
   /// Project ID for Firebase (e.g. hydroalert-dev).
@@ -33,17 +38,33 @@ class FirebaseAdminService {
 
   /// Ensures Firebase Admin is initialized. Call before verifyAndGetAdminUid.
   Future<void> ensureInitialized() async {
-    // Must require _auth and _firestore, not only _app. If initializeApp succeeded
-    // but Auth or Firestore construction threw, a later call would early-return with
-    // _auth still null → _auth!.verifyIdToken throws "Null check operator used on a null value".
     if (_app != null && _auth != null && _firestore != null) return;
 
+    while (_initInFlight != null) {
+      await _initInFlight!;
+      if (_app != null && _auth != null && _firestore != null) return;
+    }
+
+    final done = Completer<void>();
+    _initInFlight = done.future;
+    try {
+      await _initializeFirebaseAdminLocked();
+      done.complete();
+    } catch (e, st) {
+      done.completeError(e, st);
+      rethrow;
+    } finally {
+      _initInFlight = null;
+    }
+  }
+
+  Future<void> _initializeFirebaseAdminLocked() async {
     _app = null;
     _auth = null;
     _firestore = null;
     _messaging = null;
 
-    Credential credential;
+    late final Credential credential;
     if (_serviceAccountPath != null && _serviceAccountPath!.isNotEmpty) {
       final file = File(_serviceAccountPath!);
       if (!await file.exists()) {
@@ -57,9 +78,12 @@ class FirebaseAdminService {
       credential = Credential.fromApplicationDefaultCredentials();
     }
 
-    _app = FirebaseAdminApp.initializeApp(projectId, credential);
-    _auth = Auth(_app!);
-    _firestore = Firestore(_app!);
+    final app = FirebaseAdminApp.initializeApp(projectId, credential);
+    final auth = Auth(app);
+    final firestore = Firestore(app);
+    _app = app;
+    _auth = auth;
+    _firestore = firestore;
   }
 
   /// Verifies the Firebase ID token and checks that the user is an active admin
