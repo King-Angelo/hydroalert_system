@@ -1,0 +1,2 @@
+# Shell used by Linux Docker; CRLF breaks shebang and line parsing.
+entrypoint.sh text eol=lf

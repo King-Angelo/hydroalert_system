@@ -56,7 +56,8 @@ git push origin main
    | Key | Value | Notes |
    |-----|-------|-------|
    | `FIREBASE_PROJECT_ID` | `hydroalert-dev` | Your Firebase project |
-   | `FIREBASE_SERVICE_ACCOUNT_JSON` | `{ ... }` | Full JSON from service account file (paste entire content) |
+   | `FIREBASE_SERVICE_ACCOUNT_JSON` | `{...}` | **Must be valid JSON.** Prefer **one line** (see below). |
+   | `FIREBASE_SERVICE_ACCOUNT_JSON_B64` | *(optional)* | **Recommended on Render:** base64 of the entire `.json` file (no newlines). Avoids paste errors with `private_key`. |
    | `CRON_SECRET` | `your-random-secret` | For cron endpoints (optional) |
    | `BACKUP_BUCKET` | `gs://hydroalert-dev-backups` | For backup export (optional) |
    | `FCM_ALERTS_ENABLED` | `true` | Set `false` to disable FCM sends (audit log still records `push.skipped_disabled`) |
@@ -67,11 +68,14 @@ git push origin main
 
    **FCM / alerting:** See [docs/notifications_fcm_p0.md](../docs/notifications_fcm_p0.md).
 
-   **Getting the service account JSON:**
+   **Getting the service account JSON (staging / prod):**
    - Firebase Console → Project Settings → Service accounts → Generate new private key
-   - Open the downloaded JSON file
-   - Copy the entire content (including `{` and `}`)
-   - Paste as the value of `FIREBASE_SERVICE_ACCOUNT_JSON` in Render
+   - **Do not** paste multiline JSON into Render if the editor turns `private_key` into real line breaks — JSON allows only `\n` **inside the string**, not literal newlines. That causes: `FormatException: Control character in string` when verifying tokens.
+   - **Option A (recommended):** Base64 the file and set **`FIREBASE_SERVICE_ACCOUNT_JSON_B64`** (see `entrypoint.sh`):
+     - Linux: `base64 -w0 < your-project.json`
+     - macOS: `base64 -i your-project.json | tr -d '\n'`
+     - Paste the **single** base64 string as the env value (no variable name in the value).
+   - **Option B:** Minify to one line, then set **`FIREBASE_SERVICE_ACCOUNT_JSON`**: `jq -c . your-project.json` and paste the output.
 
 6.  Click **Create Web Service**
 
@@ -121,4 +125,5 @@ If using backup/retention endpoints, add jobs at [cron-job.org](https://cron-job
 | **`open Dockerfile: no such file or directory`** | **Root Directory** = monorepo folder; **Dockerfile Path** = **`backend/api/Dockerfile`** (relative to that root). |
 | Build fails on `dart_frog build` or **`dart pub get` exit 66** | Same as above — context must include **`packages/shared_models`**. |
 | Firestore permission denied | Verify `FIREBASE_SERVICE_ACCOUNT_JSON` is valid and has Firestore access |
+| **`Token verification failed: FormatException: Control character in string`… `private_key`** | Service account JSON on the server is **invalid** (usually literal newlines in `private_key`). Use **`FIREBASE_SERVICE_ACCOUNT_JSON_B64`** or **`jq -c .`** minified JSON — see **Environment Variables** above. Redeploy after fixing. |
 | 502 Bad Gateway | Check Render logs; service may be starting. Wait for cold start. |
