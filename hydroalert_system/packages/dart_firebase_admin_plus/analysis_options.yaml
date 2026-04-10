@@ -1,0 +1,8 @@
+# Vendored copy: only `lib/` is consumed by hydroalert_backend_api. Upstream
+# example/ imports package:dart_firebase_admin (different name) and test/
+# includes point outside this tree — exclude so the IDE does not mark
+# packages/ red from analyzer errors in unused folders.
+analyzer:
+  exclude:
+    - example/**
+    - test/**
