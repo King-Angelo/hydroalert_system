@@ -19,3 +19,9 @@ dependencies:
 dev_dependencies:
   lints: ^6.0.0
   test: ^1.26.0
+
+# Vendored fix: DecodedIdToken.fromMap read sign_in_provider at JWT root; Firebase
+# nests it under `firebase` (see packages/dart_firebase_admin_plus/PATCHES.md).
+dependency_overrides:
+  dart_firebase_admin_plus:
+    path: ../../packages/dart_firebase_admin_plus

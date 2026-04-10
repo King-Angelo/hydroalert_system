@@ -108,10 +108,9 @@ packages:
   dart_firebase_admin_plus:
     dependency: "direct main"
     description:
-      name: dart_firebase_admin_plus
-      sha256: "9a239a3f11452df7d9e876977ded16fbeecae44da3bf853c329eb8a000695f30"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../packages/dart_firebase_admin_plus"
+      relative: true
+    source: path
     version: "0.5.0"
   dart_frog:
     dependency: "direct main"

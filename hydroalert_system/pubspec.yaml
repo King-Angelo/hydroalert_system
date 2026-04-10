@@ -9,4 +9,6 @@ workspace:
   - apps/resident_app
   - apps/official_app
   # backend/api is excluded: Dart Frog + firebase_admin deps conflict with Flutter workspace (intl, etc.)
-  - packages/*
+  # List shared_models only — do not use packages/* (vendored dart_firebase_admin_plus for the API
+  # uses intl ^0.19 and must not participate in the Flutter workspace).
+  - packages/shared_models

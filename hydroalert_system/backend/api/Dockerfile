@@ -18,6 +18,7 @@ ENV PATH="${PATH}:/root/.pub-cache/bin"
 
 # Context = hydroalert_system/
 COPY packages/shared_models /app/packages/shared_models
+COPY packages/dart_firebase_admin_plus /app/packages/dart_firebase_admin_plus
 COPY backend/api /app/backend/api
 
 WORKDIR /app/backend/api
