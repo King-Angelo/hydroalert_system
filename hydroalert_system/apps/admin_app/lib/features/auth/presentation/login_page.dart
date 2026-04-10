@@ -152,6 +152,10 @@ class _LoginPageState extends State<LoginPage> {
       case 'popup-closed-by-user':
       case 'cancelled-popup-request':
         return l10n.authGoogleCancelled;
+      case 'unauthorized-domain':
+        return l10n.authUnauthorizedDomain;
+      case 'operation-not-allowed':
+        return l10n.authOperationNotAllowed;
       default:
         return l10n.authSignInFailed;
     }
