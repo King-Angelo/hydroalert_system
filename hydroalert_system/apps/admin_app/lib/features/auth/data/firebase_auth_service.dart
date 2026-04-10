@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 
 import 'auth_service.dart';
 
@@ -40,8 +40,10 @@ class FirebaseAuthService implements AuthService {
       return AuthSignInResult.success(adminUserId: uid);
     } on FirebaseAuthException catch (error) {
       return AuthSignInResult.failure(errorCode: error.code);
-    } catch (_) {
-      return const AuthSignInResult.failure(errorCode: 'auth-unknown');
+    } catch (e, st) {
+      // Popup blocked, wrong OAuth config, Identity Toolkit, etc. often surface here.
+      debugPrint('signInWithGoogle failed: $e\n$st');
+      return AuthSignInResult.failure(errorCode: 'auth-unknown');
     }
   }
 

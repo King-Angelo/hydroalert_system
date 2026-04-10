@@ -40,6 +40,8 @@ class AppLocalizations {
   String get authGoogleUnavailable =>
       _t('authGoogleUnavailable');
   String get authGoogleCancelled => _t('authGoogleCancelled');
+  String get authUnauthorizedDomain => _t('authUnauthorizedDomain');
+  String get authOperationNotAllowed => _t('authOperationNotAllowed');
   String get signOut => _t('signOut');
   String get emailRequired => _t('emailRequired');
   String get emailInvalid => _t('emailInvalid');
@@ -364,6 +366,10 @@ const _strings = <String, Map<String, String>>{
     'authGoogleUnavailable':
         'Google sign-in is not available in this build.',
     'authGoogleCancelled': 'Google sign-in was cancelled.',
+    'authUnauthorizedDomain':
+        'This domain is not allowed for sign-in. In Firebase Console → Authentication → Settings, add your site to Authorized domains (e.g. hydroalert-staging.web.app).',
+    'authOperationNotAllowed':
+        'Google sign-in is disabled for this project. In Firebase Console → Authentication → Sign-in method, enable Google.',
     'signOut': 'Sign out',
     'emailRequired': 'Email is required',
     'emailInvalid': 'Enter a valid email',
@@ -626,6 +632,10 @@ const _strings = <String, Map<String, String>>{
     'authGoogleUnavailable':
         'Hindi available ang Google sign-in sa build na ito.',
     'authGoogleCancelled': 'Kinansela ang Google sign-in.',
+    'authUnauthorizedDomain':
+        'Hindi pinapayagan ang domain na ito para sa sign-in. Sa Firebase Console → Authentication → Settings, idagdag ang site sa Authorized domains.',
+    'authOperationNotAllowed':
+        'Naka-disable ang Google sign-in sa project na ito. Sa Firebase Console → Authentication → Sign-in method, i-enable ang Google.',
     'signOut': 'Mag-sign out',
     'emailRequired': 'Kailangan ang email',
     'emailInvalid': 'Maglagay ng wastong email',
