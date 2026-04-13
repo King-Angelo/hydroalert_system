@@ -1,8 +1,12 @@
-# Vendored copy: only `lib/` is consumed by hydroalert_backend_api. Upstream
-# example/ imports package:dart_firebase_admin (different name) and test/
-# includes point outside this tree — exclude so the IDE does not mark
-# packages/ red from analyzer errors in unused folders.
+# Vendored copy: only `lib/` is consumed by hydroalert_backend_api (via path
+# override). Upstream example/ and test/ are broken in this tree.
+#
+# Excluding `lib/**` here stops the IDE from analyzing this package as its own
+# context (which produced dozens of false positives when the workspace root is
+# `Development_of_hydroalert` without a matching package_config). The API
+# package still type-checks imports when you run `dart analyze` in backend/api.
 analyzer:
   exclude:
     - example/**
     - test/**
+    - lib/**
