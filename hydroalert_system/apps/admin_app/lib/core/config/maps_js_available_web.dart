@@ -3,8 +3,7 @@ import 'dart:js_interop_unsafe';
 
 /// True when the Maps JS API from `web/index.html` finished loading (`google.maps`).
 ///
-/// Uses [globalContext] instead of `package:web` [Window] so behavior matches
-/// `globalThis` in the browser and works across dart2js / dart2wasm web.
+/// Uses [globalContext] so behavior matches `globalThis` across dart2js / dart2wasm web.
 bool isGoogleMapsScriptLoaded() {
   try {
     final g = globalContext;

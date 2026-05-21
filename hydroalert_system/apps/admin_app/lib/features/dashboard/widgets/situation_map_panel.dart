@@ -14,9 +14,8 @@ import 'mock_map_panel.dart';
 /// Situation map: Google Maps when [MapsConfig.isConfigured] and the platform
 /// supports `google_maps_flutter`; otherwise [MockMapPanel].
 ///
-/// On **web**, `google.maps` can appear slightly after the first frame (or after
-/// the script in `index.html` finishes). This widget briefly polls so we do not
-/// stick on the static mock when the JS API is only milliseconds late.
+/// On **web**, `google.maps` can appear slightly after the first frame. This widget
+/// polls briefly so a late-loading Maps script does not stay on the static mock.
 class SituationMapPanel extends StatefulWidget {
   const SituationMapPanel({
     super.key,

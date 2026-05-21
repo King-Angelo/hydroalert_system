@@ -7,7 +7,7 @@ import 'maps_js_available_stub.dart'
 /// Google Maps API key for the situation map (compile-time).
 ///
 /// **Web:** add the Maps JavaScript API script to `web/index.html` with a browser key.
-/// If the script loads successfully, the situation map uses the live widget even when
+/// If `google.maps` loads, the live map is used even when
 /// `HYDROADMIN_GOOGLE_MAPS_API_KEY` was not passed at build time (e.g. some CI builds).
 /// Passing `--dart-define=HYDROADMIN_GOOGLE_MAPS_API_KEY=...` is still recommended so
 /// the native map stack and web stay aligned.
